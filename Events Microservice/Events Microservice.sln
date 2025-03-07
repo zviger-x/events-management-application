@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{174669E4-1019-48EA-908D-FF765BCBB02E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{174669E4-1019-48EA-908D-FF765BCBB02E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{6C4B25BD-4A84-4BA4-B03D-56DCE15F9AB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{6C4B25BD-4A84-4BA4-B03D-56DCE15F9AB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E0A2D6FA-DB1B-409F-9352-036248BF3ACC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E0A2D6FA-DB1B-409F-9352-036248BF3ACC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{5785D6A9-4618-4F4E-81AA-11090F166757}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsAPI", "EventsAPI\EventsAPI.csproj", "{38954CB4-7860-4B87-B0B8-B0660C1F37A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventsAPI", "EventsAPI\EventsAPI.csproj", "{38954CB4-7860-4B87-B0B8-B0660C1F37A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +29,6 @@ Global
 		{E0A2D6FA-DB1B-409F-9352-036248BF3ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0A2D6FA-DB1B-409F-9352-036248BF3ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0A2D6FA-DB1B-409F-9352-036248BF3ACC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5785D6A9-4618-4F4E-81AA-11090F166757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5785D6A9-4618-4F4E-81AA-11090F166757}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5785D6A9-4618-4F4E-81AA-11090F166757}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5785D6A9-4618-4F4E-81AA-11090F166757}.Release|Any CPU.Build.0 = Release|Any CPU
 		{38954CB4-7860-4B87-B0B8-B0660C1F37A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{38954CB4-7860-4B87-B0B8-B0660C1F37A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38954CB4-7860-4B87-B0B8-B0660C1F37A4}.Release|Any CPU.ActiveCfg = Release|Any CPU

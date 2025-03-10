@@ -27,5 +27,11 @@ namespace DataAccess.UnitOfWork.Interfaces
         /// Rolls back the current transaction, discarding any unsaved changes.
         /// </summary>
         Task RollbackTransactionAsync();
+
+        /// <summary>
+        /// Executes an action within a transaction.
+        /// </summary>
+        /// <param name="action">The action to execute within the transaction.</param>
+        Task InvokeWithTransactionAsync(Func<Task> action);
     }
 }

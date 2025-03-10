@@ -13,17 +13,26 @@ namespace BusinessLogic.Services
 
         public override async Task CreateAsync(User entity)
         {
-            await _unitOfWork.UserRepository.CreateAsync(entity);
-        }
-
-        public override async Task DeleteAsync(User entity)
-        {
-            await _unitOfWork.UserRepository.DeleteAsync(entity);
+            await _unitOfWork.InvokeWithTransactionAsync(async () =>
+            {
+                await _unitOfWork.UserRepository.CreateAsync(entity);
+            });
         }
 
         public override async Task UpdateAsync(User entity)
         {
-            await _unitOfWork.UserRepository.UpdateAsync(entity);
+            await _unitOfWork.InvokeWithTransactionAsync(async () =>
+            {
+                await _unitOfWork.UserRepository.UpdateAsync(entity);
+            });
+        }
+
+        public override async Task DeleteAsync(User entity)
+        {
+            await _unitOfWork.InvokeWithTransactionAsync(async () =>
+            {
+                await _unitOfWork.UserRepository.DeleteAsync(entity);
+            });
         }
 
         public override IQueryable<User> GetAll()

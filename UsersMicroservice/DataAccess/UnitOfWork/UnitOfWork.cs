@@ -66,5 +66,20 @@ namespace DataAccess.UnitOfWork
             _userNotificationRepository.Dispose();
             _userTransactionRepository.Dispose();
         }
+
+        public async Task InvokeWithTransactionAsync(Func<Task> action)
+        {
+            await BeginTransactionAsync();
+            try
+            {
+                await action();
+                await CommitTransactionAsync();
+            }
+            catch
+            {
+                await RollbackTransactionAsync();
+                throw;
+            }
+        }
     }
 }

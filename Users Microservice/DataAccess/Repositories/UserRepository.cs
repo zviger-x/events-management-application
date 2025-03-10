@@ -1,9 +1,10 @@
 ﻿using DataAccess.Contexts;
 using DataAccess.Entities;
+using DataAccess.Repositories.Interfaces;
 
 namespace DataAccess.Repositories
 {
-    internal class UserRepository : BaseRepository<User>
+    internal class UserRepository : BaseRepository<User>, IUserRepository
     {
         public UserRepository(UserDbContext context)
             : base(context)

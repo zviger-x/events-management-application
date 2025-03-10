@@ -2,7 +2,7 @@
 
 namespace DataAccess.Repositories.Interfaces
 {
-    internal interface IRepository<T>
+    internal interface IRepository<T> : IDisposable
         where T : IEntity
     {
         /// <summary>

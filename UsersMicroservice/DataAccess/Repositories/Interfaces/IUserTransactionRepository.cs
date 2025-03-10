@@ -2,7 +2,7 @@
 
 namespace DataAccess.Repositories.Interfaces
 {
-    internal interface IUserTransactionRepository : IRepository<UserTransaction>
+    public interface IUserTransactionRepository : IRepository<UserTransaction>
     {
     }
 }

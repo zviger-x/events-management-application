@@ -2,7 +2,7 @@
 
 namespace DataAccess.Repositories.Interfaces
 {
-    internal interface IUserNotificationRepository : IRepository<UserNotification>
+    public interface IUserNotificationRepository : IRepository<UserNotification>
     {
     }
 }

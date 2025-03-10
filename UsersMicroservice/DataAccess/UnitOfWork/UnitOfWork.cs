@@ -43,6 +43,9 @@ namespace DataAccess.UnitOfWork
         public void Dispose()
         {
             _context.Dispose();
+            _userRepository.Dispose();
+            _userNotificationRepository.Dispose();
+            _userTransactionRepository.Dispose();
         }
     }
 }

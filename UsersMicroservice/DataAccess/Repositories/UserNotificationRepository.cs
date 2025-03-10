@@ -1,6 +1,7 @@
 ﻿using DataAccess.Contexts;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
@@ -17,7 +18,7 @@ namespace DataAccess.Repositories
 
         public override IQueryable<UserNotification> GetAll()
         {
-            return _context.UserNotifications;
+            return _context.UserNotifications.AsNoTracking();
         }
     }
 }

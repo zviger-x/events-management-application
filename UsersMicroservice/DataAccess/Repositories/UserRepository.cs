@@ -1,6 +1,7 @@
 ﻿using DataAccess.Contexts;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
@@ -17,7 +18,7 @@ namespace DataAccess.Repositories
 
         public override IQueryable<User> GetAll()
         {
-            return _context.Users;
+            return _context.Users.AsNoTracking();
         }
     }
 }

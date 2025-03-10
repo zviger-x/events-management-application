@@ -8,6 +8,24 @@ namespace DataAccess.UnitOfWork.Interfaces
         IUserNotificationRepository UserNotificationRepository { get; }
         IUserTransactionRepository UserTransactionRepository { get; }
 
+        /// <summary>
+        /// Saves changes to the database.
+        /// </summary>
         Task SaveChangesAsync();
+
+        /// <summary>
+        /// Begins a new transaction.
+        /// </summary>
+        Task BeginTransactionAsync();
+
+        /// <summary>
+        /// Saving all changes to the database and commits the current transaction.
+        /// </summary>
+        Task CommitTransactionAsync();
+
+        /// <summary>
+        /// Rolls back the current transaction, discarding any unsaved changes.
+        /// </summary>
+        Task RollbackTransactionAsync();
     }
 }

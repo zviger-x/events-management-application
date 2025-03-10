@@ -2,7 +2,7 @@
 
 namespace DataAccess.UnitOfWork.Interfaces
 {
-    internal interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork : IDisposable
     {
         IUserRepository UserRepository { get; }
         IUserNotificationRepository UserNotificationRepository { get; }

@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Services.Interfaces;
+using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 
@@ -8,10 +9,12 @@ namespace BusinessLogic.Services
         where T : IEntity
     {
         protected readonly IUnitOfWork _unitOfWork;
+        protected readonly IBaseValidator<T> _validator;
 
-        protected BaseService(IUnitOfWork unitOfWork)
+        protected BaseService(IUnitOfWork unitOfWork, IBaseValidator<T> validator)
         {
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
 
         public abstract Task CreateAsync(T entity);

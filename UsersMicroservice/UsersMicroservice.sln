@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic", "BusinessLo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsersAPI", "UsersAPI\UsersAPI.csproj", "{BFB0B307-5157-41A9-B9C2-D2BC12D14200}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{BDF3002B-DA09-411E-BAF9-3D574A488B37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{BFB0B307-5157-41A9-B9C2-D2BC12D14200}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFB0B307-5157-41A9-B9C2-D2BC12D14200}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFB0B307-5157-41A9-B9C2-D2BC12D14200}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDF3002B-DA09-411E-BAF9-3D574A488B37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDF3002B-DA09-411E-BAF9-3D574A488B37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDF3002B-DA09-411E-BAF9-3D574A488B37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDF3002B-DA09-411E-BAF9-3D574A488B37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

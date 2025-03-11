@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Validation.Validators.Interfaces;
+﻿using BusinessLogic.Validation.Results;
+using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
@@ -15,22 +16,17 @@ namespace BusinessLogic.Validation.Validators
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Dictionary<string, string[]>> ValidateAndThrowAsync(T entity)
+        public async Task<ValidationResultDictionary> ValidateAndThrowAsync(T entity)
         {
             var result = await ValidateAsync(entity);
 
             if (result.IsValid)
                 return new();
 
-            // В будущем возможно сделаю так, чтобы на фронтенд приходило в формате error.propertyname.errorcode
+            // В будущем сделаю так, чтобы на фронтенд приходило в формате error.propertyname.errorcode
             // Чтобы можно было под разные языки подстраивать ошибки
-            // А пока для демонстрации так.
-            return result.Errors
-                .GroupBy(e => e.PropertyName.ToLower())
-                .ToDictionary(
-                    g => $"error.{g.Key}",
-                    g => g.Select(e => e.ErrorMessage).ToArray()
-                );
+            // Сейчас для демонстрации ошибки будут возвращаться текстом
+            return new ValidationResultDictionary(result);
         }
     }
 }

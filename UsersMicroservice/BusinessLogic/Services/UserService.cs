@@ -18,8 +18,8 @@ namespace BusinessLogic.Services
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
             // Это временно
-            if (validationResult.Any())
-                throw new Exception(string.Join(Environment.NewLine, validationResult.SelectMany(e => e.Value).ToList()));
+            if (validationResult.IsValid)
+                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
 
             await _unitOfWork.InvokeWithTransactionAsync(async () =>
             {
@@ -31,8 +31,8 @@ namespace BusinessLogic.Services
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
             // Это временно
-            if (validationResult.Any())
-                throw new Exception(string.Join(Environment.NewLine, validationResult.SelectMany(e => e.Value).ToList()));
+            if (validationResult.IsValid)
+                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
 
             await _unitOfWork.InvokeWithTransactionAsync(async () =>
             {
@@ -44,8 +44,8 @@ namespace BusinessLogic.Services
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
             // Это временно
-            if (validationResult.Any())
-                throw new Exception(string.Join(Environment.NewLine, validationResult.SelectMany(e => e.Value).ToList()));
+            if (validationResult.IsValid)
+                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
 
             await _unitOfWork.InvokeWithTransactionAsync(async () =>
             {

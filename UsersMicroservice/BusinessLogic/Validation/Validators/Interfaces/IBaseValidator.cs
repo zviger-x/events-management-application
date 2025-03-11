@@ -1,8 +1,10 @@
-﻿using DataAccess.Entities.Interfaces;
+﻿using BusinessLogic.Validation.Results;
+using DataAccess.Entities.Interfaces;
+using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators.Interfaces
 {
-    internal interface IBaseValidator<T>
+    internal interface IBaseValidator<T> : IValidator<T>
         where T : IEntity
     {
         /// <summary>
@@ -14,6 +16,6 @@ namespace BusinessLogic.Validation.Validators.Interfaces
         /// - The key is a string representing the error code.
         /// - The value is an array of strings, each representing a validation error message.
         /// </returns>
-        Task<Dictionary<string, string[]>> ValidateAndThrowAsync(T entity);
+        Task<ValidationResultDictionary> ValidateAndThrowAsync(T entity);
     }
 }

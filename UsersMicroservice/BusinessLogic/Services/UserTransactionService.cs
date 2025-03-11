@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Models;
+using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -12,46 +13,51 @@ namespace BusinessLogic.Services
         {
         }
 
-        // Пока что я буду просто выбрасывать ошибки. Но в будущем будет выбрасывать DTO, хранящая ошибки,
-        // которые будет принимать контроллер и возвращать в frontend
-        public override async Task CreateAsync(UserTransaction entity)
+        // Пока что я буду просто выбрасывать ошибки. Но в будущем будет выбрасываться коды ошибки,
+        // которые будут поступать в frontend
+        public override async Task<Response> CreateAsync(UserTransaction entity)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
-            // Это временно
             if (validationResult.IsValid)
-                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
+                return Response.Fail(validationResult);
 
             await _unitOfWork.UserTransactionRepository.CreateAsync(entity);
+
+            return Response.Success();
         }
 
-        public override async Task UpdateAsync(UserTransaction entity)
+        public override async Task<Response> UpdateAsync(UserTransaction entity)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
-            // Это временно
             if (validationResult.IsValid)
-                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
+                return Response.Fail(validationResult);
 
             await _unitOfWork.UserTransactionRepository.UpdateAsync(entity);
+
+            return Response.Success();
         }
 
-        public override async Task DeleteAsync(UserTransaction entity)
+        public override async Task<Response> DeleteAsync(UserTransaction entity)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
-            // Это временно
             if (validationResult.IsValid)
-                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
+                return Response.Fail(validationResult);
 
             await _unitOfWork.UserTransactionRepository.DeleteAsync(entity);
+
+            return Response.Success();
         }
 
-        public override IQueryable<UserTransaction> GetAll()
+        public override Response<IQueryable<UserTransaction>> GetAll()
         {
-            return _unitOfWork.UserTransactionRepository.GetAll();
+            var collection = _unitOfWork.UserTransactionRepository.GetAll();
+            return Response.Success(collection);
         }
 
-        public override async Task<UserTransaction> GetByIdAsync(int id)
+        public override async Task<Response<UserTransaction>> GetByIdAsync(int id)
         {
-            return await _unitOfWork.UserTransactionRepository.GetByIdAsync(id);
+            var user = await _unitOfWork.UserTransactionRepository.GetByIdAsync(id);
+            return Response.Success(user);
         }
     }
 }

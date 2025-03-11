@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Models;
+using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -12,46 +13,50 @@ namespace BusinessLogic.Services
         {
         }
 
-        // Пока что я буду просто выбрасывать ошибки. Но в будущем будет выбрасывать DTO, хранящая ошибки,
-        // которые будет принимать контроллер и возвращать в frontend
-        public override async Task CreateAsync(UserNotification entity)
+        // Пока что я буду просто выбрасывать ошибки. Но в будущем будет выбрасываться коды ошибки,
+        // которые будут поступать в frontend
+        public override async Task<Response> CreateAsync(UserNotification entity)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
-            // Это временно
             if (validationResult.IsValid)
-                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
+                return Response.Fail(validationResult);
 
             await _unitOfWork.UserNotificationRepository.CreateAsync(entity);
+
+            return Response.Success();
         }
 
-        public override async Task UpdateAsync(UserNotification entity)
+        public override async Task<Response> UpdateAsync(UserNotification entity)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
-            // Это временно
             if (validationResult.IsValid)
-                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
+                return Response.Fail(validationResult);
 
             await _unitOfWork.UserNotificationRepository.UpdateAsync(entity);
+
+            return Response.Success();
         }
 
-        public override async Task DeleteAsync(UserNotification entity)
+        public override async Task<Response> DeleteAsync(UserNotification entity)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
-            // Это временно
             if (validationResult.IsValid)
-                throw new Exception(string.Join(Environment.NewLine, validationResult.Errors.SelectMany(e => e.Value).ToList()));
+                return Response.Fail(validationResult);
 
             await _unitOfWork.UserNotificationRepository.DeleteAsync(entity);
+            return Response.Success();
         }
 
-        public override IQueryable<UserNotification> GetAll()
+        public override Response<IQueryable<UserNotification>> GetAll()
         {
-            return _unitOfWork.UserNotificationRepository.GetAll();
+            var collection = _unitOfWork.UserNotificationRepository.GetAll();
+            return Response.Success(collection);
         }
 
-        public override async Task<UserNotification> GetByIdAsync(int id)
+        public override async Task<Response<UserNotification>> GetByIdAsync(int id)
         {
-            return await _unitOfWork.UserNotificationRepository.GetByIdAsync(id);
+            var user = await _unitOfWork.UserNotificationRepository.GetByIdAsync(id);
+            return Response.Success(user);
         }
     }
 }

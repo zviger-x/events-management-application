@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Models;
+using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
@@ -17,15 +18,15 @@ namespace BusinessLogic.Services
             _validator = validator;
         }
 
-        public abstract Task CreateAsync(T entity);
+        public abstract Task<Response> CreateAsync(T entity);
 
-        public abstract Task UpdateAsync(T entity);
+        public abstract Task<Response> UpdateAsync(T entity);
 
-        public abstract Task DeleteAsync(T entity);
+        public abstract Task<Response> DeleteAsync(T entity);
 
-        public abstract IQueryable<T> GetAll();
+        public abstract Response<IQueryable<T>> GetAll();
 
-        public abstract Task<T> GetByIdAsync(int id);
+        public abstract Task<Response<T>> GetByIdAsync(int id);
 
         public virtual async Task SaveChangesAsync() => await _unitOfWork.SaveChangesAsync();
 

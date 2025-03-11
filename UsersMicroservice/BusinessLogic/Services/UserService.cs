@@ -66,6 +66,7 @@ namespace BusinessLogic.Services
         public override async Task<Response<User>> GetByIdAsync(int id)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            user.Password = string.Empty;
             return Response.Success(user);
         }
     }

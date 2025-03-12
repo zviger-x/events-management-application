@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators.Interfaces
 {
-    internal interface IBaseValidator<T> : IValidator<T>
+    public interface IBaseValidator<T> : IValidator<T>
         where T : IEntity
     {
         /// <summary>

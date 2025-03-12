@@ -2,7 +2,7 @@
 
 namespace BusinessLogic.Validation.Results
 {
-    internal class ValidationResultDictionary
+    public class ValidationResultDictionary
     {
         public ValidationResultDictionary()
         {

@@ -2,7 +2,7 @@
 
 namespace BusinessLogic.Models
 {
-    internal class Response
+    public class Response
     {
         public Response()
         {
@@ -23,7 +23,7 @@ namespace BusinessLogic.Models
         public static Response Fail(ValidationResultDictionary validationResultDictionary) => new(validationResultDictionary);
     }
 
-    internal class Response<T> : Response
+    public class Response<T> : Response
     {
         public Response(T dataTransferObject)
             : base()

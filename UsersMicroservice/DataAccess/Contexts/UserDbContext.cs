@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Contexts
 {
-    internal class UserDbContext : DbContext
+    public class UserDbContext : DbContext
     {
         public UserDbContext(DbContextOptions<UserDbContext> options)
             : base(options)

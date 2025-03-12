@@ -3,7 +3,7 @@ using DataAccess.Entities.Interfaces;
 
 namespace BusinessLogic.Services.Interfaces
 {
-    internal interface IService<T> : IDisposable
+    public interface IService<T> : IDisposable
         where T : IEntity
     {
         /// <summary>

@@ -6,7 +6,7 @@ using DataAccess.UnitOfWork.Interfaces;
 
 namespace BusinessLogic.Services
 {
-    internal abstract class BaseService<T> : IService<T>
+    public abstract class BaseService<T> : IService<T>
         where T : IEntity
     {
         protected readonly IUnitOfWork _unitOfWork;

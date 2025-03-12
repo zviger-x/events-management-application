@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    internal class BaseValidator<T> : AbstractValidator<T>, IBaseValidator<T>
+    public class BaseValidator<T> : AbstractValidator<T>, IBaseValidator<T>
         where T : IEntity
     {
         protected readonly IUnitOfWork _unitOfWork;

@@ -2,7 +2,7 @@
 
 namespace BusinessLogic.Services.Interfaces
 {
-    internal interface IUserNotificationService : IService<UserNotification>
+    public interface IUserNotificationService : IService<UserNotification>
     {
     }
 }

@@ -4,7 +4,7 @@ using DataAccess.Repositories.Interfaces;
 
 namespace DataAccess.Repositories
 {
-    internal abstract class BaseRepository<T> : IRepository<T>
+    public abstract class BaseRepository<T> : IRepository<T>
         where T : IEntity
     {
         protected BaseRepository(UserDbContext context)

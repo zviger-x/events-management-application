@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    internal class UserTransactionRepository : BaseRepository<UserTransaction>, IUserTransactionRepository
+    public class UserTransactionRepository : BaseRepository<UserTransaction>, IUserTransactionRepository
     {
         public UserTransactionRepository(UserDbContext context)
             : base(context)

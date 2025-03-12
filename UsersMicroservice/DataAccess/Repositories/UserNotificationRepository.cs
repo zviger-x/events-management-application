@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    internal class UserNotificationRepository : BaseRepository<UserNotification>, IUserNotificationRepository
+    public class UserNotificationRepository : BaseRepository<UserNotification>, IUserNotificationRepository
     {
         public UserNotificationRepository(UserDbContext context)
             : base(context)

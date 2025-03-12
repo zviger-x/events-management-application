@@ -2,7 +2,7 @@
 
 namespace BusinessLogic.Services.Interfaces
 {
-    internal interface IUserService : IService<User>
+    public interface IUserService : IService<User>
     {
     }
 }

@@ -24,14 +24,6 @@ namespace DataAccess.Initialization
                 _context.Database.EnsureCreated();
             }
 
-            if (true)//_config.AutoMigrate)
-            {
-                var pendingMigrations = _context.Database.GetPendingMigrations();
-
-                if (pendingMigrations.Any())
-                    _context.Database.Migrate();
-            }
-
             // Заполнение демонстрационными данными (используется с пересозданием БД)
             if (_config.SeedDemoData && _config.RecreateDatabase)
                 SeedDemoDataAsync();

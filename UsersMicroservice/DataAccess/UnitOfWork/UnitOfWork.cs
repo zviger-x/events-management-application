@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.UnitOfWork
 {
-    internal class UnitOfWOrk : IUnitOfWork
+    public class UnitOfWOrk : IUnitOfWork
     {
         private readonly UserDbContext _context;
         private IDbContextTransaction _transaction;
@@ -62,9 +62,9 @@ namespace DataAccess.UnitOfWork
         {
             _context.Dispose();
             _transaction?.Dispose();
-            _userRepository.Dispose();
-            _userNotificationRepository.Dispose();
-            _userTransactionRepository.Dispose();
+            _userRepository?.Dispose();
+            _userNotificationRepository?.Dispose();
+            _userTransactionRepository?.Dispose();
         }
 
         public async Task InvokeWithTransactionAsync(Func<Task> action)

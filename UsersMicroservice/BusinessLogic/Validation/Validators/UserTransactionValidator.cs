@@ -1,11 +1,12 @@
 ﻿using BusinessLogic.Validation.Messages;
+using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    internal class UserTransactionValidator : BaseValidator<UserTransaction>
+    public class UserTransactionValidator : BaseValidator<UserTransaction>, IUserTransactionValidator
     {
         public UserTransactionValidator(IUnitOfWork unitOfWork)
             : base(unitOfWork)

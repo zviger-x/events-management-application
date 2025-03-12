@@ -6,9 +6,9 @@ using DataAccess.UnitOfWork.Interfaces;
 
 namespace BusinessLogic.Services
 {
-    internal class UserNotificationService : BaseService<UserNotification>, IUserNotificationService
+    public class UserNotificationService : BaseService<UserNotification>, IUserNotificationService
     {
-        public UserNotificationService(IUnitOfWork unitOfWork, IBaseValidator<UserNotification> validator)
+        public UserNotificationService(IUnitOfWork unitOfWork, IUserNotificationValidator validator)
             : base(unitOfWork, validator)
         {
         }

@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Validation.Messages;
+using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Validation.Validators
 {
-    internal class UserValidator : BaseValidator<User>
+    public class UserValidator : BaseValidator<User>, IUserValidator
     {
         public UserValidator(IUnitOfWork unitOfWork)
             : base(unitOfWork)

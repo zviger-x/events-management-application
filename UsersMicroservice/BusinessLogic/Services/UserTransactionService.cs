@@ -6,9 +6,9 @@ using DataAccess.UnitOfWork.Interfaces;
 
 namespace BusinessLogic.Services
 {
-    internal class UserTransactionService : BaseService<UserTransaction>, IUserTransactionService
+    public class UserTransactionService : BaseService<UserTransaction>, IUserTransactionService
     {
-        public UserTransactionService(IUnitOfWork unitOfWork, IBaseValidator<UserTransaction> validator)
+        public UserTransactionService(IUnitOfWork unitOfWork, IUserTransactionValidator validator)
             : base(unitOfWork, validator)
         {
         }

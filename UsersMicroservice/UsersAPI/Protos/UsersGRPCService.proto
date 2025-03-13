@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+option csharp_namespace = "UsersAPI.Protos";
+
+import "google/api/annotations.proto";
+
+package userservice;
+
+// Определение сущности User
+message User {
+  int32 id = 1;
+  string name = 2;
+  string surname = 3;
+  string email = 4;
+  string password = 5;
+  string role = 6;
+}
+
+// Для представления коллекции ошибок, т.к. в proto нет Dictionary<string, string[]>
+message StringArray {
+  repeated string values = 1;
+}
+
+// Модель, соответствующая ValidationResultDictionary
+message ValidationResult {
+  // Ключ — название поля, значение — список ошибок
+  map<string, StringArray> errors = 1;
+  bool isValid = 2;
+}
+
+// Базовый ответ (Response)
+message Response {
+  ValidationResult errors = 1;
+  bool hasErrors = 2;
+}
+
+// Ответ с данными типа User (Response<User>)
+message ResponseUser {
+  Response baseResponse = 1;
+  User dataTransferObject = 2;
+}
+
+// Ответ для списка пользователей (Response<IQueryable<User>>)
+message ResponseUsers {
+  Response baseResponse = 1;
+  repeated User dataTransferObject = 2;
+}
+
+// Запросы для методов сервиса
+
+// Для CreateAsync
+message CreateUserRequest {
+  User user = 1;
+}
+
+// Для UpdateAsync
+message UpdateUserRequest {
+  User user = 1;
+}
+
+// Для DeleteAsync
+message DeleteUserRequest {
+  int32 id = 1;
+}
+
+// Для GetByIdAsync
+message GetUserByIdRequest {
+  int32 id = 1;
+}
+
+// Для GetAll
+message GetAllUsersRequest {
+  // Дополнительных полей можно не добавлять, если требуется вернуть всех
+}
+
+// Определение сервиса gRPC
+service UserServiceGRPC {// Метод для создания пользователя
+  rpc CreateUser (CreateUserRequest) returns (Response) {
+    option (google.api.http) = {
+      post: "/users"
+      body: "*"
+    };
+  }
+  
+  // Метод для обновления пользователя
+  rpc UpdateUser (UpdateUserRequest) returns (Response) {
+    option (google.api.http) = {
+      put: "/users"
+      body: "*"
+    };
+  }
+  
+  // Метод для удаления пользователя
+  rpc DeleteUser (DeleteUserRequest) returns (Response) {
+    option (google.api.http) = {
+      delete: "/users/{id}"
+    };
+  }
+  
+  // Метод для получения пользователя по Id
+  rpc GetUserById (GetUserByIdRequest) returns (ResponseUser) {
+    option (google.api.http) = {
+      get: "/users/{id}"
+    };
+  }
+  
+  // Метод для получения всех пользователей
+  rpc GetAllUsers (GetAllUsersRequest) returns (ResponseUsers) {
+    option (google.api.http) = {
+      get: "/users"
+    };
+  }
+}

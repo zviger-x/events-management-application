@@ -25,4 +25,8 @@
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Protobuf Include="Protos\UsersGRPCService.proto" GrpcServices="Server" />
+  </ItemGroup>
+
 </Project>

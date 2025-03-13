@@ -76,6 +76,7 @@ namespace UsersAPI
                 app.UseSwaggerUI();
             }
 
+            app.MapGrpcService<Services.UserService>();
             app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
             app.Run();

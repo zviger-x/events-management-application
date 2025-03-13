@@ -21,12 +21,18 @@ namespace UsersAPI
             // Add services to the container.
             var services = builder.Services;
 
-            // DAL
+            // Для удобства, пока доступен открытый порт
+            // Я в терминале указываю useSqlOpenPorts, чтобы при миграциях использовался открытый порт
+            // А само приложение работало на закрытых портах
+            var openSqlPorts = args.Contains("UseSqlOpenPorts");
+
             var sqlConfig = builder.Configuration.GetSection("SqlServerConfig").Get<SqlServerConfig>();
             if (sqlConfig == null)
                 throw new ArgumentNullException(nameof(sqlConfig));
 
-            services.AddDbContext<UserDbContext>(o => o.UseSqlServer(sqlConfig.ConnectionString));
+            // DAL
+            services.AddDbContext<UserDbContext>(o =>
+                o.UseSqlServer(openSqlPorts ? sqlConfig.ConnectionStringOpenPorts : sqlConfig.ConnectionString));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
             services.AddScoped<IUserTransactionRepository, UserTransactionRepository>();
@@ -51,6 +57,12 @@ namespace UsersAPI
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+
+                // Auto migrations
+                if (dbContext.Database.GetPendingMigrations().Any())
+                    dbContext.Database.Migrate();
+            
+                // Regenerate db and seed demo data
                 var dbInitializer = new DBInitializer(dbContext, sqlConfig);
                 dbInitializer.Initialize();
             }
@@ -65,7 +77,6 @@ namespace UsersAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

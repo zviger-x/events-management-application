@@ -46,10 +46,12 @@ namespace UsersAPI
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<IUserTransactionService, UserTransactionService>();
 
-            services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            builder.Services.AddGrpc().AddJsonTranscoding();
+            builder.Services.AddGrpcSwagger();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new() { Title = "gRPC Users Microservice", Version = "v1" });
+            });
 
             var app = builder.Build();
 
@@ -74,11 +76,7 @@ namespace UsersAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
+            app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
             app.Run();
         }

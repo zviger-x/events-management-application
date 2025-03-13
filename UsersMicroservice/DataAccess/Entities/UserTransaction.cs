@@ -5,11 +5,11 @@ namespace DataAccess.Entities
     public class UserTransaction : IEntity
     {
         public int Id { get; set; }
-        public required int UsertId { get; set; }
-        public required int EventId { get; set; }
-        public required int SeatRow { get; set; }
-        public required int SeatNumber { get; set; }
-        public required float Amount { get; set; }
-        public required DateTime TransactionDate { get; set; }
+        public int UsertId { get; set; }
+        public int EventId { get; set; }
+        public int SeatRow { get; set; }
+        public int SeatNumber { get; set; }
+        public float Amount { get; set; }
+        public DateTime TransactionDate { get; set; }
     }
 }

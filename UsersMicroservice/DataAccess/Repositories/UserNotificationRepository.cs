@@ -11,6 +11,14 @@ namespace DataAccess.Repositories
             : base(context)
         {
         }
+
+        public override Task DeleteAsync(int id)
+        {
+            var notification = new UserNotification() { Id = id };
+            _context.UserNotifications.Remove(notification);
+            return Task.CompletedTask;
+        }
+
         public override async Task<UserNotification> GetByIdAsync(int id)
         {
             return await _context.UserNotifications.FindAsync(id);

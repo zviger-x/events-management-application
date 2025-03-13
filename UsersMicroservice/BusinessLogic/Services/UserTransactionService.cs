@@ -37,14 +37,9 @@ namespace BusinessLogic.Services
             return Response.Success();
         }
 
-        public override async Task<Response> DeleteAsync(UserTransaction entity)
+        public override async Task<Response> DeleteAsync(int id)
         {
-            var validationResult = await _validator.ValidateAndThrowAsync(entity);
-            if (validationResult.IsValid)
-                return Response.Fail(validationResult);
-
-            await _unitOfWork.UserTransactionRepository.DeleteAsync(entity);
-
+            await _unitOfWork.UserTransactionRepository.DeleteAsync(id);
             return Response.Success();
         }
 

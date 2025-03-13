@@ -22,7 +22,7 @@ namespace BusinessLogic.Services
 
         public abstract Task<Response> UpdateAsync(T entity);
 
-        public abstract Task<Response> DeleteAsync(T entity);
+        public abstract Task<Response> DeleteAsync(int id);
 
         public abstract Response<IQueryable<T>> GetAll();
 

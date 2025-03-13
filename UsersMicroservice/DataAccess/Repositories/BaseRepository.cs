@@ -25,11 +25,7 @@ namespace DataAccess.Repositories
             return Task.CompletedTask;
         }
 
-        public virtual Task DeleteAsync(T entity)
-        {
-            _context.Remove(entity);
-            return Task.CompletedTask;
-        }
+        public abstract Task DeleteAsync(int id);
 
         public abstract Task<T> GetByIdAsync(int id);
 

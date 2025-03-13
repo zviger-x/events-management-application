@@ -69,7 +69,7 @@ namespace UsersAPI
                 dbInitializer.Initialize();
             }
 
-            // Configure the HTTP request pipeline.
+            // gRPC Swagger
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

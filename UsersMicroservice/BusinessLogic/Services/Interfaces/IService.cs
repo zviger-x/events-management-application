@@ -23,9 +23,9 @@ namespace BusinessLogic.Services.Interfaces
         /// <summary>
         /// Removes an entity.
         /// </summary>
-        /// <param name="entity">Entity to delete.</param>
+        /// <param name="id">Id of the entity to delete.</param>
         /// <returns>A response containing validation errors, if any.</returns>
-        Task<Response> DeleteAsync(T entity);
+        Task<Response> DeleteAsync(int id);
 
         /// <summary>
         /// Returns an entity by its id.

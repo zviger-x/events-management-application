@@ -11,6 +11,14 @@ namespace DataAccess.Repositories
             : base(context)
         {
         }
+
+        public override Task DeleteAsync(int id)
+        {
+            var transaction = new UserTransaction() { Id = id };
+            _context.UserTransactions.Remove(transaction);
+            return Task.CompletedTask;
+        }
+
         public override async Task<UserTransaction> GetByIdAsync(int id)
         {
             return await _context.UserTransactions.FindAsync(id);

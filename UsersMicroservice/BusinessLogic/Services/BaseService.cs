@@ -1,8 +1,8 @@
 ﻿using BusinessLogic.Models;
 using BusinessLogic.Services.Interfaces;
-using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
+using FluentValidation;
 
 namespace BusinessLogic.Services
 {
@@ -10,9 +10,9 @@ namespace BusinessLogic.Services
         where T : class, IEntity
     {
         protected readonly IUnitOfWork _unitOfWork;
-        protected readonly IBaseValidator<T> _validator;
+        protected readonly IValidator<T> _validator;
 
-        protected BaseService(IUnitOfWork unitOfWork, IBaseValidator<T> validator)
+        protected BaseService(IUnitOfWork unitOfWork, IValidator<T> validator)
         {
             _unitOfWork = unitOfWork;
             _validator = validator;

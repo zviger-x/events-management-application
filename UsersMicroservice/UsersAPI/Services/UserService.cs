@@ -27,23 +27,18 @@ namespace UsersAPI.Services
             };
 
             var response = await _userService.CreateAsync(user);
+
             var errorsMap = new MapField<string, StringArray>();
-            foreach (var kvp in response.Errors.Errors)
+            foreach (var kvp in response.Errors)
             {
                 var stringArray = new StringArray();
                 stringArray.Values.AddRange(kvp.Value);
                 errorsMap.Add(kvp.Key, stringArray);
             }
 
-            var protoResultDictionary = new ValidationResult() { IsValid = response.Errors.IsValid };
-            foreach (var kvp in errorsMap)
-                protoResultDictionary.Errors.Add(kvp.Key, kvp.Value);
-
-            var protoResponse = new Response()
-            { 
-                Errors = protoResultDictionary,
-                HasErrors = response.HasErrors
-            };
+            var protoResponse = new Response() { HasErrors = response.HasErrors };
+            foreach (var error in errorsMap)
+                protoResponse.Errors.Add(error.Key, error.Value);
 
             return protoResponse;
         }
@@ -65,22 +60,16 @@ namespace UsersAPI.Services
             var response = await _userService.UpdateAsync(user);
 
             var errorsMap = new MapField<string, StringArray>();
-            foreach (var kvp in response.Errors.Errors)
+            foreach (var kvp in response.Errors)
             {
                 var stringArray = new StringArray();
                 stringArray.Values.AddRange(kvp.Value);
                 errorsMap.Add(kvp.Key, stringArray);
             }
 
-            var protoResultDictionary = new ValidationResult() { IsValid = response.Errors.IsValid };
-            foreach (var kvp in errorsMap)
-                protoResultDictionary.Errors.Add(kvp.Key, kvp.Value);
-
-            var protoResponse = new Response()
-            {
-                Errors = protoResultDictionary,
-                HasErrors = response.HasErrors
-            };
+            var protoResponse = new Response() { HasErrors = response.HasErrors };
+            foreach (var error in errorsMap)
+                protoResponse.Errors.Add(error.Key, error.Value);
 
             return protoResponse;
         }
@@ -91,22 +80,16 @@ namespace UsersAPI.Services
             var response = await _userService.DeleteAsync(Guid.Parse(request.Id));
 
             var errorsMap = new MapField<string, StringArray>();
-            foreach (var kvp in response.Errors.Errors)
+            foreach (var kvp in response.Errors)
             {
                 var stringArray = new StringArray();
                 stringArray.Values.AddRange(kvp.Value);
                 errorsMap.Add(kvp.Key, stringArray);
             }
 
-            var protoResultDictionary = new ValidationResult() { IsValid = response.Errors.IsValid };
-            foreach (var kvp in errorsMap)
-                protoResultDictionary.Errors.Add(kvp.Key, kvp.Value);
-
-            var protoResponse = new Response()
-            {
-                Errors = protoResultDictionary,
-                HasErrors = response.HasErrors
-            };
+            var protoResponse = new Response() { HasErrors = response.HasErrors };
+            foreach (var error in errorsMap)
+                protoResponse.Errors.Add(error.Key, error.Value);
 
             return protoResponse;
         }
@@ -117,22 +100,16 @@ namespace UsersAPI.Services
             var response = await _userService.GetByIdAsync(Guid.Parse(request.Id));
 
             var errorsMap = new MapField<string, StringArray>();
-            foreach (var kvp in response.Errors.Errors)
+            foreach (var kvp in response.Errors)
             {
                 var stringArray = new StringArray();
                 stringArray.Values.AddRange(kvp.Value);
                 errorsMap.Add(kvp.Key, stringArray);
             }
 
-            var protoResultDictionary = new ValidationResult() { IsValid = response.Errors.IsValid };
-            foreach (var kvp in errorsMap)
-                protoResultDictionary.Errors.Add(kvp.Key, kvp.Value);
-
-            var baseProtoResponse = new Response()
-            {
-                Errors = protoResultDictionary,
-                HasErrors = response.HasErrors
-            };
+            var baseProtoResponse = new Response() { HasErrors = response.HasErrors };
+            foreach (var error in errorsMap)
+                baseProtoResponse.Errors.Add(error.Key, error.Value);
 
             var user = response.DataTransferObject;
             var protoUser = new User()
@@ -160,22 +137,16 @@ namespace UsersAPI.Services
             var response = _userService.GetAll();
 
             var errorsMap = new MapField<string, StringArray>();
-            foreach (var kvp in response.Errors.Errors)
+            foreach (var kvp in response.Errors)
             {
                 var stringArray = new StringArray();
                 stringArray.Values.AddRange(kvp.Value);
                 errorsMap.Add(kvp.Key, stringArray);
             }
 
-            var protoResultDictionary = new ValidationResult() { IsValid = response.Errors.IsValid };
-            foreach (var kvp in errorsMap)
-                protoResultDictionary.Errors.Add(kvp.Key, kvp.Value);
-
-            var baseProtoResponse = new Response()
-            {
-                Errors = protoResultDictionary,
-                HasErrors = response.HasErrors
-            };
+            var baseProtoResponse = new Response() { HasErrors = response.HasErrors };
+            foreach (var error in errorsMap)
+                baseProtoResponse.Errors.Add(error.Key, error.Value);
 
             var users = response.DataTransferObject;
             var protoResponse = new ResponseUsers()

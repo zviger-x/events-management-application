@@ -17,7 +17,7 @@ namespace BusinessLogic.Services
         // которые будут поступать в frontend
         public override async Task<Response> CreateAsync(User entity, CancellationToken token = default)
         {
-            var validationResult = await _validator.ValidateAndThrowAsync(entity);
+            var validationResult = await _validator.ValidateAsync(entity, token);
             if (!validationResult.IsValid)
                 return Response.Fail(validationResult);
 
@@ -32,7 +32,7 @@ namespace BusinessLogic.Services
 
         public override async Task<Response> UpdateAsync(User entity, CancellationToken token = default)
         {
-            var validationResult = await _validator.ValidateAndThrowAsync(entity);
+            var validationResult = await _validator.ValidateAsync(entity, token);
             if (!validationResult.IsValid)
                 return Response.Fail(validationResult);
 

@@ -21,16 +21,9 @@ message StringArray {
   repeated string values = 1;
 }
 
-// ћодель, соответствующа€ ValidationResultDictionary
-message ValidationResult {
-  //  люч Ч название пол€, значение Ч список ошибок
-  map<string, StringArray> errors = 1;
-  bool isValid = 2;
-}
-
 // Ѕазовый ответ (Response)
 message Response {
-  ValidationResult errors = 1;
+  map<string, StringArray> errors = 1;
   bool hasErrors = 2;
 }
 

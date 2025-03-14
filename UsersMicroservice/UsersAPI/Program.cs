@@ -46,12 +46,9 @@ namespace UsersAPI
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<IUserTransactionService, UserTransactionService>();
 
-            builder.Services.AddGrpc().AddJsonTranscoding();
-            builder.Services.AddGrpcSwagger();
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new() { Title = "gRPC Users Microservice", Version = "v1" });
-            });
+            services.AddControllers();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -76,8 +73,11 @@ namespace UsersAPI
                 app.UseSwaggerUI();
             }
 
-            app.MapGrpcService<Services.UserService>();
-            app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
+            app.UseHttpsRedirection();
+
+            app.UseAuthorization();
+
+            app.MapControllers();
 
             app.Run();
         }

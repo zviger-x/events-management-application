@@ -64,7 +64,8 @@ namespace BusinessLogic.Services
         public override async Task<Response<User>> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(id, token);
-            user.Password = string.Empty;
+            if (user != null)
+                user.Password = string.Empty;
             return Response.Success(user);
         }
     }

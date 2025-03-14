@@ -25,14 +25,14 @@ namespace BusinessLogic.Services.Interfaces
         /// </summary>
         /// <param name="id">Id of the entity to delete.</param>
         /// <returns>A response containing validation errors, if any.</returns>
-        Task<Response> DeleteAsync(int id);
+        Task<Response> DeleteAsync(Guid id);
 
         /// <summary>
         /// Returns an entity by its id.
         /// </summary>
         /// <param name="id">Entity id.</param>
         /// <returns>A response with validation errors, if any, or the entity.</returns>
-        Task<Response<T>> GetByIdAsync(int id);
+        Task<Response<T>> GetByIdAsync(Guid id);
 
         /// <summary>
         /// Returns an array of all entities.

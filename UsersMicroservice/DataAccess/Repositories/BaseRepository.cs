@@ -25,9 +25,9 @@ namespace DataAccess.Repositories
             return Task.CompletedTask;
         }
 
-        public abstract Task DeleteAsync(int id);
+        public abstract Task DeleteAsync(Guid id);
 
-        public abstract Task<T> GetByIdAsync(int id);
+        public abstract Task<T> GetByIdAsync(Guid id);
 
         public abstract IQueryable<T> GetAll();
 

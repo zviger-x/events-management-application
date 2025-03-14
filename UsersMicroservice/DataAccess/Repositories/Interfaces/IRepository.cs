@@ -21,14 +21,14 @@ namespace DataAccess.Repositories.Interfaces
         /// Removes an entity.
         /// </summary>
         /// <param name="id">Id of the entity to delete.</param>
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Guid id);
 
         /// <summary>
         /// Returns an entity by its id.
         /// </summary>
         /// <param name="id">Entity id.</param>
         /// <returns>Entity.</returns>
-        Task<T> GetByIdAsync(int id);
+        Task<T> GetByIdAsync(Guid id);
 
         /// <summary>
         /// Returns an array of all entities.

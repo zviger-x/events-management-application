@@ -24,7 +24,7 @@
         public const string DateTimeNotNull = "Date and time cannot be null.";
 
         public const string UserIdNotNull = "User ID cannot be null.";
-        public const string UserIdLessThanZero = "User ID must be greater than or equals to zero.";
+        public const string UserIdNotEmpty = "User ID cannot be empty.";
     }
 
     internal static class UserTransactionValidationMessages
@@ -35,10 +35,10 @@
         public const string DateNotNull = "Date and time cannot be null.";
 
         public const string UserIdNotNull = "User ID cannot be null.";
-        public const string UserIdLessThanZero = "User ID must be greater than or equals to zero.";
+        public const string UserIdNotEmpty = "User ID cannot be empty.";
 
         public const string EventIdNotNull = "Event ID cannot be null.";
-        public const string EventIdLessThanZero = "Event ID must be greater than or equals to zero.";
+        public const string EventIdNotEmpty = "Event ID cannot be empty.";
 
         public const string SeatRowNotNull = "Seat row cannot be null.";
         public const string SeatRowLessThanOrEqualsToZero = "Seat row must be greater than zero.";

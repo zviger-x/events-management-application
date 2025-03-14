@@ -19,9 +19,9 @@ namespace BusinessLogic.Validation.Validators
                 .NotNull().WithMessage(UserNotificationValidationMessages.DateTimeNotNull);
 
             // Нужно в будущем добавить проверку на наличие
-            RuleFor(n => n.UsertId)
+            RuleFor(n => n.UserId)
                 .NotNull().WithMessage(UserNotificationValidationMessages.UserIdNotNull)
-                .GreaterThanOrEqualTo(0).WithMessage(UserNotificationValidationMessages.UserIdLessThanZero);
+                .NotEmpty().WithMessage(UserNotificationValidationMessages.UserIdNotEmpty);
         }
     }
 }

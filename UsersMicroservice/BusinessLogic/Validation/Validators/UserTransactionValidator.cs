@@ -21,11 +21,11 @@ namespace BusinessLogic.Validation.Validators
             // Нужно в будущем добавить проверку на наличие
             RuleFor(t => t.UsertId)
                 .NotNull().WithMessage(UserTransactionValidationMessages.UserIdNotNull)
-                .GreaterThanOrEqualTo(0).WithMessage(UserTransactionValidationMessages.UserIdLessThanZero);
+                .NotEmpty().WithMessage(UserTransactionValidationMessages.UserIdNotEmpty);
 
             RuleFor(t => t.EventId)
                 .NotNull().WithMessage(UserTransactionValidationMessages.EventIdNotNull)
-                .GreaterThanOrEqualTo(0).WithMessage(UserTransactionValidationMessages.EventIdLessThanZero);
+                .NotEmpty().WithMessage(UserTransactionValidationMessages.EventIdNotEmpty);
 
             RuleFor(t => t.SeatRow)
                 .NotNull().WithMessage(UserTransactionValidationMessages.SeatRowNotNull)

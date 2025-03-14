@@ -19,7 +19,7 @@ namespace UsersAPI.Services
             var protoUser = request.User;
             var user = new DataAccess.Entities.User()
             {
-                Id = protoUser.Id,
+                Id = Guid.Parse(protoUser.Id),
                 Name = protoUser.Name,
                 Surname = protoUser.Surname,
                 Email = protoUser.Email,
@@ -55,7 +55,7 @@ namespace UsersAPI.Services
             var protoUser = request.User;
             var user = new DataAccess.Entities.User()
             {
-                Id = protoUser.Id,
+                Id = Guid.Parse(protoUser.Id),
                 Name = protoUser.Name,
                 Surname = protoUser.Surname,
                 Email = protoUser.Email,
@@ -89,7 +89,7 @@ namespace UsersAPI.Services
         // Реализация метода удаления пользователя (DeleteUser)
         public override async Task<Response> DeleteUser(DeleteUserRequest request, ServerCallContext context)
         {
-            var response = await _userService.DeleteAsync(request.Id);
+            var response = await _userService.DeleteAsync(Guid.Parse(request.Id));
 
             var errorsMap = new MapField<string, StringArray>();
             foreach (var kvp in response.Errors.Errors)
@@ -115,7 +115,7 @@ namespace UsersAPI.Services
         // Реализация метода получения пользователя по Id (GetUserById)
         public override async Task<ResponseUser> GetUserById(GetUserByIdRequest request, ServerCallContext context)
         {
-            var response = await _userService.GetByIdAsync(request.Id);
+            var response = await _userService.GetByIdAsync(Guid.Parse(request.Id));
 
             var errorsMap = new MapField<string, StringArray>();
             foreach (var kvp in response.Errors.Errors)
@@ -138,7 +138,7 @@ namespace UsersAPI.Services
             var user = response.DataTransferObject;
             var protoUser = new User()
             {
-                Id = user.Id,
+                Id = user.Id.ToString(),
                 Name = user.Name,
                 Surname = user.Surname,
                 Email = user.Email,
@@ -188,7 +188,7 @@ namespace UsersAPI.Services
             {
                 var protoUser = new User()
                 {
-                    Id = user.Id,
+                    Id = user.Id.ToString(),
                     Name = user.Name,
                     Surname = user.Surname,
                     Email = user.Email,

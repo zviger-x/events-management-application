@@ -37,7 +37,7 @@ namespace BusinessLogic.Services
             return Response.Success();
         }
 
-        public override async Task<Response> DeleteAsync(int id)
+        public override async Task<Response> DeleteAsync(Guid id)
         {
             await _unitOfWork.UserTransactionRepository.DeleteAsync(id);
             return Response.Success();
@@ -49,7 +49,7 @@ namespace BusinessLogic.Services
             return Response.Success(collection);
         }
 
-        public override async Task<Response<UserTransaction>> GetByIdAsync(int id)
+        public override async Task<Response<UserTransaction>> GetByIdAsync(Guid id)
         {
             var user = await _unitOfWork.UserTransactionRepository.GetByIdAsync(id);
             return Response.Success(user);

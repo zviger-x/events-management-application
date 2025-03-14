@@ -37,7 +37,7 @@ namespace BusinessLogic.Services
             return Response.Success();
         }
 
-        public override async Task<Response> DeleteAsync(int id)
+        public override async Task<Response> DeleteAsync(Guid id)
         {
             await _unitOfWork.UserNotificationRepository.DeleteAsync(id);
             return Response.Success();
@@ -49,7 +49,7 @@ namespace BusinessLogic.Services
             return Response.Success(collection);
         }
 
-        public override async Task<Response<UserNotification>> GetByIdAsync(int id)
+        public override async Task<Response<UserNotification>> GetByIdAsync(Guid id)
         {
             var user = await _unitOfWork.UserNotificationRepository.GetByIdAsync(id);
             return Response.Success(user);

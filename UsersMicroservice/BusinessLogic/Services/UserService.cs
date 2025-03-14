@@ -43,7 +43,7 @@ namespace BusinessLogic.Services
             return Response.Success();
         }
 
-        public override async Task<Response> DeleteAsync(int id)
+        public override async Task<Response> DeleteAsync(Guid id)
         {
             await _unitOfWork.InvokeWithTransactionAsync(async () =>
             {
@@ -59,7 +59,7 @@ namespace BusinessLogic.Services
             return Response.Success(collection);
         }
 
-        public override async Task<Response<User>> GetByIdAsync(int id)
+        public override async Task<Response<User>> GetByIdAsync(Guid id)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
             user.Password = string.Empty;

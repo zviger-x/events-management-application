@@ -39,11 +39,12 @@ namespace BusinessLogic.Services
 
         public override async Task<Response> DeleteAsync(Guid id)
         {
-            await _unitOfWork.UserTransactionRepository.DeleteAsync(id);
+            var transaction = new UserTransaction() { Id = id };
+            await _unitOfWork.UserTransactionRepository.DeleteAsync(transaction);
             return Response.Success();
         }
 
-        public override Response<IQueryable<UserTransaction>> GetAll()
+        public override Response<IEnumerable<UserTransaction>> GetAll()
         {
             var collection = _unitOfWork.UserTransactionRepository.GetAll();
             return Response.Success(collection);

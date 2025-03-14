@@ -47,13 +47,14 @@ namespace BusinessLogic.Services
         {
             await _unitOfWork.InvokeWithTransactionAsync(async () =>
             {
-                await _unitOfWork.UserRepository.DeleteAsync(id);
+                var user = new User() { Id = id };
+                await _unitOfWork.UserRepository.DeleteAsync(user);
             });
 
             return Response.Success();
         }
 
-        public override Response<IQueryable<User>> GetAll()
+        public override Response<IEnumerable<User>> GetAll()
         {
             var collection = _unitOfWork.UserRepository.GetAll();
             return Response.Success(collection);

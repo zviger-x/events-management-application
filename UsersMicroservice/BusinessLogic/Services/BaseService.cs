@@ -7,7 +7,7 @@ using DataAccess.UnitOfWork.Interfaces;
 namespace BusinessLogic.Services
 {
     public abstract class BaseService<T> : IService<T>
-        where T : IEntity
+        where T : class, IEntity
     {
         protected readonly IUnitOfWork _unitOfWork;
         protected readonly IBaseValidator<T> _validator;
@@ -24,7 +24,7 @@ namespace BusinessLogic.Services
 
         public abstract Task<Response> DeleteAsync(Guid id);
 
-        public abstract Response<IQueryable<T>> GetAll();
+        public abstract Response<IEnumerable<T>> GetAll();
 
         public abstract Task<Response<T>> GetByIdAsync(Guid id);
 

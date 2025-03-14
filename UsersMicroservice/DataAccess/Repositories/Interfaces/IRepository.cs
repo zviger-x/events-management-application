@@ -3,7 +3,7 @@
 namespace DataAccess.Repositories.Interfaces
 {
     public interface IRepository<T> : IDisposable
-        where T : IEntity
+        where T : class, IEntity
     {
         /// <summary>
         /// Creates an entity.
@@ -20,8 +20,8 @@ namespace DataAccess.Repositories.Interfaces
         /// <summary>
         /// Removes an entity.
         /// </summary>
-        /// <param name="id">Id of the entity to delete.</param>
-        Task DeleteAsync(Guid id);
+        /// <param name="entity">Entity to delete.</param>
+        Task DeleteAsync(T entity);
 
         /// <summary>
         /// Returns an entity by its id.
@@ -34,7 +34,7 @@ namespace DataAccess.Repositories.Interfaces
         /// Returns an array of all entities.
         /// </summary>
         /// <returns>An array of all entities</returns>
-        IQueryable<T> GetAll();
+        IEnumerable<T> GetAll();
 
         /// <summary>
         /// Saves all changes made in this context to the database.

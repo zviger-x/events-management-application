@@ -39,11 +39,12 @@ namespace BusinessLogic.Services
 
         public override async Task<Response> DeleteAsync(Guid id)
         {
-            await _unitOfWork.UserNotificationRepository.DeleteAsync(id);
+            var notification = new UserNotification() { Id = id };
+            await _unitOfWork.UserNotificationRepository.DeleteAsync(notification);
             return Response.Success();
         }
 
-        public override Response<IQueryable<UserNotification>> GetAll()
+        public override Response<IEnumerable<UserNotification>> GetAll()
         {
             var collection = _unitOfWork.UserNotificationRepository.GetAll();
             return Response.Success(collection);

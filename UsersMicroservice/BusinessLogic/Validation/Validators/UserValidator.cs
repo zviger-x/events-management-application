@@ -3,7 +3,6 @@ using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Validation.Validators
 {
@@ -29,8 +28,8 @@ namespace BusinessLogic.Validation.Validators
 
         private async Task<bool> IsUniqueEmail(User user, string email, CancellationToken token)
         {
-            return !await _unitOfWork.UserRepository.GetAll()
-                .AnyAsync(e => e.Email == email, token);
+            var isUnique = !_unitOfWork.UserRepository.GetAll().Any(e => e.Email == email);
+            return await Task.FromResult(isUnique);
         }
     }
 }

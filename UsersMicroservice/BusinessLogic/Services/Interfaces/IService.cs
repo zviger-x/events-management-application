@@ -4,7 +4,7 @@ using DataAccess.Entities.Interfaces;
 namespace BusinessLogic.Services.Interfaces
 {
     public interface IService<T> : IDisposable
-        where T : IEntity
+        where T : class, IEntity
     {
         /// <summary>
         /// Creates an entity.
@@ -38,7 +38,7 @@ namespace BusinessLogic.Services.Interfaces
         /// Returns an array of all entities.
         /// </summary>
         /// <returns>A response with validation errors, if any, or a collection of entities</returns>
-        Response<IQueryable<T>> GetAll();
+        Response<IEnumerable<T>> GetAll();
 
         /// <summary>
         /// Saves all changes made in this context to the database.

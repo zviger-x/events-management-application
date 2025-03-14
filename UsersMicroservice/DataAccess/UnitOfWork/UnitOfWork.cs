@@ -37,49 +37,49 @@ namespace DataAccess.UnitOfWork
             get => _userTransactionRepository ??= _serviceProvider.GetRequiredService<IUserTransactionRepository>();
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken token = default)
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(token);
         }
 
-        public async Task BeginTransactionAsync()
+        public async Task BeginTransactionAsync(CancellationToken token = default)
         {
-            _transaction = await _context.Database.BeginTransactionAsync();
+            _transaction = await _context.Database.BeginTransactionAsync(token);
         }
 
-        public async Task CommitTransactionAsync()
+        public async Task CommitTransactionAsync(CancellationToken token = default)
         {
-            await _context.SaveChangesAsync();
-            await _transaction.CommitAsync();
+            await _context.SaveChangesAsync(token);
+            await _transaction.CommitAsync(token);
         }
 
-        public async Task RollbackTransactionAsync()
+        public async Task RollbackTransactionAsync(CancellationToken token = default)
         {
-            await _transaction.RollbackAsync();
+            await _transaction.RollbackAsync(token);
+        }
+
+        public async Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default)
+        {
+            await BeginTransactionAsync(token);
+            try
+            {
+                await action(token);
+                await CommitTransactionAsync(token);
+            }
+            catch
+            {
+                await RollbackTransactionAsync(token);
+                throw;
+            }
         }
 
         public void Dispose()
         {
-            _context.Dispose();
+            _context?.Dispose();
             _transaction?.Dispose();
             _userRepository?.Dispose();
             _userNotificationRepository?.Dispose();
             _userTransactionRepository?.Dispose();
-        }
-
-        public async Task InvokeWithTransactionAsync(Func<Task> action)
-        {
-            await BeginTransactionAsync();
-            try
-            {
-                await action();
-                await CommitTransactionAsync();
-            }
-            catch
-            {
-                await RollbackTransactionAsync();
-                throw;
-            }
         }
     }
 }

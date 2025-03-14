@@ -18,17 +18,17 @@ namespace BusinessLogic.Services
             _validator = validator;
         }
 
-        public abstract Task<Response> CreateAsync(T entity);
+        public abstract Task<Response> CreateAsync(T entity, CancellationToken token = default);
 
-        public abstract Task<Response> UpdateAsync(T entity);
+        public abstract Task<Response> UpdateAsync(T entity, CancellationToken token = default);
 
-        public abstract Task<Response> DeleteAsync(Guid id);
+        public abstract Task<Response> DeleteAsync(Guid id, CancellationToken token = default);
 
         public abstract Response<IEnumerable<T>> GetAll();
 
-        public abstract Task<Response<T>> GetByIdAsync(Guid id);
+        public abstract Task<Response<T>> GetByIdAsync(Guid id, CancellationToken token = default);
 
-        public virtual async Task SaveChangesAsync() => await _unitOfWork.SaveChangesAsync();
+        public virtual async Task SaveChangesAsync(CancellationToken token = default) => await _unitOfWork.SaveChangesAsync(token);
 
         public virtual void Dispose() => _unitOfWork.Dispose();
     }

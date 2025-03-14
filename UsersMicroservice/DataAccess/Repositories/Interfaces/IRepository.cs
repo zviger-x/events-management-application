@@ -9,26 +9,26 @@ namespace DataAccess.Repositories.Interfaces
         /// Creates an entity.
         /// </summary>
         /// <param name="entity">Entity to create.</param>
-        Task CreateAsync(T entity);
+        Task CreateAsync(T entity, CancellationToken token = default);
 
         /// <summary>
         /// Updates an entity.
         /// </summary>
         /// <param name="entity">Entity to update.</param>
-        Task UpdateAsync(T entity);
+        Task UpdateAsync(T entity, CancellationToken token = default);
 
         /// <summary>
         /// Removes an entity.
         /// </summary>
         /// <param name="entity">Entity to delete.</param>
-        Task DeleteAsync(T entity);
+        Task DeleteAsync(T entity, CancellationToken token = default);
 
         /// <summary>
         /// Returns an entity by its id.
         /// </summary>
         /// <param name="id">Entity id.</param>
         /// <returns>Entity.</returns>
-        Task<T> GetByIdAsync(Guid id);
+        Task<T> GetByIdAsync(Guid id, CancellationToken token = default);
 
         /// <summary>
         /// Returns an array of all entities.
@@ -39,6 +39,6 @@ namespace DataAccess.Repositories.Interfaces
         /// <summary>
         /// Saves all changes made in this context to the database.
         /// </summary>
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(CancellationToken token = default);
     }
 }

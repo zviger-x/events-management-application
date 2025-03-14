@@ -11,28 +11,28 @@ namespace BusinessLogic.Services.Interfaces
         /// </summary>
         /// <param name="entity">Entity to create.</param>
         /// <returns>A response containing validation errors, if any.</returns>
-        Task<Response> CreateAsync(T entity);
+        Task<Response> CreateAsync(T entity, CancellationToken token = default);
 
         /// <summary>
         /// Updates an entity.
         /// </summary>
         /// <param name="entity">Entity to update.</param>
         /// <returns>A response containing validation errors, if any.</returns>
-        Task<Response> UpdateAsync(T entity);
+        Task<Response> UpdateAsync(T entity, CancellationToken token = default);
 
         /// <summary>
         /// Removes an entity.
         /// </summary>
         /// <param name="id">Id of the entity to delete.</param>
         /// <returns>A response containing validation errors, if any.</returns>
-        Task<Response> DeleteAsync(Guid id);
+        Task<Response> DeleteAsync(Guid id, CancellationToken token = default);
 
         /// <summary>
         /// Returns an entity by its id.
         /// </summary>
         /// <param name="id">Entity id.</param>
         /// <returns>A response with validation errors, if any, or the entity.</returns>
-        Task<Response<T>> GetByIdAsync(Guid id);
+        Task<Response<T>> GetByIdAsync(Guid id, CancellationToken token = default);
 
         /// <summary>
         /// Returns an array of all entities.
@@ -43,6 +43,6 @@ namespace BusinessLogic.Services.Interfaces
         /// <summary>
         /// Saves all changes made in this context to the database.
         /// </summary>
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(CancellationToken token = default);
     }
 }

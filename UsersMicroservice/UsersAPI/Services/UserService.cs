@@ -19,7 +19,6 @@ namespace UsersAPI.Services
             var protoUser = request.User;
             var user = new DataAccess.Entities.User()
             {
-                Id = Guid.Parse(protoUser.Id),
                 Name = protoUser.Name,
                 Surname = protoUser.Surname,
                 Email = protoUser.Email,

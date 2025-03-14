@@ -11,27 +11,27 @@ namespace DataAccess.UnitOfWork.Interfaces
         /// <summary>
         /// Saves changes to the database.
         /// </summary>
-        Task SaveChangesAsync();
+        Task SaveChangesAsync(CancellationToken token = default);
 
         /// <summary>
         /// Begins a new transaction.
         /// </summary>
-        Task BeginTransactionAsync();
+        Task BeginTransactionAsync(CancellationToken token = default);
 
         /// <summary>
         /// Saving all changes to the database and commits the current transaction.
         /// </summary>
-        Task CommitTransactionAsync();
+        Task CommitTransactionAsync(CancellationToken token = default);
 
         /// <summary>
         /// Rolls back the current transaction, discarding any unsaved changes.
         /// </summary>
-        Task RollbackTransactionAsync();
+        Task RollbackTransactionAsync(CancellationToken token = default);
 
         /// <summary>
         /// Executes an action within a transaction.
         /// </summary>
         /// <param name="action">The action to execute within the transaction.</param>
-        Task InvokeWithTransactionAsync(Func<Task> action);
+        Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default);
     }
 }

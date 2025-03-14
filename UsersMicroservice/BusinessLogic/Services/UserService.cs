@@ -15,41 +15,42 @@ namespace BusinessLogic.Services
 
         // Пока что я буду просто выбрасывать ошибки. Но в будущем будет выбрасываться коды ошибки,
         // которые будут поступать в frontend
-        public override async Task<Response> CreateAsync(User entity)
+        public override async Task<Response> CreateAsync(User entity, CancellationToken token = default)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
             if (!validationResult.IsValid)
                 return Response.Fail(validationResult);
 
-            await _unitOfWork.InvokeWithTransactionAsync(async () =>
+            entity.Id = default;
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                await _unitOfWork.UserRepository.CreateAsync(entity);
-            });
+                await _unitOfWork.UserRepository.CreateAsync(entity, token);
+            }, token);
 
             return Response.Success();
         }
 
-        public override async Task<Response> UpdateAsync(User entity)
+        public override async Task<Response> UpdateAsync(User entity, CancellationToken token = default)
         {
             var validationResult = await _validator.ValidateAndThrowAsync(entity);
             if (!validationResult.IsValid)
                 return Response.Fail(validationResult);
 
-            await _unitOfWork.InvokeWithTransactionAsync(async () =>
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                await _unitOfWork.UserRepository.UpdateAsync(entity);
-            });
+                await _unitOfWork.UserRepository.UpdateAsync(entity, token);
+            }, token);
 
             return Response.Success();
         }
 
-        public override async Task<Response> DeleteAsync(Guid id)
+        public override async Task<Response> DeleteAsync(Guid id, CancellationToken token = default)
         {
-            await _unitOfWork.InvokeWithTransactionAsync(async () =>
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
                 var user = new User() { Id = id };
-                await _unitOfWork.UserRepository.DeleteAsync(user);
-            });
+                await _unitOfWork.UserRepository.DeleteAsync(user, token);
+            }, token);
 
             return Response.Success();
         }
@@ -60,9 +61,9 @@ namespace BusinessLogic.Services
             return Response.Success(collection);
         }
 
-        public override async Task<Response<User>> GetByIdAsync(Guid id)
+        public override async Task<Response<User>> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id, token);
             user.Password = string.Empty;
             return Response.Success(user);
         }

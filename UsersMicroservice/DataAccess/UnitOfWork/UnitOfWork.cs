@@ -12,30 +12,24 @@ namespace DataAccess.UnitOfWork
         private IDbContextTransaction _transaction;
         private readonly IServiceProvider _serviceProvider;
 
-        private IUserRepository _userRepository;
-        private IUserNotificationRepository _userNotificationRepository;
-        private IUserTransactionRepository _userTransactionRepository;
+        private Lazy<IUserRepository> _userRepository;
+        private Lazy<IUserNotificationRepository> _userNotificationRepository;
+        private Lazy<IUserTransactionRepository> _userTransactionRepository;
 
         public UnitOfWOrk(UserDbContext context, IServiceProvider serviceProvider)
         {
             _context = context;
             _serviceProvider = serviceProvider;
-        }
 
-        public IUserRepository UserRepository
-        {
-            get => _userRepository ??= _serviceProvider.GetRequiredService<IUserRepository>();
+            _userRepository = new Lazy<IUserRepository>(() => _serviceProvider.GetRequiredService<IUserRepository>());
+            _userNotificationRepository = new Lazy<IUserNotificationRepository>(() => _serviceProvider.GetRequiredService<IUserNotificationRepository>());
+            _userTransactionRepository = new Lazy<IUserTransactionRepository>(() => _serviceProvider.GetRequiredService<IUserTransactionRepository>());
         }
+        public IUserRepository UserRepository => _userRepository.Value;
 
-        public IUserNotificationRepository UserNotificationRepository
-        {
-            get => _userNotificationRepository ??= _serviceProvider.GetRequiredService<IUserNotificationRepository>();
-        }
+        public IUserNotificationRepository UserNotificationRepository => _userNotificationRepository.Value;
 
-        public IUserTransactionRepository UserTransactionRepository
-        {
-            get => _userTransactionRepository ??= _serviceProvider.GetRequiredService<IUserTransactionRepository>();
-        }
+        public IUserTransactionRepository UserTransactionRepository => _userTransactionRepository.Value;
 
         public async Task SaveChangesAsync(CancellationToken token = default)
         {
@@ -77,9 +71,15 @@ namespace DataAccess.UnitOfWork
         {
             _context?.Dispose();
             _transaction?.Dispose();
-            _userRepository?.Dispose();
-            _userNotificationRepository?.Dispose();
-            _userTransactionRepository?.Dispose();
+            
+            if (_userRepository.IsValueCreated)
+                _userRepository.Value.Dispose();
+
+            if (_userNotificationRepository.IsValueCreated)
+                _userNotificationRepository.Value.Dispose();
+
+            if (_userTransactionRepository.IsValueCreated)
+                _userTransactionRepository.Value.Dispose();
         }
     }
 }

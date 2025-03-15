@@ -53,10 +53,10 @@ namespace DataAccess.Initialization
 
             var transactions = new UserTransaction[]
             {
-                new UserTransaction { UsertId = users[0].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.Now },
-                new UserTransaction { UsertId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.Now },
-                new UserTransaction { UsertId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 5.99f, TransactionDate = DateTime.Now },
-                new UserTransaction { UsertId = users[2].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 19.99f, TransactionDate = DateTime.Now },
+                new UserTransaction { UserId = users[0].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.Now },
+                new UserTransaction { UserId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.Now },
+                new UserTransaction { UserId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 5.99f, TransactionDate = DateTime.Now },
+                new UserTransaction { UserId = users[2].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 19.99f, TransactionDate = DateTime.Now },
             };
             _context.AddRange(transactions);
 

@@ -26,7 +26,7 @@ namespace BusinessLogic.Validation.Validators
                     .WithErrorCode(UserTransactionValidationErrorCodes.AmountIsLessThanZero);
 
             #warning Нужно добавить проверку на наличие пользователя
-            RuleFor(t => t.UsertId)
+            RuleFor(t => t.UserId)
                 .NotNull()
                     .WithMessage(UserTransactionValidationMessages.UserIdIsNull)
                     .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsNull)

@@ -2,6 +2,7 @@
 
 namespace BusinessLogic.Models
 {
+    [Obsolete(message: "", error: true)]
     public class Response
     {
         public Response()
@@ -23,6 +24,7 @@ namespace BusinessLogic.Models
         public static Response Fail(ValidationResult validationResult) => new(validationResult);
     }
 
+    [Obsolete(message: "", error: true)]
     public class Response<T> : Response
     {
         public Response(T dataTransferObject)

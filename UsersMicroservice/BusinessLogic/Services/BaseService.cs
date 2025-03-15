@@ -1,5 +1,4 @@
-﻿using BusinessLogic.Models;
-using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
@@ -18,15 +17,15 @@ namespace BusinessLogic.Services
             _validator = validator;
         }
 
-        public abstract Task<Response> CreateAsync(T entity, CancellationToken token = default);
+        public abstract Task CreateAsync(T entity, CancellationToken token = default);
 
-        public abstract Task<Response> UpdateAsync(T entity, CancellationToken token = default);
+        public abstract Task UpdateAsync(T entity, CancellationToken token = default);
 
-        public abstract Task<Response> DeleteAsync(Guid id, CancellationToken token = default);
+        public abstract Task DeleteAsync(Guid id, CancellationToken token = default);
 
-        public abstract Response<IEnumerable<T>> GetAll();
+        public abstract IEnumerable<T> GetAll();
 
-        public abstract Task<Response<T>> GetByIdAsync(Guid id, CancellationToken token = default);
+        public abstract Task<T> GetByIdAsync(Guid id, CancellationToken token = default);
 
         public virtual async Task SaveChangesAsync(CancellationToken token = default) => await _unitOfWork.SaveChangesAsync(token);
 

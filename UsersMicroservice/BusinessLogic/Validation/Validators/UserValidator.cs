@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Validation.Messages;
+﻿using BusinessLogic.Validation.ErrorCodes;
+using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -12,18 +13,34 @@ namespace BusinessLogic.Validation.Validators
             : base(unitOfWork)
         {
             RuleFor(u => u.Name)
-                .NotNull().WithMessage(UserValidationMessages.NameNotNull)
-                .NotEmpty().WithMessage(UserValidationMessages.NameNotEmpty);
+                .NotNull()
+                    .WithMessage(UserValidationMessages.NameIsNull)
+                    .WithErrorCode(UserValidationErrorCodes.NameIsNull)
+                .NotEmpty()
+                    .WithMessage(UserValidationMessages.NameIsEmpty)
+                    .WithErrorCode(UserValidationErrorCodes.NameIsEmpty);
 
             RuleFor(u => u.Surname)
-                .NotNull().WithMessage(UserValidationMessages.SurnameNotNull)
-                .NotEmpty().WithMessage(UserValidationMessages.SurnameNotEmpty);
+                .NotNull()
+                    .WithMessage(UserValidationMessages.SurnameIsNull)
+                    .WithErrorCode(UserValidationErrorCodes.SurnameIsNull)
+                .NotEmpty()
+                    .WithMessage(UserValidationMessages.SurnameIsEmpty)
+                    .WithErrorCode(UserValidationErrorCodes.SurnameIsEmpty);
 
             RuleFor(u => u.Email)
-                .NotNull().WithMessage(UserValidationMessages.EmailNotNull)
-                .NotEmpty().WithMessage(UserValidationMessages.EmailNotEmpty)
-                .EmailAddress().WithMessage(UserValidationMessages.EmailInvalid)
-                .MustAsync(IsUniqueEmail).WithMessage(UserValidationMessages.EmailMustBeUnique);
+                .NotNull()
+                    .WithMessage(UserValidationMessages.EmailIsNull)
+                    .WithErrorCode(UserValidationErrorCodes.EmailIsNull)
+                .NotEmpty()
+                    .WithMessage(UserValidationMessages.EmailIsEmpty)
+                    .WithErrorCode(UserValidationErrorCodes.EmailIsEmpty)
+                .EmailAddress()
+                    .WithMessage(UserValidationMessages.EmailIsInvalid)
+                    .WithErrorCode(UserValidationErrorCodes.EmailIsInvalid)
+                .MustAsync(IsUniqueEmail)
+                    .WithMessage(UserValidationMessages.EmailIsNotUnique)
+                    .WithErrorCode(UserValidationErrorCodes.EmailIsNotUnique);
         }
 
         private async Task<bool> IsUniqueEmail(User user, string email, CancellationToken token)

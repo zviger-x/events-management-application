@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Validation.Messages;
+﻿using BusinessLogic.Validation.ErrorCodes;
+using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -12,28 +13,51 @@ namespace BusinessLogic.Validation.Validators
             : base(unitOfWork)
         {
             RuleFor(t => t.TransactionDate)
-                .NotNull().WithMessage(UserTransactionValidationMessages.DateNotNull);
+                .NotNull()
+                    .WithMessage(UserTransactionValidationMessages.DateIsNull)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.DateIsNull);
 
             RuleFor(t => t.Amount)
-                .NotNull().WithMessage(UserTransactionValidationMessages.AmountNotNull)
-                .GreaterThanOrEqualTo(0).WithMessage(UserTransactionValidationMessages.AmountLessThanZero);
+                .NotNull()
+                    .WithMessage(UserTransactionValidationMessages.AmountIsNull)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.AmountIsNull)
+                .GreaterThanOrEqualTo(0)
+                    .WithMessage(UserTransactionValidationMessages.AmountIsLessThanZero)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.AmountIsLessThanZero);
 
-            // Нужно в будущем добавить проверку на наличие
+            #warning Нужно добавить проверку на наличие пользователя
             RuleFor(t => t.UsertId)
-                .NotNull().WithMessage(UserTransactionValidationMessages.UserIdNotNull)
-                .NotEmpty().WithMessage(UserTransactionValidationMessages.UserIdNotEmpty);
+                .NotNull()
+                    .WithMessage(UserTransactionValidationMessages.UserIdIsNull)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsNull)
+                .NotEmpty()
+                    .WithMessage(UserTransactionValidationMessages.UserIdIsEmpty)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsEmpty);
 
+            #warning Нужно добавить проверку на наличие ивента
             RuleFor(t => t.EventId)
-                .NotNull().WithMessage(UserTransactionValidationMessages.EventIdNotNull)
-                .NotEmpty().WithMessage(UserTransactionValidationMessages.EventIdNotEmpty);
+                .NotNull()
+                    .WithMessage(UserTransactionValidationMessages.EventIdIsNull)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.EventIdIsNull)
+                .NotEmpty()
+                    .WithMessage(UserTransactionValidationMessages.EventIdIsEmpty)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.EventIdIsEmpty);
 
             RuleFor(t => t.SeatRow)
-                .NotNull().WithMessage(UserTransactionValidationMessages.SeatRowNotNull)
-                .GreaterThan(0).WithMessage(UserTransactionValidationMessages.SeatRowLessThanOrEqualsToZero);
+                .NotNull()
+                    .WithMessage(UserTransactionValidationMessages.SeatRowIsNull)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.SeatRowIsNull)
+                .GreaterThan(0)
+                    .WithMessage(UserTransactionValidationMessages.SeatNumberIsLessThanOrEqualToZero)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.SeatRowIsInvalid);
 
             RuleFor(t => t.SeatNumber)
-                .NotNull().WithMessage(UserTransactionValidationMessages.SeatNumberNotNull)
-                .GreaterThan(0).WithMessage(UserTransactionValidationMessages.SeatNumberLessThanOrEqualsToZero);
+                .NotNull()
+                    .WithMessage(UserTransactionValidationMessages.SeatNumberIsNull)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.SeatNumberIsNull)
+                .GreaterThan(0)
+                    .WithMessage(UserTransactionValidationMessages.SeatNumberIsLessThanOrEqualToZero)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.SeatNumberIsInvalid);
         }
     }
 }

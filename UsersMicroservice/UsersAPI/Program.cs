@@ -9,6 +9,7 @@ using DataAccess.Repositories.Interfaces;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using UsersAPI.Middlewares;
 
 namespace UsersAPI
 {
@@ -51,6 +52,9 @@ namespace UsersAPI
             services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            // Middlewares
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             // Initializing DB
             using (var scope = app.Services.CreateScope())

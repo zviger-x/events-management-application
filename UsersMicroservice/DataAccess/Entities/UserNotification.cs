@@ -1,5 +1,6 @@
 ﻿using DataAccess.Entities.Interfaces;
 
+#pragma warning disable CS8618
 namespace DataAccess.Entities
 {
     public class UserNotification : IEntity

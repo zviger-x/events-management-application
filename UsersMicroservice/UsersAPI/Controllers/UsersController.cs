@@ -18,54 +18,47 @@ namespace UsersAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(User user, CancellationToken token)
         {
-            var response = await _userService.CreateAsync(user, token);
-            if (response.HasErrors)
-                return BadRequest(response);
+            await _userService.CreateAsync(user, token);
 
-            return Ok(response);
+            return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(User user, CancellationToken token)
+        public async Task<IActionResult> Update(Guid id, User user, CancellationToken token)
         {
-            var response = await _userService.UpdateAsync(user, token);
-            if (response.HasErrors)
-                return BadRequest(response);
+            if (id != user.Id)
+                throw new ArgumentException("ID in URL does not match ID in model");
 
-            return Ok(response);
+            await _userService.UpdateAsync(user, token);
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken token)
         {
-            var response = await _userService.DeleteAsync(id, token);
-            if (response.HasErrors)
-                return BadRequest(response);
+            await _userService.DeleteAsync(id, token);
 
-            return Ok(response);
+            return Ok();
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken token)
         {
-            var response = await _userService.GetByIdAsync(id, token);
-            if (response.HasErrors)
-                return NotFound(response);
+            var user = await _userService.GetByIdAsync(id, token);
 
-            if (response.DataTransferObject == null)
+            if (user == null)
                 return NotFound();
 
-            return Ok(response);
+            return Ok(user);
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var response = _userService.GetAll();
-            if (response.HasErrors)
-                return BadRequest(response);
+            var users = _userService.GetAll();
 
-            return Ok(response);
+            return Ok(users);
         }
     }
 }

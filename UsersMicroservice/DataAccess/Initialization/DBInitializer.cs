@@ -34,9 +34,9 @@ namespace DataAccess.Initialization
             // В будущем заполнить пароли хеш версиями
             var users = new User[]
             {
-                new User { Name = "Admin", Surname = "Admin", Email = "admin@gmail.com", Password = "invalid", Role = "admin" },
-                new User { Name = "User1", Surname = "User1", Email = "user1@gmail.com", Password = "invalid", Role = "user" },
-                new User { Name = "User2", Surname = "User2", Email = "user2@gmail.com", Password = "invalid", Role = "user" },
+                new User { Name = "Admin", Surname = "Admin", Email = "admin@gmail.com", Password = "invalid", Role = UserRoles.Admin },
+                new User { Name = "User1", Surname = "User1", Email = "user1@gmail.com", Password = "invalid", Role = UserRoles.User },
+                new User { Name = "User2", Surname = "User2", Email = "user2@gmail.com", Password = "invalid", Role = UserRoles.User },
             };
             _context.AddRange(users);
 

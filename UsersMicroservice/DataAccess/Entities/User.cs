@@ -10,7 +10,7 @@ namespace DataAccess.Entities
         public string Surname { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public string Role { get; set; }
+        public UserRoles Role { get; set; }
         public IEnumerable<UserNotification> Notifications { get; set; }
         public IEnumerable<UserTransaction> Transactions { get; set; }
     }

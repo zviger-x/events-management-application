@@ -1,5 +1,4 @@
-﻿using BusinessLogic.Models;
-using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;

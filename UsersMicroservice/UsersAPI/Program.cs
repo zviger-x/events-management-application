@@ -9,6 +9,7 @@ using DataAccess.Repositories.Interfaces;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using UsersAPI.Middlewares;
 
 namespace UsersAPI
@@ -21,6 +22,13 @@ namespace UsersAPI
 
             // Add services to the container.
             var services = builder.Services;
+
+            // Add logging
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog();
 
             // Для удобства, пока доступен открытый порт
             // Я в терминале указываю useSqlOpenPorts, чтобы при миграциях использовался открытый порт

@@ -5,10 +5,12 @@ namespace UsersAPI.Middlewares
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -19,6 +21,7 @@ namespace UsersAPI.Middlewares
             }
             catch (ValidationException ex)
             {
+                _logger.LogError(ex.Message, "Validation exception occurred");
                 var response = new
                 {
                     errors = ex.Errors.ToDictionary(
@@ -30,15 +33,18 @@ namespace UsersAPI.Middlewares
             }
             catch (ArgumentException ex)
             {
+                _logger.LogError(ex, "Argument exception occurred");
                 var response = new { error = ex.Message };
 
                 await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
             }
-            // catch (Exception)
-            // {
-            //     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            //     await context.Response.WriteAsync("An unexpected error occurred.");
-            // }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred");
+                var response = new { error = "An unexpected error occurred" };
+
+                await SendErrorAsJsonAsync(context, response, StatusCodes.Status500InternalServerError);
+            }
         }
 
         private async Task SendErrorAsJsonAsync(HttpContext context, object response, int statusCode)

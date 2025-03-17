@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Contracts;
+using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -57,6 +58,12 @@ namespace BusinessLogic.Services
                 user.Password = string.Empty;
 
             return user;
+        }
+
+        public Task UpdateUserProfile(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
+        {
+            #warning Сделать маппинг и обновление профиля.
+            return Task.FromException(new NotImplementedException());
         }
     }
 }

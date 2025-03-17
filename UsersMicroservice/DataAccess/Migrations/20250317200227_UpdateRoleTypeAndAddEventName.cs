@@ -14,8 +14,15 @@ namespace DataAccess.Migrations
                 name: "EventName",
                 table: "UserTransactions",
                 type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "Role",
+                table: "Users",
+                type: "int",
                 nullable: false,
-                defaultValue: "");
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
@@ -42,6 +49,14 @@ namespace DataAccess.Migrations
             migrationBuilder.DropColumn(
                 name: "EventName",
                 table: "UserTransactions");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Role",
+                table: "Users",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",

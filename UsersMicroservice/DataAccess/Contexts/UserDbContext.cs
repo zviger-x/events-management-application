@@ -22,13 +22,17 @@ namespace DataAccess.Contexts
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
+            modelBuilder.Entity<UserTransaction>()
+                .Property(t => t.EventName)
+                .IsRequired(false);
+
             // enum to string
-            modelBuilder.Entity<User>()
-                .Property(u => u.Role)
-                .HasConversion(
-                    v => v.ToString(),
-                    v => (UserRoles)Enum.Parse(typeof(UserRoles), v)
-                );
+            // modelBuilder.Entity<User>()
+            //     .Property(u => u.Role)
+            //     .HasConversion(
+            //         v => v.ToString(),
+            //         v => (UserRoles)Enum.Parse(typeof(UserRoles), v)
+            //     );
         }
     }
 }

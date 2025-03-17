@@ -40,9 +40,8 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -96,7 +95,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EventName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SeatNumber")

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250317190622_UpdateRoleTypeAndAddEventName")]
+    [Migration("20250317200227_UpdateRoleTypeAndAddEventName")]
     partial class UpdateRoleTypeAndAddEventName
     {
         /// <inheritdoc />
@@ -43,9 +43,8 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -99,7 +98,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EventName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SeatNumber")

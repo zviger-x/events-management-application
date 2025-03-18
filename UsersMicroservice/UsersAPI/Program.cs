@@ -1,15 +1,10 @@
-using BusinessLogic.Services;
-using BusinessLogic.Services.Interfaces;
-using BusinessLogic.Validation.Validators;
-using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Contexts;
 using DataAccess.Initialization;
-using DataAccess.Repositories;
-using DataAccess.Repositories.Interfaces;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using UsersAPI.Extensions;
 using UsersAPI.Middlewares;
 
 namespace UsersAPI
@@ -42,18 +37,12 @@ namespace UsersAPI
             // DAL
             services.AddDbContext<UserDbContext>(o =>
                 o.UseSqlServer(openSqlPorts ? sqlConfig.ConnectionStringOpenPorts : sqlConfig.ConnectionString));
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
-            services.AddScoped<IUserTransactionRepository, UserTransactionRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWOrk>();
+            services.AddRepositories();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // BLL
-            services.AddScoped<IUserValidator, UserValidator>();
-            services.AddScoped<IUserNotificationValidator, UserNotificationValidator>();
-            services.AddScoped<IUserTransactionValidator, UserTransactionValidator>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserNotificationService, UserNotificationService>();
-            services.AddScoped<IUserTransactionService, UserTransactionService>();
+            services.AddValidators();
+            services.AddServices();
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();

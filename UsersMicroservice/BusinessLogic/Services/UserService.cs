@@ -46,31 +46,6 @@ namespace BusinessLogic.Services
             }, token);
         }
 
-        public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
-        {
-            return await _unitOfWork.UserRepository.GetAllAsync(token);
-        }
-
-        public override async Task<PagedCollection<User>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
-        {
-            if (pageNumber < 1)
-                throw new ArgumentOutOfRangeException(nameof(pageNumber));
-
-            if (pageSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(pageSize));
-
-            return await _unitOfWork.UserRepository.GetPagedAsync(pageNumber, pageSize, token);
-        }
-
-        public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
-        {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(id, token);
-            if (user != null)
-                user.Password = string.Empty;
-
-            return user;
-        }
-
         public Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
         {
             #warning Сделать валидацию моделей

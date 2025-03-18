@@ -20,5 +20,10 @@ namespace DataAccess.Repositories
                 .Include(u => u.Transactions)
                 .FirstOrDefaultAsync(u => u.Id == id, token);
         }
+
+        public async Task<bool> ContainsEmailAsync(string email, CancellationToken token = default)
+        {
+            return await _context.Users.AnyAsync(u => u.Email == email);
+        }
     }
 }

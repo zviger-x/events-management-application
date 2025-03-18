@@ -9,6 +9,7 @@ namespace BusinessLogic.Services
         public AuthService(IUnitOfWork unitOfWork)
             : base(unitOfWork)
         {
+            #warning Сделать валидацию моделей
         }
 
         public Task LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken)

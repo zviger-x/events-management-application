@@ -36,9 +36,20 @@ namespace BusinessLogic.Services
             await _unitOfWork.UserTransactionRepository.DeleteAsync(transaction, token);
         }
 
-        public override IEnumerable<UserTransaction> GetAll()
+        public override async Task<IEnumerable<UserTransaction>> GetAllAsync(CancellationToken token = default)
         {
-            return _unitOfWork.UserTransactionRepository.GetAll();
+            return await _unitOfWork.UserTransactionRepository.GetAllAsync(token);
+        }
+
+        public override async Task<PagedCollection<UserTransaction>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            if (pageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+
+            if (pageSize < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageSize));
+
+            return await _unitOfWork.UserTransactionRepository.GetPagedAsync(pageNumber, pageSize, token);
         }
 
         public override async Task<UserTransaction> GetByIdAsync(Guid id, CancellationToken token = default)

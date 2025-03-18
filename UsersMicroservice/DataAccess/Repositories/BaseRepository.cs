@@ -1,4 +1,5 @@
 ﻿using DataAccess.Contexts;
+using DataAccess.Entities;
 using DataAccess.Entities.Interfaces;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -38,9 +39,30 @@ namespace DataAccess.Repositories
             return await _context.Set<T>().FindAsync([id], cancellationToken: token);
         }
 
-        public virtual IEnumerable<T> GetAll()
+        public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)
         {
-            return _context.Set<T>().AsNoTracking().AsEnumerable();
+            return await _context.Set<T>().AsNoTracking().ToListAsync(token);
+        }
+
+        public virtual async Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            var query = _context.Set<T>().AsNoTracking();
+
+            var totalCount = await query.CountAsync(token);
+            var totalPages = (int)Math.Ceiling(totalCount / (float)pageSize);
+
+            var page = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(token);
+
+            return new PagedCollection<T>
+            {
+                Items = page,
+                TotalPages = totalPages,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            };
         }
 
         public virtual async Task SaveChangesAsync(CancellationToken token = default)

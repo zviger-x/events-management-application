@@ -78,7 +78,6 @@ namespace UsersAPI
                 dbInitializer.Initialize();
             }
 
-            // gRPC Swagger
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

@@ -46,9 +46,20 @@ namespace BusinessLogic.Services
             }, token);
         }
 
-        public override IEnumerable<User> GetAll()
+        public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
         {
-            return _unitOfWork.UserRepository.GetAll();
+            return await _unitOfWork.UserRepository.GetAllAsync(token);
+        }
+
+        public override async Task<PagedCollection<User>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            if (pageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+
+            if (pageSize < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageSize));
+
+            return await _unitOfWork.UserRepository.GetPagedAsync(pageNumber, pageSize, token);
         }
 
         public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
@@ -60,9 +71,17 @@ namespace BusinessLogic.Services
             return user;
         }
 
-        public Task UpdateUserProfile(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
+        public Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
         {
+            #warning Сделать валидацию моделей
             #warning Сделать маппинг и обновление профиля.
+            return Task.FromException(new NotImplementedException());
+        }
+
+        public Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken)
+        {
+            #warning Сделать валидацию моделей
+            #warning Сделать изменение пароля.
             return Task.FromException(new NotImplementedException());
         }
     }

@@ -36,9 +36,20 @@ namespace BusinessLogic.Services
             await _unitOfWork.UserNotificationRepository.DeleteAsync(notification, token);
         }
 
-        public override IEnumerable<UserNotification> GetAll()
+        public override async Task<IEnumerable<UserNotification>> GetAllAsync(CancellationToken token)
         {
-            return _unitOfWork.UserNotificationRepository.GetAll();
+            return await _unitOfWork.UserNotificationRepository.GetAllAsync(token);
+        }
+
+        public override async Task<PagedCollection<UserNotification>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            if (pageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+
+            if (pageSize < 1)
+                throw new ArgumentOutOfRangeException(nameof(pageSize));
+
+            return await _unitOfWork.UserNotificationRepository.GetPagedAsync(pageNumber, pageSize, token);
         }
 
         public override async Task<UserNotification> GetByIdAsync(Guid id, CancellationToken token = default)

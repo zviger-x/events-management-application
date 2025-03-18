@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Services.Interfaces;
+using DataAccess.Entities;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
@@ -34,7 +35,9 @@ namespace BusinessLogic.Services
 
         public abstract Task DeleteAsync(Guid id, CancellationToken token = default);
 
-        public abstract IEnumerable<T> GetAll();
+        public abstract Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default);
+
+        public abstract Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default);
 
         public abstract Task<T> GetByIdAsync(Guid id, CancellationToken token = default);
 

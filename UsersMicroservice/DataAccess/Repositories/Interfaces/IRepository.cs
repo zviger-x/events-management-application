@@ -1,4 +1,5 @@
-﻿using DataAccess.Entities.Interfaces;
+﻿using DataAccess.Entities;
+using DataAccess.Entities.Interfaces;
 
 namespace DataAccess.Repositories.Interfaces
 {
@@ -34,7 +35,15 @@ namespace DataAccess.Repositories.Interfaces
         /// Returns an array of all entities.
         /// </summary>
         /// <returns>An array of all entities</returns>
-        IEnumerable<T> GetAll();
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default);
+
+        /// <summary>
+        /// Returns an array of entities.
+        /// </summary>
+        /// <param name="pageNumber">Page number.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <returns>An a paged collection of entities</returns>
+        Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default);
 
         /// <summary>
         /// Saves all changes made in this context to the database.

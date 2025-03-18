@@ -54,9 +54,17 @@ namespace UsersAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var users = _userService.GetAll();
+            var users = await _userService.GetAllAsync();
+
+            return Ok(users);
+        }
+
+        [HttpGet("{pageNumber}/{pageSize}")]
+        public async Task<IActionResult> GetAllPaged(int pageNumber, int pageSize)
+        {
+            var users = await _userService.GetPagedAsync(pageNumber, pageSize);
 
             return Ok(users);
         }

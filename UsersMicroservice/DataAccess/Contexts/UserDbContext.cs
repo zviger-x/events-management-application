@@ -27,12 +27,12 @@ namespace DataAccess.Contexts
                 .IsRequired(false);
 
             // enum to string
-            // modelBuilder.Entity<User>()
-            //     .Property(u => u.Role)
-            //     .HasConversion(
-            //         v => v.ToString(),
-            //         v => (UserRoles)Enum.Parse(typeof(UserRoles), v)
-            //     );
+            modelBuilder.Entity<User>()
+                .Property(u => u.Role)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (UserRoles)Enum.Parse(typeof(UserRoles), v)
+                );
         }
     }
 }

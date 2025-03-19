@@ -33,7 +33,7 @@ namespace BusinessLogic.Services
             _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<string> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken)
+        public async Task<string> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default)
         {
             await _registerValidator.ValidateAndThrowAsync(userRegister, cancellationToken);
 
@@ -48,7 +48,7 @@ namespace BusinessLogic.Services
             return _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
         }
 
-        public async Task<string> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken)
+        public async Task<string> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default)
         {
             await _loginValidator.ValidateAndThrowAsync(userLogin, cancellationToken);
 

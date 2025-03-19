@@ -9,13 +9,13 @@ namespace BusinessLogic.Services.Interfaces
         /// </summary>
         /// <param name="userRegister">The user registration data.</param>
         /// <returns>Generated Jwt token</returns>
-        Task<string> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken);
+        Task<string> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Authenticates a user.
         /// </summary>
         /// <param name="userLogin">The user login data.</param>
         /// <returns>Generated Jwt token</returns>
-        Task<string> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken);
+        Task<string> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default);
     }
 }

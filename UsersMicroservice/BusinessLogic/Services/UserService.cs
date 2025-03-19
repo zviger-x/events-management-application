@@ -24,16 +24,16 @@ namespace BusinessLogic.Services
             _changePasswordValidator = changePasswordValidator;
         }
 
-        public override async Task CreateAsync(User entity, CancellationToken token = default)
+        public override Task CreateAsync(User entity, CancellationToken token = default)
         {
-            #warning использовать сервис Auth.Register()
-            await _validator.ValidateAndThrowAsync(entity, token);
-
-            entity.Id = default;
-            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
-            {
-                await _unitOfWork.UserRepository.CreateAsync(entity, token);
-            }, token);
+            throw new InvalidOperationException("Please use the Register method from AuthService instead. This method cannot hash the password and return Jwt token");
+            // await _validator.ValidateAndThrowAsync(entity, token);
+            // 
+            // entity.Id = default;
+            // await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            // {
+            //     await _unitOfWork.UserRepository.CreateAsync(entity, token);
+            // }, token);
         }
 
         public override async Task UpdateAsync(User entity, CancellationToken token = default)
@@ -55,8 +55,8 @@ namespace BusinessLogic.Services
         public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
         {
             var collection = await base.GetAllAsync(token);
-            // foreach (var user in collection)
-            //     user.PasswordHash = string.Empty;
+            foreach (var user in collection)
+                user.PasswordHash = string.Empty;
 
             return collection;
         }

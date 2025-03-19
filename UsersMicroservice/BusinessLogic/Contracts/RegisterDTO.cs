@@ -1,5 +1,6 @@
 ﻿namespace BusinessLogic.Contracts
 {
+    #pragma warning disable CS8618
     public class RegisterDTO
     {
         public string Name { get; set; }

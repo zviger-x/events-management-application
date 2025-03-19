@@ -1,7 +1,7 @@
 ﻿namespace BusinessLogic.Configuration
 {
     #pragma warning disable CS8618
-    internal class JwtTokenConfig
+    public class JwtTokenConfig
     {
         public string SecretKey { get; set; }
         public string Issuer { get; set; }

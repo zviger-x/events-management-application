@@ -9,12 +9,12 @@ namespace BusinessLogic.Services.Interfaces
         /// Updates the user's profile information.
         /// </summary>
         /// <param name="userUpdate">The data to update the user's profile.</param>
-        Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken);
+        Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Changes the user's password.
         /// </summary>
         /// <param name="changePassword">The data to change the user's password.</param>
-        Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken);
+        Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken = default);
     }
 }

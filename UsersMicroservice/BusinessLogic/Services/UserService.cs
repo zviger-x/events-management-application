@@ -3,6 +3,7 @@ using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
+using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
@@ -15,10 +16,9 @@ namespace BusinessLogic.Services
         {
         }
 
-        // Пока что я буду просто выбрасывать ошибки. Но в будущем будет выбрасываться коды ошибки,
-        // которые будут поступать в frontend
         public override async Task CreateAsync(User entity, CancellationToken token = default)
         {
+            #warning использовать сервис Auth.Register()
             await _validator.ValidateAndThrowAsync(entity, token);
 
             entity.Id = default;
@@ -30,12 +30,9 @@ namespace BusinessLogic.Services
 
         public override async Task UpdateAsync(User entity, CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(entity, token);
+            var updateDTO = _mapper.Map<UpdateUserDTO>(entity);
 
-            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
-            {
-                await _unitOfWork.UserRepository.UpdateAsync(entity, token);
-            }, token);
+            await UpdateUserProfileAsync(updateDTO, token);
         }
 
         public override async Task DeleteAsync(Guid id, CancellationToken token = default)
@@ -47,11 +44,17 @@ namespace BusinessLogic.Services
             }, token);
         }
 
-        public Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
+        public async Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
         {
             #warning Сделать валидацию моделей
-            #warning Сделать маппинг и обновление профиля.
-            return Task.FromException(new NotImplementedException());
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userUpdate.Id);
+            _mapper.Map(userUpdate, user);
+
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            {
+                await _unitOfWork.UserRepository.UpdateAsync(user, token);
+            }, cancellationToken);
         }
 
         public Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken)

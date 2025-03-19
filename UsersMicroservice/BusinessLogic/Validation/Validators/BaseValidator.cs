@@ -1,11 +1,10 @@
-﻿using DataAccess.Entities.Interfaces;
-using DataAccess.UnitOfWork.Interfaces;
+﻿using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
     public class BaseValidator<T> : AbstractValidator<T>
-        where T : class, IEntity
+        where T : class
     {
         protected readonly IUnitOfWork _unitOfWork;
 

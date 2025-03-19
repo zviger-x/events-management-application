@@ -45,6 +45,7 @@ namespace BusinessLogic.Validation.Validators
 
         private async Task<bool> IsUniqueEmail(string email, CancellationToken token)
         {
+            #warning Нужно проверять, что мы НЕ редактируем пользователя
             return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
         }
     }

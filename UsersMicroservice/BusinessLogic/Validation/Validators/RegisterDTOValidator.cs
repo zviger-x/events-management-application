@@ -14,46 +14,46 @@ namespace BusinessLogic.Validation.Validators
         {
             RuleFor(u => u.Name)
                 .NotNull()
-                    .WithMessage(RegisterDTOValidationMessages.NameIsNull)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.NameIsNull)
+                    .WithMessage(RegisterValidationMessages.NameIsNull)
+                    .WithErrorCode(RegisterValidationErrorCodes.NameIsNull)
                 .NotEmpty()
-                    .WithMessage(RegisterDTOValidationMessages.NameIsEmpty)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.NameIsEmpty);
+                    .WithMessage(RegisterValidationMessages.NameIsEmpty)
+                    .WithErrorCode(RegisterValidationErrorCodes.NameIsEmpty);
 
             RuleFor(u => u.Surname)
                 .NotNull()
-                    .WithMessage(RegisterDTOValidationMessages.SurnameIsNull)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.SurnameIsNull)
+                    .WithMessage(RegisterValidationMessages.SurnameIsNull)
+                    .WithErrorCode(RegisterValidationErrorCodes.SurnameIsNull)
                 .NotEmpty()
-                    .WithMessage(RegisterDTOValidationMessages.SurnameIsEmpty)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.SurnameIsEmpty);
+                    .WithMessage(RegisterValidationMessages.SurnameIsEmpty)
+                    .WithErrorCode(RegisterValidationErrorCodes.SurnameIsEmpty);
 
             RuleFor(u => u.Email)
                 .NotNull()
-                    .WithMessage(RegisterDTOValidationMessages.EmailIsNull)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.EmailIsNull)
+                    .WithMessage(RegisterValidationMessages.EmailIsNull)
+                    .WithErrorCode(RegisterValidationErrorCodes.EmailIsNull)
                 .NotEmpty()
-                    .WithMessage(RegisterDTOValidationMessages.EmailIsEmpty)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.EmailIsEmpty)
+                    .WithMessage(RegisterValidationMessages.EmailIsEmpty)
+                    .WithErrorCode(RegisterValidationErrorCodes.EmailIsEmpty)
                 .EmailAddress()
-                    .WithMessage(RegisterDTOValidationMessages.EmailIsInvalid)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.EmailIsInvalid)
+                    .WithMessage(RegisterValidationMessages.EmailIsInvalid)
+                    .WithErrorCode(RegisterValidationErrorCodes.EmailIsInvalid)
                 .MustAsync(IsUniqueEmail)
-                    .WithMessage(RegisterDTOValidationMessages.EmailIsNotUnique)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.EmailIsNotUnique);
+                    .WithMessage(RegisterValidationMessages.EmailIsNotUnique)
+                    .WithErrorCode(RegisterValidationErrorCodes.EmailIsNotUnique);
 
             RuleFor(u => u.Password)
                 .NotNull()
-                    .WithMessage(RegisterDTOValidationMessages.PasswordIsNull)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.PasswordIsNull)
+                    .WithMessage(RegisterValidationMessages.PasswordIsNull)
+                    .WithErrorCode(RegisterValidationErrorCodes.PasswordIsNull)
                 .NotEmpty()
-                    .WithMessage(RegisterDTOValidationMessages.PasswordIsEmpty)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.PasswordIsEmpty);
+                    .WithMessage(RegisterValidationMessages.PasswordIsEmpty)
+                    .WithErrorCode(RegisterValidationErrorCodes.PasswordIsEmpty);
 
             RuleFor(u => u.ConfirmPassword)
                 .Equal(u => u.Password)
-                    .WithMessage(RegisterDTOValidationMessages.PasswordsDoNotMatch)
-                    .WithErrorCode(RegisterDTOValidationErrorCodes.PasswordsDoNotMatch);
+                    .WithMessage(RegisterValidationMessages.PasswordsDoNotMatch)
+                    .WithErrorCode(RegisterValidationErrorCodes.PasswordsDoNotMatch);
         }
 
         private async Task<bool> IsUniqueEmail(string email, CancellationToken token)

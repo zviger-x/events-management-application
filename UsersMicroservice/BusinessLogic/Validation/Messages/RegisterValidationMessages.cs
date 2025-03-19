@@ -1,6 +1,6 @@
 ﻿namespace BusinessLogic.Validation.Messages
 {
-    internal static class RegisterDTOValidationMessages
+    internal static class RegisterValidationMessages
     {
         public const string NameIsNull = "User name cannot be null.";
         public const string NameIsEmpty = "User name cannot be empty.";

@@ -1,6 +1,6 @@
 ﻿namespace BusinessLogic.Validation.ErrorCodes
 {
-    internal static class RegisterDTOValidationErrorCodes
+    internal static class RegisterValidationErrorCodes
     {
         public const string NameIsNull = "nameIsNull";
         public const string NameIsEmpty = "nameIsEmpty";

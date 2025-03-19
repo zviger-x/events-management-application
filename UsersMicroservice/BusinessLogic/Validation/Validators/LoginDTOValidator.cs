@@ -12,24 +12,25 @@ namespace BusinessLogic.Validation.Validators
         public LoginDTOValidator(IUnitOfWork unitOfWork)
             : base(unitOfWork)
         {
+            #warning Проверить наличие пользователя
             RuleFor(u => u.Email)
                 .NotNull()
-                    .WithMessage(LoginDTOValidationMessages.EmailIsNull)
-                    .WithErrorCode(LoginDTOValidationErrorCodes.EmailIsNull)
+                    .WithMessage(LoginValidationMessages.EmailIsNull)
+                    .WithErrorCode(LoginValidationErrorCodes.EmailIsNull)
                 .NotEmpty()
-                    .WithMessage(LoginDTOValidationMessages.EmailIsEmpty)
-                    .WithErrorCode(LoginDTOValidationErrorCodes.EmailIsEmpty)
+                    .WithMessage(LoginValidationMessages.EmailIsEmpty)
+                    .WithErrorCode(LoginValidationErrorCodes.EmailIsEmpty)
                 .EmailAddress()
-                    .WithMessage(LoginDTOValidationMessages.EmailIsInvalid)
-                    .WithErrorCode(LoginDTOValidationErrorCodes.EmailIsInvalid);
+                    .WithMessage(LoginValidationMessages.EmailIsInvalid)
+                    .WithErrorCode(LoginValidationErrorCodes.EmailIsInvalid);
 
             RuleFor(u => u.Password)
                 .NotNull()
-                    .WithMessage(LoginDTOValidationMessages.PasswordIsNull)
-                    .WithErrorCode(LoginDTOValidationErrorCodes.PasswordIsNull)
+                    .WithMessage(LoginValidationMessages.PasswordIsNull)
+                    .WithErrorCode(LoginValidationErrorCodes.PasswordIsNull)
                 .NotEmpty()
-                    .WithMessage(LoginDTOValidationMessages.PasswordIsEmpty)
-                    .WithErrorCode(LoginDTOValidationErrorCodes.PasswordIsEmpty);
+                    .WithMessage(LoginValidationMessages.PasswordIsEmpty)
+                    .WithErrorCode(LoginValidationErrorCodes.PasswordIsEmpty);
         }
     }
 }

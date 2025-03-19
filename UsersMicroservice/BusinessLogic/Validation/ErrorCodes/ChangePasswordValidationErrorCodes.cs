@@ -1,6 +1,6 @@
 ﻿namespace BusinessLogic.Validation.ErrorCodes
 {
-    internal static class ChangePasswordDTOValidationErrorCodes
+    internal static class ChangePasswordValidationErrorCodes
     {
         public const string PasswordIsNull = "passwordIsNull";
         public const string PasswordIsEmpty = "passwordIsEmpty";

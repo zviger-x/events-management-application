@@ -1,28 +1,72 @@
 ﻿using AutoMapper;
 using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
+using BusinessLogic.Validation.ErrorCodes;
+using BusinessLogic.Validation.Messages;
+using BusinessLogic.Validation.Validators.Interfaces;
+using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace BusinessLogic.Services
 {
     public class AuthService : BaseService, IAuthService
     {
-        public AuthService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILoginDTOValidator _loginValidator;
+        private readonly IRegisterDTOValidator _registerValidator;
+
+        private readonly IPasswordHashingService _passwordHashingService;
+        private readonly IJwtTokenService _jwtTokenService;
+
+        public AuthService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ILoginDTOValidator loginValidator,
+            IRegisterDTOValidator registerValidator,
+            IPasswordHashingService passwordHashingService,
+            IJwtTokenService jwtTokenService)
             : base(unitOfWork, mapper)
         {
-            #warning Сделать валидацию моделей
+            _loginValidator = loginValidator;
+            _registerValidator = registerValidator;
+            _passwordHashingService = passwordHashingService;
+            _jwtTokenService = jwtTokenService;
         }
 
-        public Task LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken)
+        public async Task<string> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken)
         {
-            #warning Сделать вход пользователя и возврат токена.
-            return Task.FromException(new NotImplementedException());
+            await _registerValidator.ValidateAndThrowAsync(userRegister, cancellationToken);
+
+            var user = _mapper.Map<User>(userRegister);
+            user.PasswordHash = _passwordHashingService.HashPassword(userRegister.Password);
+
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            {
+                await _unitOfWork.UserRepository.CreateAsync(user, token);
+            }, cancellationToken);
+
+            return _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
         }
 
-        public Task RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken)
+        public async Task<string> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken)
         {
-            #warning Сделать регистрацию пользователя и возврат токена.
-            return Task.FromException(new NotImplementedException());
+            await _loginValidator.ValidateAndThrowAsync(userLogin, cancellationToken);
+
+            var user = await _unitOfWork.UserRepository.GetByEmailAsync(userLogin.Email, cancellationToken);
+
+            if (user == null || !_passwordHashingService.VerifyPassword(userLogin.Password, user.PasswordHash))
+            {
+                throw new ValidationException(new List<ValidationFailure>
+                {
+                    new ValidationFailure()
+                    {
+                        ErrorCode = LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
+                        ErrorMessage = LoginValidationMessages.EmailOrPasswordIsInvalid
+                    }
+                });
+            }
+
+            return _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
         }
     }
 }

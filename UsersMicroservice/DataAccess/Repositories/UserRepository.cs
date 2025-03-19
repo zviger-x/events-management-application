@@ -25,5 +25,10 @@ namespace DataAccess.Repositories
         {
             return await _context.Users.AnyAsync(u => u.Email == email);
         }
+
+        public async Task<User> GetByEmailAsync(string email, CancellationToken token = default)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
+        }
     }
 }

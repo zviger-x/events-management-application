@@ -16,16 +16,16 @@ namespace BusinessLogic.Validation.Validators
 
             RuleFor(u => u.NewPassword)
                 .NotNull()
-                    .WithMessage(ChangePasswordDTOValidationMessages.PasswordIsNull)
-                    .WithErrorCode(ChangePasswordDTOValidationErrorCodes.PasswordIsNull)
+                    .WithMessage(ChangePasswordValidationMessages.PasswordIsNull)
+                    .WithErrorCode(ChangePasswordValidationErrorCodes.PasswordIsNull)
                 .NotEmpty()
-                    .WithMessage(ChangePasswordDTOValidationMessages.PasswordIsEmpty)
-                    .WithErrorCode(ChangePasswordDTOValidationErrorCodes.PasswordIsEmpty);
+                    .WithMessage(ChangePasswordValidationMessages.PasswordIsEmpty)
+                    .WithErrorCode(ChangePasswordValidationErrorCodes.PasswordIsEmpty);
 
             RuleFor(u => u.ConfirmPassword)
                 .Equal(u => u.NewPassword)
-                    .WithMessage(ChangePasswordDTOValidationMessages.PasswordsDoNotMatch)
-                    .WithErrorCode(ChangePasswordDTOValidationErrorCodes.PasswordsDoNotMatch);
+                    .WithMessage(ChangePasswordValidationMessages.PasswordsDoNotMatch)
+                    .WithErrorCode(ChangePasswordValidationErrorCodes.PasswordsDoNotMatch);
         }
     }
 }

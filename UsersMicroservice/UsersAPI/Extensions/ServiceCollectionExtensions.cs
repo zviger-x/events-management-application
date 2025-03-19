@@ -41,6 +41,7 @@ namespace UsersAPI.Extensions
             services.AddScoped<IUserTransactionService, UserTransactionService>();
 
             services.AddScoped<IPasswordHashingService, PasswordHashingService>();
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IAuthService, AuthService>();
         }
     }

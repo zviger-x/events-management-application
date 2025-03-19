@@ -10,6 +10,9 @@ namespace BusinessLogic.Mapping
         {
             CreateMap<UpdateUserDTO, User>();
             CreateMap<User, UpdateUserDTO>();
+
+            CreateMap<RegisterDTO, User>();
+            CreateMap<User, RegisterDTO>();
         }
 
         // /// <summary>

@@ -55,8 +55,8 @@ namespace BusinessLogic.Services
         public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
         {
             var collection = await base.GetAllAsync(token);
-            foreach (var user in collection)
-                user.PasswordHash = string.Empty;
+            // foreach (var user in collection)
+            //     user.PasswordHash = string.Empty;
 
             return collection;
         }

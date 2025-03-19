@@ -14,19 +14,19 @@ namespace BusinessLogic.Validation.Validators
         {
             RuleFor(u => u.Name)
                 .NotNull()
-                    .WithMessage(UpdateUserDTOValidationMessages.NameIsNull)
-                    .WithErrorCode(UpdateUserDTOValidationErrorCodes.NameIsNull)
+                    .WithMessage(UpdateUserValidationMessages.NameIsNull)
+                    .WithErrorCode(UpdateUserValidationErrorCodes.NameIsNull)
                 .NotEmpty()
-                    .WithMessage(UpdateUserDTOValidationMessages.NameIsEmpty)
-                    .WithErrorCode(UpdateUserDTOValidationErrorCodes.NameIsEmpty);
+                    .WithMessage(UpdateUserValidationMessages.NameIsEmpty)
+                    .WithErrorCode(UpdateUserValidationErrorCodes.NameIsEmpty);
 
             RuleFor(u => u.Surname)
                 .NotNull()
-                    .WithMessage(UpdateUserDTOValidationMessages.SurnameIsNull)
-                    .WithErrorCode(UpdateUserDTOValidationErrorCodes.SurnameIsNull)
+                    .WithMessage(UpdateUserValidationMessages.SurnameIsNull)
+                    .WithErrorCode(UpdateUserValidationErrorCodes.SurnameIsNull)
                 .NotEmpty()
-                    .WithMessage(UpdateUserDTOValidationMessages.SurnameIsEmpty)
-                    .WithErrorCode(UpdateUserDTOValidationErrorCodes.SurnameIsEmpty);
+                    .WithMessage(UpdateUserValidationMessages.SurnameIsEmpty)
+                    .WithErrorCode(UpdateUserValidationErrorCodes.SurnameIsEmpty);
         }
     }
 }

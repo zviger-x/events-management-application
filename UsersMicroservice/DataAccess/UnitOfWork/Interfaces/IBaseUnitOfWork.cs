@@ -29,6 +29,7 @@ namespace DataAccess.UnitOfWork.Interfaces
 
         /// <summary>
         /// Executes an action within a transaction.
+        /// Saving all changes to the database and commits the current transaction.
         /// </summary>
         /// <param name="action">The action to execute within the transaction.</param>
         Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default);

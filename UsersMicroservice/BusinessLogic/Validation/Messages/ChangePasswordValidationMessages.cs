@@ -1,6 +1,6 @@
 ﻿namespace BusinessLogic.Validation.Messages
 {
-    internal static class ChangePasswordDTOValidationMessages
+    internal static class ChangePasswordValidationMessages
     {
         public const string PasswordIsNull = "Password cannot be null.";
         public const string PasswordIsEmpty = "Password cannot be empty.";

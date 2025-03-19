@@ -3,7 +3,6 @@ using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
-using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
@@ -11,9 +10,18 @@ namespace BusinessLogic.Services
 {
     public class UserService : BaseService<User>, IUserService
     {
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IUserValidator validator)
+        private readonly IUpdateUserDTOValidator _updateUserValidator;
+        private readonly IChangePasswordDTOValidator _changePasswordValidator;
+
+        public UserService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IUserValidator validator,
+            IUpdateUserDTOValidator updateUserValidator,
+            IChangePasswordDTOValidator changePasswordValidator)
             : base(unitOfWork, mapper, validator)
         {
+            _updateUserValidator = updateUserValidator;
+            _changePasswordValidator = changePasswordValidator;
         }
 
         public override async Task CreateAsync(User entity, CancellationToken token = default)
@@ -44,11 +52,37 @@ namespace BusinessLogic.Services
             }, token);
         }
 
+        public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
+        {
+            var collection = await base.GetAllAsync(token);
+            foreach (var user in collection)
+                user.Password = string.Empty;
+
+            return collection;
+        }
+
+        public override async Task<PagedCollection<User>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            var page = await base.GetPagedAsync(pageNumber, pageSize, token);
+            foreach (var user in page.Items)
+                user.Password = string.Empty;
+
+            return page;
+        }
+
+        public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
+        {
+            var user = await base.GetByIdAsync(id, token);
+            user.Password = string.Empty;
+
+            return user;
+        }
+
         public async Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
         {
-            #warning Сделать валидацию моделей
+            await _updateUserValidator.ValidateAndThrowAsync(userUpdate, cancellationToken);
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userUpdate.Id);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userUpdate.Id, cancellationToken);
             _mapper.Map(userUpdate, user);
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
@@ -57,11 +91,19 @@ namespace BusinessLogic.Services
             }, cancellationToken);
         }
 
-        public Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken)
+        public async Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken)
         {
-            #warning Сделать валидацию моделей
-            #warning Сделать изменение пароля.
-            return Task.FromException(new NotImplementedException());
+            await _changePasswordValidator.ValidateAndThrowAsync(changePassword, cancellationToken);
+
+            #warning Сделать валидацию текущего пароля
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(changePassword.Id, cancellationToken);
+            user.Password = changePassword.NewPassword; // добавить хэш
+
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            {
+                await _unitOfWork.UserRepository.UpdateAsync(user, token);
+            }, cancellationToken);
         }
     }
 }

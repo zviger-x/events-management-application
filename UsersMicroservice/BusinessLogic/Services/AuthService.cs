@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Contracts;
+﻿using AutoMapper;
+using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 
@@ -6,8 +7,8 @@ namespace BusinessLogic.Services
 {
     public class AuthService : BaseService, IAuthService
     {
-        public AuthService(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public AuthService(IUnitOfWork unitOfWork, IMapper mapper)
+            : base(unitOfWork, mapper)
         {
             #warning Сделать валидацию моделей
         }

@@ -1,11 +1,12 @@
-﻿using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Contracts;
+using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UsersAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
@@ -23,13 +24,24 @@ namespace UsersAPI.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, User user, CancellationToken token)
+        [HttpPut("{id}/change-profile")]
+        public async Task<IActionResult> ChangeProfile(Guid id, UpdateUserDTO updateUserDTO, CancellationToken token)
         {
-            if (id != user.Id)
+            if (id != updateUserDTO.Id)
                 throw new ArgumentException("ID in URL does not match ID in model");
 
-            await _userService.UpdateAsync(user, token);
+            await _userService.UpdateUserProfileAsync(updateUserDTO, token);
+
+            return Ok();
+        }
+
+        [HttpPut("{id}/change-password")]
+        public async Task<IActionResult> ChangePassword(Guid id, ChangePasswordDTO changePasswordDTO, CancellationToken token)
+        {
+            if (id != changePasswordDTO.Id)
+                throw new ArgumentException("ID in URL does not match ID in model");
+
+            await _userService.ChangePasswordAsync(changePasswordDTO, token);
 
             return Ok();
         }

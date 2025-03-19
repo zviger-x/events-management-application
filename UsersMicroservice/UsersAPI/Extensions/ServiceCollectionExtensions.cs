@@ -27,6 +27,11 @@ namespace UsersAPI.Extensions
             services.AddScoped<IUserValidator, UserValidator>();
             services.AddScoped<IUserNotificationValidator, UserNotificationValidator>();
             services.AddScoped<IUserTransactionValidator, UserTransactionValidator>();
+
+            services.AddScoped<IUpdateUserDTOValidator, UpdateUserDTOValidator>();
+            services.AddScoped<IChangePasswordDTOValidator, ChangePasswordDTOValidator>();
+            services.AddScoped<IRegisterDTOValidator, RegisterDTOValidator>();
+            services.AddScoped<ILoginDTOValidator, LoginDTOValidator>();
         }
 
         public static void AddServices(this IServiceCollection services)
@@ -34,6 +39,7 @@ namespace UsersAPI.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<IUserTransactionService, UserTransactionService>();
+            services.AddScoped<IAuthService, AuthService>();
         }
     }
 }

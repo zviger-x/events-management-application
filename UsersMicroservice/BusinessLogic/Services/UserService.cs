@@ -56,7 +56,7 @@ namespace BusinessLogic.Services
         {
             var collection = await base.GetAllAsync(token);
             foreach (var user in collection)
-                user.Password = string.Empty;
+                user.PasswordHash = string.Empty;
 
             return collection;
         }
@@ -65,7 +65,7 @@ namespace BusinessLogic.Services
         {
             var page = await base.GetPagedAsync(pageNumber, pageSize, token);
             foreach (var user in page.Items)
-                user.Password = string.Empty;
+                user.PasswordHash = string.Empty;
 
             return page;
         }
@@ -73,7 +73,7 @@ namespace BusinessLogic.Services
         public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             var user = await base.GetByIdAsync(id, token);
-            user.Password = string.Empty;
+            user.PasswordHash = string.Empty;
 
             return user;
         }
@@ -98,7 +98,7 @@ namespace BusinessLogic.Services
             #warning Сделать валидацию текущего пароля
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(changePassword.Id, cancellationToken);
-            user.Password = changePassword.NewPassword; // добавить хэш
+            user.PasswordHash = changePassword.NewPassword; // добавить хэш
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {

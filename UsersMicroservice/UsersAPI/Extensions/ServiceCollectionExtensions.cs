@@ -39,6 +39,8 @@ namespace UsersAPI.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<IUserTransactionService, UserTransactionService>();
+
+            services.AddScoped<IPasswordHashingService, PasswordHashingService>();
             services.AddScoped<IAuthService, AuthService>();
         }
     }

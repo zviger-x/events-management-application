@@ -1,3 +1,4 @@
+using BusinessLogic.Mapping;
 using DataAccess.Contexts;
 using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
@@ -41,6 +42,7 @@ namespace UsersAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // BLL
+            services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
             services.AddServices();
 

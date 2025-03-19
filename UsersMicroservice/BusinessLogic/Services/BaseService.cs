@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Services.Interfaces;
+﻿using AutoMapper;
+using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
@@ -9,10 +10,12 @@ namespace BusinessLogic.Services
     public abstract class BaseService : IDisposable
     {
         protected readonly IUnitOfWork _unitOfWork;
+        protected readonly IMapper _mapper;
 
-        protected BaseService(IUnitOfWork unitOfWork)
+        protected BaseService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public virtual void Dispose() => _unitOfWork.Dispose();
@@ -23,8 +26,8 @@ namespace BusinessLogic.Services
     {
         protected readonly IValidator<T> _validator;
 
-        protected BaseService(IUnitOfWork unitOfWork, IValidator<T> validator)
-            : base(unitOfWork)
+        protected BaseService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<T> validator)
+            : base(unitOfWork, mapper)
         {
             _validator = validator;
         }

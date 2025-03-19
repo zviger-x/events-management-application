@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Contracts;
+﻿using AutoMapper;
+using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
@@ -9,8 +10,8 @@ namespace BusinessLogic.Services
 {
     public class UserService : BaseService<User>, IUserService
     {
-        public UserService(IUnitOfWork unitOfWork, IUserValidator validator)
-            : base(unitOfWork, validator)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IUserValidator validator)
+            : base(unitOfWork, mapper, validator)
         {
         }
 

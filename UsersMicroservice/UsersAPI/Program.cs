@@ -29,6 +29,7 @@ namespace UsersAPI
             // Add logging
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
                 .CreateLogger();
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog();

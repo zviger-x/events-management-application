@@ -3,7 +3,9 @@ using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Security.Claims;
+using System.Text.Json;
 using UsersAPI.Filters;
 
 namespace UsersAPI.Controllers
@@ -12,10 +14,14 @@ namespace UsersAPI.Controllers
     [Route("api/users")]
     public class UsersController : Controller
     {
+        private readonly IDistributedCache _cache;
+        private readonly ILogger<UsersController> _logger;
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IDistributedCache cache, ILogger<UsersController> logger, IUserService userService)
         {
+            _cache = cache;
+            _logger = logger;
             _userService = userService;
         }
 
@@ -75,9 +81,22 @@ namespace UsersAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _userService.GetAllAsync();
+            var cachedUsers = await _cache.GetStringAsync("users_cache_key");
 
-            return Ok(users);
+            if (!string.IsNullOrEmpty(cachedUsers))
+            {
+                _logger.LogInformation("------------ USERS FROM CACHE");
+                var users = JsonSerializer.Deserialize<List<User>>(cachedUsers);
+                return Ok(users);
+            }
+
+            _logger.LogInformation("------------ USERS FROM DATABASE");
+            var usersFromDb = await _userService.GetAllAsync();
+
+            var cacheExpiryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(10));
+            await _cache.SetStringAsync("users_cache_key", JsonSerializer.Serialize(usersFromDb), cacheExpiryOptions);
+
+            return Ok(usersFromDb);
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin))]

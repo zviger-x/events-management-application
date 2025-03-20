@@ -67,6 +67,7 @@ namespace UsersAPI
                         ValidIssuer = jwtConfig.Issuer,
                         ValidAudience = jwtConfig.Audience,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
             services.AddAuthorization();

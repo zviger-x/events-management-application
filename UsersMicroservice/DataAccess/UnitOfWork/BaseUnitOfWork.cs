@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.UnitOfWork
 {
+    #pragma warning disable CS8618
     public abstract class BaseUnitOfWork : IBaseUnitOfWork
     {
         protected readonly UserDbContext _context;

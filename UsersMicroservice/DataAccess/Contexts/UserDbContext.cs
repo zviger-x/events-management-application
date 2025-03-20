@@ -13,6 +13,7 @@ namespace DataAccess.Contexts
         public DbSet<User> Users { get; set; }
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<UserTransaction> UserTransactions { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +34,10 @@ namespace DataAccess.Contexts
                     v => v.ToString(),
                     v => (UserRoles)Enum.Parse(typeof(UserRoles), v)
                 );
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasIndex(u => u.UserId)
+                .IsUnique();
         }
     }
 }

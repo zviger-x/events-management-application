@@ -1,0 +1,43 @@
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using DataAccess.Entities;
+
+namespace UsersAPI.Filters
+{
+    public class ForCurrentUserOrRolesAttribute : Attribute, IAuthorizationFilter
+    {
+        private readonly UserRoles[] _allowedRoles;
+
+        public ForCurrentUserOrRolesAttribute(params UserRoles[] allowedRoles)
+        {
+            _allowedRoles = allowedRoles ?? Array.Empty<UserRoles>();
+        }
+
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            var user = context.HttpContext.User;
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => Enum.Parse<UserRoles>(c.Value)).ToArray();
+
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                context.Result = new ForbidResult();
+                return;
+            }
+
+            var routeId = context.RouteData.Values["id"]?.ToString();
+            if (routeId == null || !Guid.TryParse(routeId, out var requestedId))
+            {
+                context.Result = new BadRequestResult();
+                return;
+            }
+
+            // Разрешаем, если пользователь запрашивает себя или если у него есть одна из разрешённых ролей
+            if (userId != requestedId && !_allowedRoles.Any(role => userRoles.Contains(role)))
+            {
+                context.Result = new ForbidResult();
+            }
+        }
+    }
+}

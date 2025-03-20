@@ -7,5 +7,6 @@ namespace DataAccess.UnitOfWork.Interfaces
         IUserRepository UserRepository { get; }
         IUserNotificationRepository UserNotificationRepository { get; }
         IUserTransactionRepository UserTransactionRepository { get; }
+        IRefreshTokenRepository RefreshTokenRepository { get; }
     }
 }

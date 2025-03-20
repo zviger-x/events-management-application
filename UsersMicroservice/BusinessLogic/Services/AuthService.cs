@@ -33,7 +33,7 @@ namespace BusinessLogic.Services
             _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<string> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default)
+        public async Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default)
         {
             await _registerValidator.ValidateAndThrowAsync(userRegister, cancellationToken);
 
@@ -45,10 +45,14 @@ namespace BusinessLogic.Services
                 await _unitOfWork.UserRepository.CreateAsync(user, token);
             }, cancellationToken);
 
-            return _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
+            await UpdateRefreshTokenInDatabase(refreshToken, cancellationToken);
+
+            return new (jwtToken, refreshToken.Token);
         }
 
-        public async Task<string> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default)
+        public async Task<(string jwtToken, string refreshToken)> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default)
         {
             await _loginValidator.ValidateAndThrowAsync(userLogin, cancellationToken);
 
@@ -66,7 +70,36 @@ namespace BusinessLogic.Services
                 });
             }
 
-            return _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
+            await UpdateRefreshTokenInDatabase(refreshToken, cancellationToken);
+
+            return new(jwtToken, refreshToken.Token);
+        }
+
+        public async Task<string> RefreshTokenAsync(Guid id, string refreshToken, CancellationToken cancellationToken = default)
+        {
+            if (await _jwtTokenService.ValidateRefreshTokenAsync(id, refreshToken))
+            {
+                var user = await _unitOfWork.UserRepository.GetByIdAsync(id, cancellationToken);
+                var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+                return jwtToken;
+            }
+
+            return null;
+        }
+
+        private async Task UpdateRefreshTokenInDatabase(RefreshToken token, CancellationToken cancellationToken = default)
+        {
+            // Если токен существует, то обновляем данные существующего, иначе создаём новый.
+            var existingRefreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(token.UserId, cancellationToken);
+            if (existingRefreshToken != null)
+            {
+                existingRefreshToken.Token = token.Token;
+                existingRefreshToken.Expires = token.Expires;
+            }
+            else await _unitOfWork.RefreshTokenRepository.CreateAsync(token, cancellationToken);
+            await _unitOfWork.RefreshTokenRepository.SaveChangesAsync(cancellationToken);
         }
     }
 }

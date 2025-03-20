@@ -20,6 +20,9 @@ namespace UsersAPI.Extensions
 
             services.AddScoped<IRepository<UserTransaction>, UserTransactionRepository>();
             services.AddScoped<IUserTransactionRepository, UserTransactionRepository>();
+
+            services.AddScoped<IRepository<RefreshToken>, RefreshTokenRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         }
 
         public static void AddValidators(this IServiceCollection services)

@@ -13,6 +13,7 @@ services:
       - "8081"
     depends_on:
       - sqlserver
+      - redis
     restart: always
     networks:
       - internal-docker-network
@@ -31,9 +32,21 @@ services:
     networks:
       - internal-docker-network
 
+  redis:
+    image: redis:latest
+    container_name: Redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      - internal-docker-network
+
 networks:
   internal-docker-network:
     driver: bridge
 
 volumes:
   sql_data:
+  redis_data:  

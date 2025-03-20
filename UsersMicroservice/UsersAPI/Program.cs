@@ -9,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using StackExchange.Redis;
 using System.Text;
+using UsersAPI.Configuration;
 using UsersAPI.Extensions;
 using UsersAPI.Middlewares;
 
@@ -30,6 +32,17 @@ namespace UsersAPI
                 .CreateLogger();
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog();
+
+            // Redis
+            var redisConfig = builder.Configuration.GetSection("RedisServerConfig").Get<RedisServerConfig>();
+            if (redisConfig == null) 
+                throw new ArgumentNullException(nameof(redisConfig));
+            builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfig.ConnectionString));
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConfig.ConnectionString;
+                options.InstanceName = redisConfig.CachePrefix;
+            });
 
             // Для удобства, пока доступен открытый порт
             // Я в терминале указываю useSqlOpenPorts, чтобы при миграциях использовался открытый порт

@@ -1,6 +1,5 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

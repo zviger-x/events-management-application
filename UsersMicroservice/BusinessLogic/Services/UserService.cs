@@ -12,16 +12,19 @@ namespace BusinessLogic.Services
     {
         private readonly IUpdateUserDTOValidator _updateUserValidator;
         private readonly IChangePasswordDTOValidator _changePasswordValidator;
+        private readonly IPasswordHashingService _passwordHashingService;
 
         public UserService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IUserValidator validator,
             IUpdateUserDTOValidator updateUserValidator,
-            IChangePasswordDTOValidator changePasswordValidator)
+            IChangePasswordDTOValidator changePasswordValidator,
+            IPasswordHashingService passwordHashingService)
             : base(unitOfWork, mapper, validator)
         {
             _updateUserValidator = updateUserValidator;
             _changePasswordValidator = changePasswordValidator;
+            _passwordHashingService = passwordHashingService;
         }
 
         public override Task CreateAsync(User entity, CancellationToken token = default)
@@ -98,7 +101,7 @@ namespace BusinessLogic.Services
             #warning Сделать валидацию текущего пароля
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(changePassword.Id, cancellationToken);
-            user.PasswordHash = changePassword.NewPassword; // добавить хэш
+            user.PasswordHash = _passwordHashingService.HashPassword(changePassword.NewPassword);
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {

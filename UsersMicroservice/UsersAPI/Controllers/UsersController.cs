@@ -1,4 +1,6 @@
-﻿using BusinessLogic.Contracts;
+﻿using BusinessLogic.Caching.Constants;
+using BusinessLogic.Caching.Interfaces;
+using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -14,13 +16,13 @@ namespace UsersAPI.Controllers
     [Route("api/users")]
     public class UsersController : Controller
     {
-        private readonly IDistributedCache _cache;
+        private readonly ICacheService _cacheService;
         private readonly ILogger<UsersController> _logger;
         private readonly IUserService _userService;
 
-        public UsersController(IDistributedCache cache, ILogger<UsersController> logger, IUserService userService)
+        public UsersController(ICacheService cacheService, ILogger<UsersController> logger, IUserService userService)
         {
-            _cache = cache;
+            _cacheService = cacheService;
             _logger = logger;
             _userService = userService;
         }
@@ -69,10 +71,15 @@ namespace UsersAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken token)
         {
-            var user = await _userService.GetByIdAsync(id, token);
+            var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(id));
+            if (cachedUser != null)
+                return Ok(cachedUser);
 
+            var user = await _userService.GetByIdAsync(id, token);
             if (user == null)
                 return NotFound();
+
+            await _cacheService.SetAsync(CacheKeys.UserById(id), user);
 
             return Ok(user);
         }
@@ -81,29 +88,32 @@ namespace UsersAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var cachedUsers = await _cache.GetStringAsync("users_cache_key");
+            var cachedUsers = await _cacheService.GetAsync<List<User>>(CacheKeys.AllUsers);
 
-            if (!string.IsNullOrEmpty(cachedUsers))
+            if (cachedUsers != null)
             {
                 _logger.LogInformation("------------ USERS FROM CACHE");
-                var users = JsonSerializer.Deserialize<List<User>>(cachedUsers);
-                return Ok(users);
+                return Ok(cachedUsers);
             }
 
             _logger.LogInformation("------------ USERS FROM DATABASE");
-            var usersFromDb = await _userService.GetAllAsync();
+            var users = await _userService.GetAllAsync();
+            await _cacheService.SetAsync(CacheKeys.AllUsers, users);
 
-            var cacheExpiryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(10));
-            await _cache.SetStringAsync("users_cache_key", JsonSerializer.Serialize(usersFromDb), cacheExpiryOptions);
-
-            return Ok(usersFromDb);
+            return Ok(users);
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin))]
         [HttpGet("{pageNumber}/{pageSize}")]
         public async Task<IActionResult> GetAllPaged(int pageNumber, int pageSize)
         {
+            var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, pageSize));
+
+            if (cachedUsers != null)
+                return Ok(cachedUsers);
+
             var users = await _userService.GetPagedAsync(pageNumber, pageSize);
+            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), users);
 
             return Ok(users);
         }

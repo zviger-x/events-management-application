@@ -47,7 +47,9 @@ namespace BusinessLogic.Services
 
             var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
-            await UpdateRefreshTokenInDatabase(refreshToken, cancellationToken);
+
+            await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
+            await _unitOfWork.RefreshTokenRepository.SaveChangesAsync(cancellationToken);
 
             return new (jwtToken, refreshToken.Token);
         }
@@ -72,7 +74,9 @@ namespace BusinessLogic.Services
 
             var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
-            await UpdateRefreshTokenInDatabase(refreshToken, cancellationToken);
+
+            await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
+            await _unitOfWork.RefreshTokenRepository.SaveChangesAsync(cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
         }
@@ -87,19 +91,6 @@ namespace BusinessLogic.Services
             }
 
             return null;
-        }
-
-        private async Task UpdateRefreshTokenInDatabase(RefreshToken token, CancellationToken cancellationToken = default)
-        {
-            // Если токен существует, то обновляем данные существующего, иначе создаём новый.
-            var existingRefreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(token.UserId, cancellationToken);
-            if (existingRefreshToken != null)
-            {
-                existingRefreshToken.Token = token.Token;
-                existingRefreshToken.Expires = token.Expires;
-            }
-            else await _unitOfWork.RefreshTokenRepository.CreateAsync(token, cancellationToken);
-            await _unitOfWork.RefreshTokenRepository.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -17,5 +17,16 @@ namespace DataAccess.Repositories
         {
             return await _context.RefreshTokens.FirstOrDefaultAsync(t => t.UserId == id, token);
         }
+
+        public async Task UpsertAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
+        {
+            var existingRefreshToken = await GetByUserIdAsync(refreshToken.UserId, cancellationToken);
+            if (existingRefreshToken != null)
+            {
+                existingRefreshToken.Token = refreshToken.Token;
+                existingRefreshToken.Expires = refreshToken.Expires;
+            }
+            else await CreateAsync(refreshToken, cancellationToken);
+        }
     }
 }

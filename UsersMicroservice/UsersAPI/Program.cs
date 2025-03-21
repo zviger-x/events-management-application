@@ -64,6 +64,7 @@ namespace UsersAPI
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
             services.AddServices();
+            services.AddCachingServices();
 
             // JWT
             var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtTokenConfig>();

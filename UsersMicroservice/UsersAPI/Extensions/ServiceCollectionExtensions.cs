@@ -5,6 +5,8 @@ using BusinessLogic.Validation.Validators.Interfaces;
 using BusinessLogic.Validation.Validators;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Services;
+using BusinessLogic.Caching.Interfaces;
+using BusinessLogic.Caching;
 
 namespace UsersAPI.Extensions
 {
@@ -46,6 +48,11 @@ namespace UsersAPI.Extensions
             services.AddScoped<IPasswordHashingService, PasswordHashingService>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IAuthService, AuthService>();
+        }
+        
+        public static void AddCachingServices(this IServiceCollection services)
+        {
+            services.AddScoped<ICacheService, RedisCacheService>();
         }
     }
 }

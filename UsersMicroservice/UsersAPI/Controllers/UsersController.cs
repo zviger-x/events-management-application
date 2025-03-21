@@ -39,6 +39,7 @@ namespace UsersAPI.Controllers
                 throw new ArgumentException("ID in URL does not match ID in model");
 
             await _userService.UpdateUserProfileAsync(updateUserDTO, token);
+            await _cacheService.RemoveAsync(CacheKeys.UserById(id));
 
             return Ok();
         }

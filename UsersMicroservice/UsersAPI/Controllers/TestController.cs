@@ -1,6 +1,7 @@
 ﻿using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UsersAPI.Attributes;
 
 namespace UsersAPI.Controllers
 {
@@ -12,12 +13,12 @@ namespace UsersAPI.Controllers
         [HttpGet("authorization")]
         public IActionResult TestDefault() => Ok();
 
-        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [AuthorizeRoles(UserRoles.Admin)]
         [HttpGet("authorization-admin")]
         public IActionResult TestAdmin() => Ok();
 
-        [Authorize(Roles = $"{nameof(UserRoles.Admin)},{nameof(UserRoles.User)}")]
-        [HttpGet("authorization-user")]
+        [AuthorizeRoles(UserRoles.User, UserRoles.Admin)]
+        [HttpGet("authorization-user&admin")]
         public IActionResult TestUser() => Ok();
     }
 }

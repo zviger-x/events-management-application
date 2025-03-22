@@ -4,6 +4,7 @@ using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UsersAPI.Attributes;
 using UsersAPI.Filters;
 
 namespace UsersAPI.Controllers
@@ -23,7 +24,7 @@ namespace UsersAPI.Controllers
 
         [Authorize]
         [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpPut("{id}/change-profile")]
+        [HttpPut("{id}/profile")]
         public async Task<IActionResult> ChangeProfile([FromRoute] Guid id, [FromBody] UpdateUserDTO updateUserDTO, CancellationToken token)
         {
             if (id != updateUserDTO.Id)
@@ -36,7 +37,7 @@ namespace UsersAPI.Controllers
 
         [Authorize]
         [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpPut("{id}/change-password")]
+        [HttpPut("{id}/password")]
         public async Task<IActionResult> ChangePassword([FromRoute] Guid id, [FromBody] ChangePasswordDTO changePasswordDTO, CancellationToken token)
         {
             if (id != changePasswordDTO.Id)
@@ -69,7 +70,7 @@ namespace UsersAPI.Controllers
             return Ok(user);
         }
 
-        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [AuthorizeRoles(UserRoles.Admin)]
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
@@ -78,7 +79,7 @@ namespace UsersAPI.Controllers
             return Ok(users);
         }
 
-        [Authorize(Roles = nameof(UserRoles.Admin))]
+        [AuthorizeRoles(UserRoles.Admin)]
         [HttpGet]
         public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1)
         {

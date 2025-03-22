@@ -1,5 +1,4 @@
-﻿using BusinessLogic.Caching.Constants;
-using BusinessLogic.Caching.Interfaces;
+﻿using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
@@ -13,16 +12,12 @@ namespace UsersAPI.Controllers
     [Route("api/users")]
     public class UsersController : Controller
     {
-        private readonly ICacheService _cacheService;
-        private readonly ILogger<UsersController> _logger;
         private readonly IUserService _userService;
 
         private const int PageSize = 10;
 
-        public UsersController(ICacheService cacheService, ILogger<UsersController> logger, IUserService userService)
+        public UsersController(ICacheService cacheService, IUserService userService)
         {
-            _cacheService = cacheService;
-            _logger = logger;
             _userService = userService;
         }
 
@@ -35,7 +30,6 @@ namespace UsersAPI.Controllers
                 throw new ArgumentException("ID in URL does not match ID in model");
 
             await _userService.UpdateUserProfileAsync(updateUserDTO, token);
-            await _cacheService.RemoveAsync(CacheKeys.UserById(id));
 
             return Ok();
         }
@@ -68,15 +62,9 @@ namespace UsersAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken token)
         {
-            var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(id));
-            if (cachedUser != null)
-                return Ok(cachedUser);
-
             var user = await _userService.GetByIdAsync(id, token);
             if (user == null)
                 return NotFound();
-
-            await _cacheService.SetAsync(CacheKeys.UserById(id), user);
 
             return Ok(user);
         }
@@ -85,13 +73,7 @@ namespace UsersAPI.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            var cachedUsers = await _cacheService.GetAsync<List<User>>(CacheKeys.AllUsers);
-
-            if (cachedUsers != null)
-                return Ok(cachedUsers);
-
             var users = await _userService.GetAllAsync();
-            await _cacheService.SetAsync(CacheKeys.AllUsers, users);
 
             return Ok(users);
         }
@@ -100,13 +82,7 @@ namespace UsersAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1)
         {
-            var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, PageSize));
-
-            if (cachedUsers != null)
-                return Ok(cachedUsers);
-
             var users = await _userService.GetPagedAsync(pageNumber, PageSize);
-            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, PageSize), users);
 
             return Ok(users);
         }

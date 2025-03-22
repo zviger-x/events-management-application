@@ -1,7 +1,6 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace UsersAPI.Controllers
 {

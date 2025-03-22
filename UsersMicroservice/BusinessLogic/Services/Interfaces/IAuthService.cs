@@ -21,9 +21,8 @@ namespace BusinessLogic.Services.Interfaces
         /// <summary>
         /// Checks the validity of the refresh token and returns a new Jwt token.
         /// </summary>
-        /// <param name="id">User id.</param>
         /// <param name="refreshToken">Refresh token to check.</param>
         /// <returns>Generated Jwt token.</returns>
-        Task<string> RefreshTokenAsync(Guid id, string refreshToken, CancellationToken cancellationToken = default);
+        Task<string> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,4 @@
-using BusinessLogic.Configuration;
+п»їusing BusinessLogic.Configuration;
 using BusinessLogic.Mapping;
 using DataAccess.Contexts;
 using DataAccess.Initialization;
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 using StackExchange.Redis;
 using System.Text;
 using UsersAPI.Configuration;
@@ -28,7 +29,7 @@ namespace UsersAPI
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
+                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
                 .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
                 .CreateLogger();
             builder.Logging.ClearProviders();
@@ -45,9 +46,9 @@ namespace UsersAPI
                 options.InstanceName = redisConfig.CachePrefix;
             });
 
-            // Для удобства, пока доступен открытый порт
-            // Я в терминале указываю useSqlOpenPorts, чтобы при миграциях использовался открытый порт
-            // А само приложение работало на закрытых портах
+            // Р”Р»СЏ СѓРґРѕР±СЃС‚РІР°, РїРѕРєР° РґРѕСЃС‚СѓРїРµРЅ РѕС‚РєСЂС‹С‚С‹Р№ РїРѕСЂС‚
+            // РЇ РІ С‚РµСЂРјРёРЅР°Р»Рµ СѓРєР°Р·С‹РІР°СЋ useSqlOpenPorts, С‡С‚РѕР±С‹ РїСЂРё РјРёРіСЂР°С†РёСЏС… РёСЃРїРѕР»СЊР·РѕРІР°Р»СЃСЏ РѕС‚РєСЂС‹С‚С‹Р№ РїРѕСЂС‚
+            // Рђ СЃР°РјРѕ РїСЂРёР»РѕР¶РµРЅРёРµ СЂР°Р±РѕС‚Р°Р»Рѕ РЅР° Р·Р°РєСЂС‹С‚С‹С… РїРѕСЂС‚Р°С…
             var openSqlPorts = args.Contains("UseSqlOpenPorts");
 
             var sqlConfig = builder.Configuration.GetSection("SqlServerConfig").Get<SqlServerConfig>();

@@ -1,5 +1,4 @@
 ﻿using DataAccess.Entities;
-using System.Security.Claims;
 
 namespace BusinessLogic.Services.Interfaces
 {
@@ -25,18 +24,8 @@ namespace BusinessLogic.Services.Interfaces
         /// <summary>
         /// Checks the validity of the token
         /// </summary>
-        /// <param name="userId">User id</param>
         /// <param name="refreshToken">Refresh token to validate</param>
-        /// <returns>True if the token is valid, otherwise false.</returns>
-        Task<bool> ValidateRefreshTokenAsync(Guid userId, string refreshToken);
-
-        /// <summary>
-        /// Retrieves the ClaimsPrincipal from an expired JWT token.
-        /// This method is used to extract the user claims from a token that has expired.
-        /// Note: The token's expiration time is not validated in this method.
-        /// </summary>
-        /// <param name="token">The expired JWT token.</param>
-        /// <returns>Returns the ClaimsPrincipal extracted from the expired token if valid; otherwise, returns null.</returns>
-        ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+        /// <returns>Validation result including the user Id of this token</returns>
+        Task<(bool IsValid, Guid UserId)> ValidateRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     }
 }

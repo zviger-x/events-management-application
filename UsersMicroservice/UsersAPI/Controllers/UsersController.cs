@@ -5,9 +5,6 @@ using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Security.Claims;
-using System.Text.Json;
 using UsersAPI.Filters;
 
 namespace UsersAPI.Controllers
@@ -20,6 +17,8 @@ namespace UsersAPI.Controllers
         private readonly ILogger<UsersController> _logger;
         private readonly IUserService _userService;
 
+        private const int PageSize = 10;
+
         public UsersController(ICacheService cacheService, ILogger<UsersController> logger, IUserService userService)
         {
             _cacheService = cacheService;
@@ -30,11 +29,8 @@ namespace UsersAPI.Controllers
         [Authorize]
         [ForCurrentUserOrRoles(UserRoles.Admin)]
         [HttpPut("{id}/change-profile")]
-        public async Task<IActionResult> ChangeProfile(Guid id, UpdateUserDTO updateUserDTO, CancellationToken token)
+        public async Task<IActionResult> ChangeProfile([FromRoute] Guid id, [FromBody] UpdateUserDTO updateUserDTO, CancellationToken token)
         {
-            if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) || userId != id)
-                return Forbid();
-
             if (id != updateUserDTO.Id)
                 throw new ArgumentException("ID in URL does not match ID in model");
 
@@ -47,7 +43,7 @@ namespace UsersAPI.Controllers
         [Authorize]
         [ForCurrentUserOrRoles(UserRoles.Admin)]
         [HttpPut("{id}/change-password")]
-        public async Task<IActionResult> ChangePassword(Guid id, ChangePasswordDTO changePasswordDTO, CancellationToken token)
+        public async Task<IActionResult> ChangePassword([FromRoute] Guid id, [FromBody] ChangePasswordDTO changePasswordDTO, CancellationToken token)
         {
             if (id != changePasswordDTO.Id)
                 throw new ArgumentException("ID in URL does not match ID in model");
@@ -60,7 +56,7 @@ namespace UsersAPI.Controllers
         [Authorize]
         [ForCurrentUserOrRoles(UserRoles.Admin)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken token)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
         {
             await _userService.DeleteAsync(id, token);
 
@@ -70,7 +66,7 @@ namespace UsersAPI.Controllers
         [Authorize]
         [ForCurrentUserOrRoles(UserRoles.Admin)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id, CancellationToken token)
+        public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken token)
         {
             var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(id));
             if (cachedUser != null)
@@ -86,18 +82,14 @@ namespace UsersAPI.Controllers
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin))]
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             var cachedUsers = await _cacheService.GetAsync<List<User>>(CacheKeys.AllUsers);
 
             if (cachedUsers != null)
-            {
-                _logger.LogInformation("------------ USERS FROM CACHE");
                 return Ok(cachedUsers);
-            }
 
-            _logger.LogInformation("------------ USERS FROM DATABASE");
             var users = await _userService.GetAllAsync();
             await _cacheService.SetAsync(CacheKeys.AllUsers, users);
 
@@ -105,16 +97,16 @@ namespace UsersAPI.Controllers
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin))]
-        [HttpGet("{pageNumber}/{pageSize}")]
-        public async Task<IActionResult> GetAllPaged(int pageNumber, int pageSize)
+        [HttpGet]
+        public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1)
         {
-            var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, pageSize));
+            var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, PageSize));
 
             if (cachedUsers != null)
                 return Ok(cachedUsers);
 
-            var users = await _userService.GetPagedAsync(pageNumber, pageSize);
-            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), users);
+            var users = await _userService.GetPagedAsync(pageNumber, PageSize);
+            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, PageSize), users);
 
             return Ok(users);
         }

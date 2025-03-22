@@ -12,6 +12,13 @@ namespace DataAccess.Repositories.Interfaces
         Task<RefreshToken> GetByUserIdAsync(Guid id, CancellationToken token = default);
 
         /// <summary>
+        /// Returns the full refresh token data, from the refresh token
+        /// </summary>
+        /// <param name="refreshToken">Refresh token.</param>
+        /// <returns>Full refresh token data.</returns>
+        Task<RefreshToken> GetByRefreshTokenAsync(string refreshToken, CancellationToken token = default);
+
+        /// <summary>
         /// Updates an existing one, otherwise creates a new one
         /// </summary>
         /// <param name="refreshToken">Refresh token</param>

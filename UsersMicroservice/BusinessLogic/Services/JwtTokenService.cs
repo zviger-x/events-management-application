@@ -81,43 +81,13 @@ namespace BusinessLogic.Services
             return refreshToken;
         }
 
-        public async Task<bool> ValidateRefreshTokenAsync(Guid userId, string refreshToken)
+        public async Task<(bool IsValid, Guid UserId)> ValidateRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            var storedToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(userId);
+            var storedToken = await _unitOfWork.RefreshTokenRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
             if (storedToken == null || storedToken.Token != refreshToken || storedToken.Expires < DateTime.UtcNow)
-                return false;
+                return new (false, Guid.Empty);
 
-            return true;
-        }
-
-        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_secretKey);
-
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = false,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out var securityToken);
-                var jwtToken = securityToken as JwtSecurityToken;
-                if (jwtToken == null)
-                    return null;
-
-                return principal;
-            }
-            catch
-            {
-                return null;
-            }
+            return new (true, storedToken.UserId);
         }
     }
 }

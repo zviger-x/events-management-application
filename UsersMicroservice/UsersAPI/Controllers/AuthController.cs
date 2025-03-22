@@ -35,21 +35,7 @@ namespace UsersAPI.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
-            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
-            if (authHeader == null)
-                return Unauthorized("Authorization header is missing");
-
-            var headerToken = authHeader.Substring("Bearer ".Length);
-            var principal = _jwtTokenService.GetPrincipalFromExpiredToken(headerToken);
-
-            var userIdClaim = principal?.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                return Unauthorized("User ID not found in token");
-
-            if (!Guid.TryParse(userIdClaim.Value, out var userId))
-                return Unauthorized("Invalid User ID format");
-
-            var token = await _authService.RefreshTokenAsync(userId, refreshToken);
+            var token = await _authService.RefreshTokenAsync(refreshToken);
             if (token == null)
                 return Unauthorized("Refresh token expired or invalid");
 

@@ -13,6 +13,11 @@ namespace DataAccess.Repositories
         {
         }
 
+        public async Task<RefreshToken> GetByRefreshTokenAsync(string refreshToken, CancellationToken token = default)
+        {
+            return await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Token == refreshToken, token);
+        }
+
         public async Task<RefreshToken> GetByUserIdAsync(Guid id, CancellationToken token = default)
         {
             return await _context.RefreshTokens.FirstOrDefaultAsync(t => t.UserId == id, token);

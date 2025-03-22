@@ -1,7 +1,10 @@
-services:
+﻿services:
   usersapi:
     container_name: UsersAPI
+    tty: true
     environment:
+      - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
+      - TERM=xterm-256color
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081

@@ -38,6 +38,10 @@ namespace DataAccess.Contexts
             modelBuilder.Entity<RefreshToken>()
                 .HasIndex(u => u.UserId)
                 .IsUnique();
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasIndex(u => u.Token)
+                .IsUnique();
         }
     }
 }

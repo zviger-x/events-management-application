@@ -81,16 +81,15 @@ namespace BusinessLogic.Services
             return new(jwtToken, refreshToken.Token);
         }
 
-        public async Task<string> RefreshTokenAsync(Guid id, string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<string> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            if (await _jwtTokenService.ValidateRefreshTokenAsync(id, refreshToken))
-            {
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(id, cancellationToken);
-                var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
-                return jwtToken;
-            }
+            var result = await _jwtTokenService.ValidateRefreshTokenAsync(refreshToken, cancellationToken);
+            if (!result.IsValid)
+                return null;
 
-            return null;
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(result.UserId, cancellationToken);
+            var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            return jwtToken;
         }
     }
 }

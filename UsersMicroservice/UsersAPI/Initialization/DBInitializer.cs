@@ -1,8 +1,9 @@
 ﻿using DataAccess.Contexts;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using UsersAPI.Configuration;
 
-namespace DataAccess.Initialization
+namespace UsersApi.Initialization
 {
     public class DBInitializer
     {
@@ -31,7 +32,7 @@ namespace DataAccess.Initialization
 
         private void SeedDemoDataAsync()
         {
-            // Пароли: admin, user1, user2
+            // Passwords: admin, user1, user2
             var users = new User[]
             {
                 new User { Name = "Admin", Surname = "Admin", Email = "admin@gmail.com", PasswordHash = "AQAAAAIAAYagAAAAEOJEFYJVGyBt/OrvY+kMgB7L99hchiZYr3BswvZugATlYLES5DXLGC6PkFQU/z/18A==", Role = UserRoles.Admin },

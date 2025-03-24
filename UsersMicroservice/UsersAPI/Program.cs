@@ -1,7 +1,6 @@
 ﻿using BusinessLogic.Configuration;
 using BusinessLogic.Mapping;
 using DataAccess.Contexts;
-using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +11,7 @@ using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using StackExchange.Redis;
 using System.Text;
+using UsersApi.Initialization;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
 using UsersAPI.Middlewares;
@@ -46,18 +46,11 @@ namespace UsersAPI
                 options.InstanceName = redisConfig.CachePrefix;
             });
 
-            // Для удобства, пока доступен открытый порт
-            // Я в терминале указываю useSqlOpenPorts, чтобы при миграциях использовался открытый порт
-            // А само приложение работало на закрытых портах
-            var openSqlPorts = args.Contains("UseSqlOpenPorts");
-
+            // DAL
             var sqlConfig = builder.Configuration.GetSection("SqlServerConfig").Get<SqlServerConfig>();
             if (sqlConfig == null)
                 throw new ArgumentNullException(nameof(sqlConfig));
-
-            // DAL
-            services.AddDbContext<UserDbContext>(o =>
-                o.UseSqlServer(openSqlPorts ? sqlConfig.ConnectionStringOpenPorts : sqlConfig.ConnectionString));
+            services.AddDbContext<UserDbContext>(o => o.UseSqlServer(sqlConfig.ConnectionString));
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

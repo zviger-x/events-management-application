@@ -34,14 +34,14 @@ namespace UsersAPI.Middlewares
             catch (ArgumentException ex)
             {
                 _logger.LogError(ex, "Argument exception occurred");
-                var response = new { error = ex.Message };
+                var response = GetSingleErrorResponse("invalidArgument", ex.Message);
 
                 await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected error occurred");
-                var response = new { error = "An unexpected error occurred" };
+                var response = GetSingleErrorResponse("unexpectedError", "An unexpected error occurred");
 
                 await SendErrorAsJsonAsync(context, response, StatusCodes.Status500InternalServerError);
             }
@@ -52,6 +52,17 @@ namespace UsersAPI.Middlewares
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(response);
+        }
+
+        private object GetSingleErrorResponse(string code, string message)
+        {
+            return new
+            {
+                errors = new Dictionary<string, object>
+                {
+                    { code, new { serverMessage = message } }
+                }
+            };
         }
     }
 }

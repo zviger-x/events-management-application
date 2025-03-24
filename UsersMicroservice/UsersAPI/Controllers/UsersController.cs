@@ -28,7 +28,7 @@ namespace UsersAPI.Controllers
         public async Task<IActionResult> ChangeProfile([FromRoute] Guid id, [FromBody] UpdateUserDTO updateUserDTO, CancellationToken token)
         {
             if (id != updateUserDTO.Id)
-                throw new ArgumentException("ID in URL does not match ID in model");
+                throw new ArgumentException("You are not allowed to modify this profile.");
 
             await _userService.UpdateUserProfileAsync(updateUserDTO, token);
 
@@ -41,7 +41,7 @@ namespace UsersAPI.Controllers
         public async Task<IActionResult> ChangePassword([FromRoute] Guid id, [FromBody] ChangePasswordDTO changePasswordDTO, CancellationToken token)
         {
             if (id != changePasswordDTO.Id)
-                throw new ArgumentException("ID in URL does not match ID in model");
+                throw new ArgumentException("You are not allowed to modify this profile.");
 
             await _userService.ChangePasswordAsync(changePasswordDTO, token);
 
@@ -72,18 +72,18 @@ namespace UsersAPI.Controllers
 
         [AuthorizeRoles(UserRoles.Admin)]
         [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(CancellationToken token)
         {
-            var users = await _userService.GetAllAsync();
+            var users = await _userService.GetAllAsync(token);
 
             return Ok(users);
         }
 
         [AuthorizeRoles(UserRoles.Admin)]
         [HttpGet]
-        public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1)
+        public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1, CancellationToken token = default)
         {
-            var users = await _userService.GetPagedAsync(pageNumber, PageSize);
+            var users = await _userService.GetPagedAsync(pageNumber, PageSize, token);
 
             return Ok(users);
         }

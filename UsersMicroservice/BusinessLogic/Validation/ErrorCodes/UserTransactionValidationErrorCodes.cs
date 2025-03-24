@@ -9,6 +9,7 @@
 
         public const string UserIdIsNull = "userIdIsNull";
         public const string UserIdIsEmpty = "userIdIsEmpty";
+        public const string UserIdIsInvalid = "userIdIsInvalid";
 
         public const string EventIdIsNull = "eventIdIsNull";
         public const string EventIdIsEmpty = "eventIdIsEmpty";

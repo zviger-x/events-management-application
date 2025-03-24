@@ -13,8 +13,6 @@
         public const string EmailIsInvalid = "Email format is invalid.";
         public const string EmailIsNotUnique = "Email must be unique.";
 
-        public const string EmailOrPasswordIsInvalid = "Invalid email or password.";
-
         public const string PasswordIsNull = "Password cannot be null.";
         public const string PasswordIsEmpty = "Password cannot be empty.";
 

@@ -25,14 +25,23 @@ namespace BusinessLogic.Validation.Validators
                     .WithMessage(UserNotificationValidationMessages.DateTimeIsNull)
                     .WithErrorCode(UserNotificationValidationErrorCodes.DateTimeIsNull);
 
-            #warning Нужно добавить проверку на наличие пользователя
             RuleFor(n => n.UserId)
                 .NotNull()
                     .WithMessage(UserNotificationValidationMessages.UserIdIsNull)
                     .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsNull)
                 .NotEmpty()
                     .WithMessage(UserNotificationValidationMessages.UserIdIsEmpty)
-                    .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsEmpty);
+                    .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsEmpty)
+                .MustAsync(IsExists)
+                    .WithMessage(UserNotificationValidationMessages.UserIdIsInvalid)
+                    .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsInvalid);
+        }
+
+        private async Task<bool> IsExists(Guid guid, CancellationToken token)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid);
+
+            return user != null;
         }
     }
 }

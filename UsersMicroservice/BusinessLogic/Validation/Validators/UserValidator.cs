@@ -43,9 +43,19 @@ namespace BusinessLogic.Validation.Validators
                     .WithErrorCode(UserValidationErrorCodes.EmailIsNotUnique);
         }
 
-        private async Task<bool> IsUniqueEmail(string email, CancellationToken token)
+        private async Task<bool> IsUniqueEmail(User user, string email, CancellationToken token)
         {
-            #warning Нужно проверять, что мы НЕ редактируем пользователя
+            var userFromContext = await _unitOfWork.UserRepository.GetByIdAsync(user.Id);
+
+            // Если пользователь не существует, то возвращаем true, потому что email уникален для нового пользователя
+            if (userFromContext == null)
+                return true;
+
+            // Если email не изменился, то возвращаем true (не нужно проверять уникальность, это тот же email)
+            if (userFromContext.Email == user.Email)
+                return true;
+
+            // Проверяем, существует ли другой пользователь с нашим новым email
             return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
         }
     }

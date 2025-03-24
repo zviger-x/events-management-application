@@ -9,5 +9,6 @@
 
         public const string UserIdIsNull = "userIdIsNull";
         public const string UserIdIsEmpty = "userIdIsEmpty";
+        public const string UserIdIsInvalid = "userIdIsInvalid";
     }
 }

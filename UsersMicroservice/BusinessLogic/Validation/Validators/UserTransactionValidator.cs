@@ -25,16 +25,18 @@ namespace BusinessLogic.Validation.Validators
                     .WithMessage(UserTransactionValidationMessages.AmountIsLessThanZero)
                     .WithErrorCode(UserTransactionValidationErrorCodes.AmountIsLessThanZero);
 
-            #warning Нужно добавить проверку на наличие пользователя
             RuleFor(t => t.UserId)
                 .NotNull()
                     .WithMessage(UserTransactionValidationMessages.UserIdIsNull)
                     .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsNull)
                 .NotEmpty()
                     .WithMessage(UserTransactionValidationMessages.UserIdIsEmpty)
-                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsEmpty);
+                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsEmpty)
+                .MustAsync(IsUserExists)
+                    .WithMessage(UserTransactionValidationMessages.UserIdIsInvalid)
+                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsInvalid);
 
-            #warning Нужно добавить проверку на наличие ивента
+            #warning TODO: Нужно добавить проверку на наличие ивента (gRPC)
             RuleFor(t => t.EventId)
                 .NotNull()
                     .WithMessage(UserTransactionValidationMessages.EventIdIsNull)
@@ -58,6 +60,14 @@ namespace BusinessLogic.Validation.Validators
                 .GreaterThan(0)
                     .WithMessage(UserTransactionValidationMessages.SeatNumberIsLessThanOrEqualToZero)
                     .WithErrorCode(UserTransactionValidationErrorCodes.SeatNumberIsInvalid);
+        }
+
+
+        private async Task<bool> IsUserExists(Guid guid, CancellationToken token)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid);
+
+            return user != null;
         }
     }
 }

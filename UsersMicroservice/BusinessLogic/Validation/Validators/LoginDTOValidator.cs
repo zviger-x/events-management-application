@@ -12,7 +12,6 @@ namespace BusinessLogic.Validation.Validators
         public LoginDTOValidator(IUnitOfWork unitOfWork)
             : base(unitOfWork)
         {
-            #warning Проверить наличие пользователя
             RuleFor(u => u.Email)
                 .NotNull()
                     .WithMessage(LoginValidationMessages.EmailIsNull)

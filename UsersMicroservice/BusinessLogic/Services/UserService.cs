@@ -132,8 +132,6 @@ namespace BusinessLogic.Services
         {
             await _changePasswordValidator.ValidateAndThrowAsync(changePassword, cancellationToken);
 
-            #warning Сделать валидацию текущего пароля
-
             var user = await _unitOfWork.UserRepository.GetByIdAsync(changePassword.Id, cancellationToken);
             user.PasswordHash = _passwordHashingService.HashPassword(changePassword.NewPassword);
 

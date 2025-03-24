@@ -13,8 +13,6 @@
         public const string EmailIsInvalid = "emailIsInvalid";
         public const string EmailIsNotUnique = "emailIsNotUnique";
 
-        public const string EmailOrPasswordIsInvalid = "emailOrPasswordIsInvalid";
-
         public const string PasswordIsNull = "passwordIsNull";
         public const string PasswordIsEmpty = "passwordIsEmpty";
 

@@ -9,5 +9,6 @@
 
         public const string UserIdIsNull = "User ID cannot be null.";
         public const string UserIdIsEmpty = "User ID cannot be empty.";
+        public const string UserIdIsInvalid = "User ID is invalid";
     }
 }

@@ -38,11 +38,6 @@ namespace DataAccess.UnitOfWork
             return (IRepository<T>)_repositories[type];
         }
 
-        public virtual async Task SaveChangesAsync(CancellationToken token = default)
-        {
-            await _context.SaveChangesAsync(token);
-        }
-
         public virtual async Task BeginTransactionAsync(CancellationToken token = default)
         {
             _transaction = await _context.Database.BeginTransactionAsync(token);

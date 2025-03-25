@@ -5,6 +5,10 @@ using DataAccess.Entities;
 
 namespace UsersAPI.Filters
 {
+    /// <summary>
+    /// Determines whether the user ID passed via Route applies to the current user, and grants access to anyone with the listed roles.
+    /// If there is no ID in the route, it will return BadRequest
+    /// </summary>
     public class ForCurrentUserOrRolesAttribute : Attribute, IAuthorizationFilter
     {
         private readonly UserRoles[] _allowedRoles;

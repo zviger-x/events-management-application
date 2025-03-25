@@ -25,27 +25,27 @@ namespace BusinessLogic.Caching
             _defaultExpirationTime = TimeSpan.FromSeconds(cacheExpirationSeconds.Value);
         }
 
-        public async Task<T?> GetAsync<T>(string key)
+        public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            var cachedData = await _cache.GetStringAsync(key);
+            var cachedData = await _cache.GetStringAsync(key, cancellationToken);
             if (string.IsNullOrEmpty(cachedData)) return default;
 
             _logger.LogInformation($"Cache hit for key: {key}");
             return JsonSerializer.Deserialize<T>(cachedData);
         }
 
-        public async Task SetAsync<T>(string key, T value)
+        public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default)
         {
             var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(_defaultExpirationTime);
             var serializedData = JsonSerializer.Serialize(value);
-            await _cache.SetStringAsync(key, serializedData, options);
+            await _cache.SetStringAsync(key, serializedData, options, cancellationToken);
 
             _logger.LogInformation($"Cache set for key: {key} with expiration: {_defaultExpirationTime.TotalSeconds} seconds");
         }
 
-        public async Task RemoveAsync(string key)
+        public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            await _cache.RemoveAsync(key);
+            await _cache.RemoveAsync(key, cancellationToken);
             _logger.LogInformation($"Cache removed for key: {key}");
         }
     }

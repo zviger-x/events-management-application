@@ -7,33 +7,38 @@ namespace DataAccess.Repositories.Interfaces
         where T : class, IEntity
     {
         /// <summary>
-        /// Creates an entity.
+        /// Creates an entity and automatically saves it to the database.
         /// </summary>
         /// <param name="entity">Entity to create.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task CreateAsync(T entity, CancellationToken token = default);
 
         /// <summary>
-        /// Updates an entity.
+        /// Updates an entity and automatically saves the changes to the database.
         /// </summary>
         /// <param name="entity">Entity to update.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task UpdateAsync(T entity, CancellationToken token = default);
 
         /// <summary>
-        /// Removes an entity.
+        /// Removes an entity and automatically saves the changes to the database.
         /// </summary>
         /// <param name="entity">Entity to delete.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task DeleteAsync(T entity, CancellationToken token = default);
 
         /// <summary>
         /// Returns an entity by its id.
         /// </summary>
         /// <param name="id">Entity id.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>Entity.</returns>
         Task<T> GetByIdAsync(Guid id, CancellationToken token = default);
 
         /// <summary>
         /// Returns an array of all entities.
         /// </summary>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>An array of all entities</returns>
         Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default);
 
@@ -42,12 +47,8 @@ namespace DataAccess.Repositories.Interfaces
         /// </summary>
         /// <param name="pageNumber">Page number.</param>
         /// <param name="pageSize">Page size.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>An a paged collection of entities</returns>
         Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default);
-
-        /// <summary>
-        /// Saves all changes made in this context to the database.
-        /// </summary>
-        Task SaveChangesAsync(CancellationToken token = default);
     }
 }

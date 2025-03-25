@@ -118,6 +118,9 @@ namespace BusinessLogic.Services
             await _updateUserValidator.ValidateAndThrowAsync(userUpdate, cancellationToken);
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(userUpdate.Id, cancellationToken);
+            if (user == null)
+                throw new ArgumentException("There is no user with this Id.");
+
             _mapper.Map(userUpdate, user);
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
@@ -133,6 +136,9 @@ namespace BusinessLogic.Services
             await _changePasswordValidator.ValidateAndThrowAsync(changePassword, cancellationToken);
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(changePassword.Id, cancellationToken);
+            if (user == null)
+                throw new ArgumentException("There is no user with this Id.");
+
             user.PasswordHash = _passwordHashingService.HashPassword(changePassword.NewPassword);
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>

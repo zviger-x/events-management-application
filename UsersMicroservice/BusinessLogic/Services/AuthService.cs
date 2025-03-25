@@ -49,7 +49,6 @@ namespace BusinessLogic.Services
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
 
             await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
-            await _unitOfWork.RefreshTokenRepository.SaveChangesAsync(cancellationToken);
 
             return new (jwtToken, refreshToken.Token);
         }
@@ -76,7 +75,6 @@ namespace BusinessLogic.Services
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
 
             await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
-            await _unitOfWork.RefreshTokenRepository.SaveChangesAsync(cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
         }

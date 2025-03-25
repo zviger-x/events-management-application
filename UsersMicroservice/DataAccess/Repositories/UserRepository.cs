@@ -16,6 +16,7 @@ namespace DataAccess.Repositories
         public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             return await _context.Users
+                .AsNoTracking()
                 .Include(u => u.Notifications)
                 .Include(u => u.Transactions)
                 .FirstOrDefaultAsync(u => u.Id == id, token);

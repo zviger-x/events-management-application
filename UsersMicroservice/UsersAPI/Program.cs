@@ -50,7 +50,11 @@ namespace UsersAPI
             var sqlConfig = builder.Configuration.GetSection("SqlServerConfig").Get<SqlServerConfig>();
             if (sqlConfig == null)
                 throw new ArgumentNullException(nameof(sqlConfig));
-            services.AddDbContext<UserDbContext>(o => o.UseSqlServer(sqlConfig.ConnectionString));
+            services.AddDbContext<UserDbContext>(o =>
+            {
+                o.UseSqlServer(sqlConfig.ConnectionString);
+                o.EnableSensitiveDataLogging();
+            });
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

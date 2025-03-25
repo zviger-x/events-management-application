@@ -8,23 +8,21 @@ namespace DataAccess.UnitOfWork.Interfaces
         IRepository<T> Repository<T>() where T : class, IEntity;
 
         /// <summary>
-        /// Saves changes to the database.
-        /// </summary>
-        Task SaveChangesAsync(CancellationToken token = default);
-
-        /// <summary>
         /// Begins a new transaction.
         /// </summary>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task BeginTransactionAsync(CancellationToken token = default);
 
         /// <summary>
         /// Saving all changes to the database and commits the current transaction.
         /// </summary>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task CommitTransactionAsync(CancellationToken token = default);
 
         /// <summary>
         /// Rolls back the current transaction, discarding any unsaved changes.
         /// </summary>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task RollbackTransactionAsync(CancellationToken token = default);
 
         /// <summary>
@@ -32,6 +30,7 @@ namespace DataAccess.UnitOfWork.Interfaces
         /// Saving all changes to the database and commits the current transaction.
         /// </summary>
         /// <param name="action">The action to execute within the transaction.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default);
     }
 }

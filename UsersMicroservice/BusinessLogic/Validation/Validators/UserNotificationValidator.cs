@@ -32,12 +32,12 @@ namespace BusinessLogic.Validation.Validators
                 .NotEmpty()
                     .WithMessage(UserNotificationValidationMessages.UserIdIsEmpty)
                     .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsEmpty)
-                .MustAsync(IsExists)
+                .MustAsync(IsUserExists)
                     .WithMessage(UserNotificationValidationMessages.UserIdIsInvalid)
                     .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsInvalid);
         }
 
-        private async Task<bool> IsExists(Guid guid, CancellationToken token)
+        private async Task<bool> IsUserExists(Guid guid, CancellationToken token)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(guid);
 

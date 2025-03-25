@@ -20,23 +20,30 @@ namespace DataAccess.Repositories
         public virtual async Task CreateAsync(T entity, CancellationToken token = default)
         {
             await _context.AddAsync(entity, token);
+            await _context.SaveChangesAsync(token);
+            _context.Entry(entity).State = EntityState.Detached;
         }
 
-        public virtual Task UpdateAsync(T entity, CancellationToken token = default)
+        public virtual async Task UpdateAsync(T entity, CancellationToken token = default)
         {
             _context.Update(entity);
-            return Task.CompletedTask;
+            await _context.SaveChangesAsync(token);
+            _context.Entry(entity).State = EntityState.Detached;
         }
 
-        public virtual Task DeleteAsync(T entity, CancellationToken token = default)
+        public virtual async Task DeleteAsync(T entity, CancellationToken token = default)
         {
             _context.Set<T>().Remove(entity);
-            return Task.CompletedTask;
+            await _context.SaveChangesAsync(token);
         }
 
         public virtual async Task<T> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            return await _context.Set<T>().FindAsync([id], cancellationToken: token);
+            var entity = await _context.Set<T>().FindAsync([id], cancellationToken: token);
+            if (entity != null)
+                _context.Entry(entity).State = EntityState.Detached;
+
+            return entity;
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)
@@ -63,11 +70,6 @@ namespace DataAccess.Repositories
                 CurrentPage = pageNumber,
                 PageSize = pageSize
             };
-        }
-
-        public virtual async Task SaveChangesAsync(CancellationToken token = default)
-        {
-            await _context.SaveChangesAsync(token);
         }
 
         public virtual void Dispose()

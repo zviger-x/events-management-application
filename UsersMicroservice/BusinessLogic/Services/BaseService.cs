@@ -38,7 +38,6 @@ namespace BusinessLogic.Services
 
             entity.Id = default;
             await _unitOfWork.Repository<T>().CreateAsync(entity, token);
-            await SaveChangesAsync(token);
         }
 
         public virtual async Task UpdateAsync(T entity, CancellationToken token = default)
@@ -46,7 +45,6 @@ namespace BusinessLogic.Services
             await _validator.ValidateAndThrowAsync(entity, token);
 
             await _unitOfWork.Repository<T>().UpdateAsync(entity, token);
-            await SaveChangesAsync(token);
         }
 
         public virtual async Task DeleteAsync(Guid id, CancellationToken token = default)
@@ -54,7 +52,6 @@ namespace BusinessLogic.Services
             var entity = Activator.CreateInstance<T>();
             entity.Id = id;
             await _unitOfWork.Repository<T>().DeleteAsync(entity, token);
-            await SaveChangesAsync(token);
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)
@@ -77,7 +74,5 @@ namespace BusinessLogic.Services
         {
             return await _unitOfWork.Repository<T>().GetByIdAsync(id, token);
         }
-
-        public virtual async Task SaveChangesAsync(CancellationToken token = default) => await _unitOfWork.SaveChangesAsync(token);
     }
 }

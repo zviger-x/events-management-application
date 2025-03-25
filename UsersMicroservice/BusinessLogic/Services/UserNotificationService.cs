@@ -12,5 +12,10 @@ namespace BusinessLogic.Services
             : base(unitOfWork, mapper, validator)
         {
         }
+
+        public async Task<IEnumerable<UserNotification>> GetByUserIdAsync(Guid id, CancellationToken token = default)
+        {
+            return await _unitOfWork.UserNotificationRepository.GetByUserIdAsync(id, token);
+        }
     }
 }

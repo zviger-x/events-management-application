@@ -14,12 +14,19 @@ namespace UsersAPI.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IUserNotificationService _userNotificationService;
+        private readonly IUserTransactionService _userTransactionService;
 
         private const int PageSize = 10;
 
-        public UsersController(ICacheService cacheService, IUserService userService)
+        public UsersController(ICacheService cacheService,
+            IUserService userService,
+            IUserNotificationService userNotificationService,
+            IUserTransactionService userTransactionService)
         {
             _userService = userService;
+            _userNotificationService = userNotificationService;
+            _userTransactionService = userTransactionService;
         }
 
         [Authorize]
@@ -68,6 +75,26 @@ namespace UsersAPI.Controllers
                 return NotFound();
 
             return Ok(user);
+        }
+
+        [Authorize]
+        [ForCurrentUserOrRoles(UserRoles.Admin)]
+        [HttpGet("{id}/notifications")]
+        public async Task<IActionResult> GetUserNotifications([FromRoute] Guid id, CancellationToken token)
+        {
+            var notifications = await _userNotificationService.GetByUserIdAsync(id, token);
+
+            return Ok(notifications);
+        }
+
+        [Authorize]
+        [ForCurrentUserOrRoles(UserRoles.Admin)]
+        [HttpGet("{id}/transactions")]
+        public async Task<IActionResult> GetUserTransactions([FromRoute] Guid id, CancellationToken token)
+        {
+            var transactions = await _userTransactionService.GetByUserIdAsync(id, token);
+
+            return Ok(transactions);
         }
 
         [AuthorizeRoles(UserRoles.Admin)]

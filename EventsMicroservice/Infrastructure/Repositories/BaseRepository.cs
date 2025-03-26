@@ -2,10 +2,10 @@
 using Domain.Entities.Interfaces;
 using Domain.Entities;
 using MongoDB.Driver;
-using Application.Contexts;
+using Infrastructure.Contexts;
 
 #pragma warning disable CS8603
-namespace Application.Repositories
+namespace Infrastructure.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T>
         where T : class, IEntity

@@ -3,7 +3,7 @@ using Domain.Entities.Interfaces;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
-namespace Application.Contexts
+namespace Infrastructure.Contexts
 {
     public abstract class BaseDbContext
     {
@@ -34,7 +34,7 @@ namespace Application.Contexts
             return collection;
         }
 
-        protected string GetCollectionName<T>()
+        public string GetCollectionName<T>()
             where T : class, IEntity
         {
             return typeof(T).Name.ToLower();
@@ -48,27 +48,21 @@ namespace Application.Contexts
             // Указываю, что мой Guid Id - действительный идентификатор
             // и что нужно его использовать, а не стандартный ObjectId
             // без изменения сущностей. Т.е. не придётся менять сущности
-            // и добавлять каждой атрибут [BsonId]
+            // и добавлять для каждой атрибут [BsonId]
 
-            #region -- Guid as ID --
-            BsonClassMap.RegisterClassMap<Event>(cm =>
+            RegisterGuid<Event>();
+            RegisterGuid<Seat>();
+            RegisterGuid<Review>();
+        }
+
+        private void RegisterGuid<T>() 
+            where T : class, IEntity
+        {
+            BsonClassMap.RegisterClassMap<T>(cm =>
             {
                 cm.AutoMap();
                 cm.MapIdMember(c => c.Id);
             });
-
-            BsonClassMap.RegisterClassMap<Seat>(cm =>
-            {
-                cm.AutoMap();
-                cm.MapIdMember(c => c.Id);
-            });
-
-            BsonClassMap.RegisterClassMap<Review>(cm =>
-            {
-                cm.AutoMap();
-                cm.MapIdMember(c => c.Id);
-            });
-            #endregion
         }
     }
 }

@@ -50,6 +50,5 @@ namespace Application.Repositories.Interfaces
         /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>An a paged collection of entities</returns>
         Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default);
-        void Dispose();
     }
 }

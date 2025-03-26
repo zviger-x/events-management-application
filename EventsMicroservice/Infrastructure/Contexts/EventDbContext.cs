@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using MongoDB.Driver;
 
-namespace Application.Contexts
+namespace Infrastructure.Contexts
 {
     public class EventDbContext : BaseDbContext
     {

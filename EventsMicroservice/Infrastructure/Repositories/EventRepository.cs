@@ -14,6 +14,30 @@ namespace Infrastructure.Repositories
         {
         }
 
+        public override async Task DeleteAsync(Event entity, CancellationToken token = default)
+        {
+            using var session = await _context.Client.StartSessionAsync(cancellationToken: token);
+
+            session.StartTransaction();
+            try
+            {
+                var deleteEventResult = await _context.Events.DeleteOneAsync(session, e => e.Id == entity.Id, cancellationToken: token);
+
+                if (deleteEventResult.DeletedCount > 0)
+                {
+                    await _context.Seats.DeleteManyAsync(session, s => s.EventId == entity.Id, cancellationToken: token);
+                    await _context.Reviews.DeleteManyAsync(session, r => r.EventId == entity.Id, cancellationToken: token);
+                }
+
+                await session.CommitTransactionAsync(token);
+            }
+            catch
+            {
+                await session.AbortTransactionAsync(token);
+                throw;
+            }
+        }
+
         public override async Task<Event> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             var query = _context.Events

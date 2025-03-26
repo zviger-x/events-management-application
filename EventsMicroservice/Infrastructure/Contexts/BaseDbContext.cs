@@ -20,6 +20,10 @@ namespace Infrastructure.Contexts
             RegisterMappings();
         }
 
+        public IMongoDatabase Database => _database;
+
+        public IMongoClient Client => _database.Client;
+
         public IMongoCollection<T> Collection<T>()
             where T : class, IEntity
         {

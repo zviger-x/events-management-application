@@ -11,7 +11,7 @@ namespace DataAccess.UnitOfWork
     public abstract class BaseUnitOfWork : IBaseUnitOfWork
     {
         protected readonly UserDbContext _context;
-        protected IDbContextTransaction _transaction;
+        protected IDbContextTransaction? _transaction;
         protected readonly IServiceProvider _serviceProvider;
 
         private Dictionary<Type, object> _repositories;
@@ -45,13 +45,23 @@ namespace DataAccess.UnitOfWork
 
         public virtual async Task CommitTransactionAsync(CancellationToken token = default)
         {
+            if (_transaction == null)
+                throw new InvalidOperationException("Transaction has not been started.");
+
             await _context.SaveChangesAsync(token);
             await _transaction.CommitAsync(token);
+            _transaction.Dispose();
+            _transaction = null;
         }
 
         public virtual async Task RollbackTransactionAsync(CancellationToken token = default)
         {
+            if (_transaction == null)
+                throw new InvalidOperationException("Transaction has not been started.");
+
             await _transaction.RollbackAsync(token);
+            _transaction.Dispose();
+            _transaction = null;
         }
 
         public virtual async Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default)

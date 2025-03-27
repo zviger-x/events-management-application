@@ -94,7 +94,8 @@ namespace UsersAPI.Middlewares
             }
 
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            await context.Response.WriteAsync("Token is revoked");
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync("Token is revoked");
             return;
         }
     }

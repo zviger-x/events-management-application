@@ -1,14 +1,14 @@
 ﻿using Application.UnitOfWork.Interfaces;
 using Application.UseCases.Interfaces;
+using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using FluentValidation;
 
 namespace Infrastructure.UseCases.EventUseCases
 {
     public class EventGetPagedUseCase : BaseUseCase<Event>, IGetPagedUseCaseAsync<Event>
     {
-        public EventGetPagedUseCase(IUnitOfWork unitOfWork, IMapper mapper, IValidator<Event> validator)
+        public EventGetPagedUseCase(IUnitOfWork unitOfWork, IMapper mapper, IEventValidator validator)
             : base(unitOfWork, mapper, validator)
         {
         }

@@ -1,5 +1,6 @@
 ﻿using Application.UnitOfWork.Interfaces;
 using Application.UseCases.Interfaces;
+using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
@@ -8,7 +9,7 @@ namespace Infrastructure.UseCases.EventUseCases
 {
     public class EventDeleteUseCase : BaseUseCase<Event>, IDeleteUseCaseAsync<Event>
     {
-        public EventDeleteUseCase(IUnitOfWork unitOfWork, IMapper mapper, IValidator<Event> validator)
+        public EventDeleteUseCase(IUnitOfWork unitOfWork, IMapper mapper, IEventValidator validator)
             : base(unitOfWork, mapper, validator)
         {
         }

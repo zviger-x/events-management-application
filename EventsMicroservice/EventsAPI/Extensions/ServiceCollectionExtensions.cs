@@ -2,14 +2,31 @@
 using Application.UseCases.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
+using EventsAPI.Configuration;
 using Infrastructure.Repositories;
 using Infrastructure.UseCases.EventUseCases;
 using Infrastructure.Validation.Validators;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 
 namespace EventsAPI.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        public static void AddMongoServer(this IServiceCollection services, MongoServerConfig mongoServerConfig)
+        {
+            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+
+            services.AddSingleton<IMongoClient>(new MongoClient(mongoServerConfig.ConnectionString));
+            services.AddScoped<IMongoDatabase>(provider =>
+            {
+                var client = provider.GetRequiredService<IMongoClient>();
+                return client.GetDatabase(mongoServerConfig.DatabaseName);
+            });
+        }
+
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IRepository<Event>, EventRepository>();

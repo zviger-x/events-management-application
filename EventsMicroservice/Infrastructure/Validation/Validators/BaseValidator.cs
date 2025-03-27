@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class BaseValidator<T> : AbstractValidator<T>
+    public abstract class BaseValidator<T> : AbstractValidator<T>
         where T : class
     {
         protected readonly IUnitOfWork _unitOfWork;

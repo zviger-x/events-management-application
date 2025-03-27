@@ -1,5 +1,6 @@
 ﻿using Application.UnitOfWork.Interfaces;
 using Application.UseCases.Interfaces;
+using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
@@ -8,7 +9,7 @@ namespace Infrastructure.UseCases.EventUseCases
 {
     public class EventCreateUseCase : BaseUseCase<Event>, ICreateUseCaseAsync<Event>
     {
-        public EventCreateUseCase(IUnitOfWork unitOfWork, IMapper mapper, IValidator<Event> validator)
+        public EventCreateUseCase(IUnitOfWork unitOfWork, IMapper mapper, IEventValidator validator)
             : base(unitOfWork, mapper, validator)
         {
         }
@@ -17,7 +18,10 @@ namespace Infrastructure.UseCases.EventUseCases
         {
             await _validator.ValidateAndThrowAsync(@event);
 
-            @event.Id = default;
+            @event.Id = Guid.NewGuid();
+            @event.Seats = default!;
+            @event.Reviews = default!;
+
             await _unitOfWork.EventRepository.CreateAsync(@event, cancellationToken).ConfigureAwait(false);
         }
     }

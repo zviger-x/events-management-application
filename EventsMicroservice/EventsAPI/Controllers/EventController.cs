@@ -37,6 +37,8 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] Event eventToCreate, CancellationToken cancellationToken)
         {
             await _createUseCaseAsync.Execute(eventToCreate, cancellationToken);
+
+            return Ok();
         }
 
         [HttpPut("{id}")]
@@ -62,6 +64,8 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var @event = await _getByIdUseCaseAsync.Execute(id, cancellationToken);
+            if (@event == null)
+                return NotFound();
 
             return Ok(@event);
         }
@@ -75,7 +79,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
             var page = await _getPagedUseCasesAsync.Execute(pageNumber, PageSize, cancellationToken);
 

@@ -1,6 +1,12 @@
 using Application.UnitOfWork.Interfaces;
+using AutoMapper;
+using EventsAPI.Configuration;
 using EventsAPI.Extensions;
+using EventsAPI.Middlewares;
+using Infrastructure.Contexts;
+using Infrastructure.Mapping;
 using Infrastructure.UnitOfWork;
+using MongoDB.Driver;
 
 namespace EventsAPI
 {
@@ -20,12 +26,16 @@ namespace EventsAPI
             // Redis
 
             // Data access
-            #warning TODO: Добавить подключение к монго
+            var mongoConfig = builder.Configuration.GetSection("MongoServerConfig").Get<MongoServerConfig>();
+            if (mongoConfig == null)
+                throw new ArgumentNullException(nameof(mongoConfig));
+            services.AddMongoServer(mongoConfig);
+            services.AddScoped<EventDbContext>();
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Use cases
-            #warning TODO: Добавить профиль мапперы
+            services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
             services.AddUseCases();
 

@@ -7,6 +7,8 @@ using Infrastructure.Contexts;
 using Infrastructure.Mapping;
 using Infrastructure.UnitOfWork;
 using MongoDB.Driver;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace EventsAPI
 {
@@ -22,6 +24,12 @@ namespace EventsAPI
             // Add configs
 
             // Add logging
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+                .CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog();
 
             // Redis
 

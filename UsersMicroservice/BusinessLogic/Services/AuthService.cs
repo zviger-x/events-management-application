@@ -86,11 +86,8 @@ namespace BusinessLogic.Services
             return new(jwtToken, refreshToken.Token);
         }
 
-        public async Task LogoutAsync(Guid id, string token, CancellationToken cancellationToken = default)
+        public async Task LogoutAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var expirationTime = TimeSpan.FromMinutes(_jwtTokenService.TokenExpirationMinutes);
-            await _cacheService.SetAsync(CacheKeys.UserJwtToken(id), token, expirationTime, cancellationToken);
-
             var refreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(id);
             await _unitOfWork.RefreshTokenRepository.DeleteAsync(refreshToken);
         }

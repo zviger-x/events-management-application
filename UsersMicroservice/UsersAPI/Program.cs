@@ -122,7 +122,6 @@ namespace UsersAPI
 
             // Middlewares
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-            app.UseMiddleware<JwtBlacklistMiddleware>();
 
             // Initializing DB
             using (var scope = app.Services.CreateScope())

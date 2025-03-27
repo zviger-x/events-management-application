@@ -37,15 +37,11 @@ namespace UsersAPI.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
-            var token = Request.Headers["Authorization"].FirstOrDefault()?.Substring("Bearer ".Length);
-            if (string.IsNullOrEmpty(token))
-                return BadRequest("Token is missing.");
-
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!Guid.TryParse(userIdClaim, out var userId))
                 return Unauthorized();
 
-            await _authService.LogoutAsync(userId, token, cancellationToken);
+            await _authService.LogoutAsync(userId, cancellationToken);
             return Ok();
         }
 

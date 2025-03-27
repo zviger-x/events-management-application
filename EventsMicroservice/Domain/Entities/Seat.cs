@@ -10,6 +10,6 @@ namespace Domain.Entities
         public int Row { get; set; }
         public int Number { get; set; }
         public float Price { get; set; }
-        public string Status { get; set; }
+        public bool IsBought { get; set; }
     }
 }

@@ -12,8 +12,7 @@ namespace Domain.Entities
         public DateTime EndDate { get; set; }
         public string Location { get; set; }
         public DateTime PurchaseDeadline { get; set; }
-        public byte[] Image { get; set; }
-        public string Status { get; set; }
+        public byte[]? Image { get; set; }
         public IEnumerable<Seat> Seats { get; set; }
         public IEnumerable<Review> Reviews { get; set; }
     }

@@ -66,7 +66,7 @@ namespace BusinessLogic.Services
 
         public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
         {
-            var cachedUsers = await _cacheService.GetAsync<List<User>>(CacheKeys.AllUsers);
+            var cachedUsers = await _cacheService.GetAsync<List<User>>(CacheKeys.AllUsers, token);
             if (cachedUsers != null)
                 return cachedUsers;
 
@@ -74,14 +74,14 @@ namespace BusinessLogic.Services
             foreach (var user in users)
                 user.PasswordHash = string.Empty;
 
-            await _cacheService.SetAsync(CacheKeys.AllUsers, users);
+            await _cacheService.SetAsync(CacheKeys.AllUsers, users, token);
 
             return users;
         }
 
         public override async Task<PagedCollection<User>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
         {
-            var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, pageSize));
+            var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, pageSize), token);
             if (cachedUsers != null)
                 return cachedUsers;
 
@@ -89,14 +89,14 @@ namespace BusinessLogic.Services
             foreach (var user in users.Items)
                 user.PasswordHash = string.Empty;
 
-            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), users);
+            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), users, token);
 
             return users;
         }
 
         public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(id));
+            var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(id), token);
             if (cachedUser != null)
             {
                 cachedUser.PasswordHash = string.Empty;
@@ -108,7 +108,7 @@ namespace BusinessLogic.Services
                 return null;
 
             user.PasswordHash = string.Empty;
-            await _cacheService.SetAsync(CacheKeys.UserById(id), user);
+            await _cacheService.SetAsync(CacheKeys.UserById(id), user, token);
 
             return user;
         }
@@ -128,7 +128,7 @@ namespace BusinessLogic.Services
                 await _unitOfWork.UserRepository.UpdateAsync(user, token);
             }, cancellationToken);
 
-            await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id));
+            await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
         public async Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken)

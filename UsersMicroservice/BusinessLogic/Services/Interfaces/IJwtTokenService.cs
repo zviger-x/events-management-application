@@ -4,6 +4,10 @@ namespace BusinessLogic.Services.Interfaces
 {
     public interface IJwtTokenService
     {
+        int TokenExpirationMinutes { get; }
+        
+        int RefreshTokenExpirationMinutess { get; }
+
         /// <summary>
         /// Generates a JWT token for the given user.
         /// </summary>

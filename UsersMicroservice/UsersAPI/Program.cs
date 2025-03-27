@@ -27,6 +27,11 @@ namespace UsersAPI
             // Add services to the container.
             var services = builder.Services;
 
+            // Add configs
+            services.Configure<JwtTokenConfig>(builder.Configuration.GetSection("Jwt"));
+            services.Configure<RedisServerConfig>(builder.Configuration.GetSection("RedisServerConfig"));
+            services.Configure<SqlServerConfig>(builder.Configuration.GetSection("SqlServerConfig"));
+
             // Add logging
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(theme: AnsiConsoleTheme.Code)
@@ -117,6 +122,7 @@ namespace UsersAPI
 
             // Middlewares
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<JwtBlacklistMiddleware>();
 
             // Initializing DB
             using (var scope = app.Services.CreateScope())

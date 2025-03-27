@@ -39,6 +39,10 @@ namespace BusinessLogic.Services
             _refreshTokenExpirationMinutes = config.RefreshTokenExpirationMinutes;
         }
 
+        public int TokenExpirationMinutes => _tokenExpirationMinutes;
+
+        public int RefreshTokenExpirationMinutess => _refreshTokenExpirationMinutes;
+
         public string GenerateToken(Guid id, string name, string email, UserRoles role)
         {
             var claims = new[]

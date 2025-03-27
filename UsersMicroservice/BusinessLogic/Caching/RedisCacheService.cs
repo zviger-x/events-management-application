@@ -36,11 +36,16 @@ namespace BusinessLogic.Caching
 
         public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default)
         {
-            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(_defaultExpirationTime);
+            await SetAsync(key, value, _defaultExpirationTime, cancellationToken);
+        }
+
+        public async Task SetAsync<T>(string key, T value, TimeSpan expirationTime, CancellationToken cancellationToken = default)
+        {
+            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(expirationTime);
             var serializedData = JsonSerializer.Serialize(value);
             await _cache.SetStringAsync(key, serializedData, options, cancellationToken);
 
-            _logger.LogInformation($"Cache set for key: {key} with expiration: {_defaultExpirationTime.TotalSeconds} seconds");
+            _logger.LogInformation($"Cache set for key: {key} with expiration: {expirationTime.TotalSeconds} seconds");
         }
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)

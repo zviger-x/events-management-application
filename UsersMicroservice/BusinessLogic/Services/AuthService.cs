@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using BusinessLogic.Caching.Constants;
+using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
@@ -8,6 +10,7 @@ using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 using FluentValidation.Results;
+using System.Net.Http;
 
 namespace BusinessLogic.Services
 {
@@ -19,18 +22,22 @@ namespace BusinessLogic.Services
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly IJwtTokenService _jwtTokenService;
 
+        private readonly ICacheService _cacheService;
+
         public AuthService(IUnitOfWork unitOfWork,
             IMapper mapper,
             ILoginDTOValidator loginValidator,
             IRegisterDTOValidator registerValidator,
             IPasswordHashingService passwordHashingService,
-            IJwtTokenService jwtTokenService)
+            IJwtTokenService jwtTokenService,
+            ICacheService cacheService)
             : base(unitOfWork, mapper)
         {
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
             _passwordHashingService = passwordHashingService;
             _jwtTokenService = jwtTokenService;
+            _cacheService = cacheService;
         }
 
         public async Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default)
@@ -46,8 +53,8 @@ namespace BusinessLogic.Services
             }, cancellationToken);
 
             var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
-            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
 
+            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
             await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
 
             return new (jwtToken, refreshToken.Token);
@@ -72,11 +79,20 @@ namespace BusinessLogic.Services
             }
 
             var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
-            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
 
+            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
             await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
+        }
+
+        public async Task LogoutAsync(HttpContext context, CancellationToken cancellationToken = default)
+        {
+            var expirationTime = TimeSpan.FromMinutes(_jwtTokenService.TokenExpirationMinutes);
+            await _cacheService.SetAsync(CacheKeys.UserJwtToken(id), token, expirationTime, cancellationToken);
+
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(id);
+            await _unitOfWork.RefreshTokenRepository.DeleteAsync(refreshToken);
         }
 
         public async Task<string> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)

@@ -1,6 +1,8 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace UsersAPI.Controllers
 {
@@ -29,6 +31,22 @@ namespace UsersAPI.Controllers
         {
             var token = await _authService.LoginAsync(loginDTO, cancellationToken);
             return Ok(new { AccessToken = token.jwtToken, RefreshToken = token.refreshToken });
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Substring("Bearer ".Length);
+            if (string.IsNullOrEmpty(token))
+                return BadRequest("Token is missing.");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            await _authService.LogoutAsync(userId, token, cancellationToken);
+            return Ok();
         }
 
         [HttpPost("refresh")]

@@ -21,6 +21,14 @@ namespace BusinessLogic.Services.Interfaces
         Task<(string jwtToken, string refreshToken)> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Logs out the user by his id.
+        /// </summary>
+        /// <param name="id">Id of the user.</param>
+        /// <param name="jwtToken">User token to mark irrelevance</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
+        Task LogoutAsync(Guid id, string jwtToken, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Checks the validity of the refresh token and returns a new Jwt token.
         /// </summary>
         /// <param name="refreshToken">Refresh token to check.</param>

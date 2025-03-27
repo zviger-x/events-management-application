@@ -1,3 +1,7 @@
+using Application.UnitOfWork.Interfaces;
+using EventsAPI.Extensions;
+using Infrastructure.UnitOfWork;
+
 namespace EventsAPI
 {
     public class Program
@@ -7,12 +11,32 @@ namespace EventsAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            var services = builder.Services;
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            // Add configs
+
+            // Add logging
+
+            // Redis
+
+            // Data access
+            #warning TODO: Добавить подключение к монго
+            services.AddRepositories();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Use cases
+            #warning TODO: Добавить профиль мапперы
+            services.AddValidators();
+            services.AddUseCases();
+
+            services.AddControllers();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            // Middlewares
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

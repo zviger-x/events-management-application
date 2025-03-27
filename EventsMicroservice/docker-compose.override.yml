@@ -1,0 +1,59 @@
+services:
+  eventsapi:
+    container_name: EventsAPI
+    stdin_open: true
+    tty: true
+    environment:
+      - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
+      - TERM=xterm-256color
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - mongoserver
+      #- redis
+    restart: always
+    networks:
+      - internal-docker-network
+
+  # ПРИ ИЗМЕНЕНИИ ПОРТОВ ИЛИ ИМЕНИ, ИЗМЕНИТЬ ИХ В mongo-entrypoint.sh
+  mongoserver:
+    image: mongo:latest
+    container_name: MongoServer
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init-replica.sh:/mongo-init-replica.sh
+    restart: always
+    networks:
+      - internal-docker-network
+    entrypoint: ["/bin/bash", "/mongo-init-replica.sh"]
+
+  #redis:
+  #  image: redis:latest
+  #  container_name: Redis
+  #  volumes:
+  #    - redis_data:/data
+  #  ports:
+  #    - "6379:6379"
+  #  restart: always
+  #  networks:
+  #    - internal-docker-network
+
+networks:
+  internal-docker-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  #redis_data:

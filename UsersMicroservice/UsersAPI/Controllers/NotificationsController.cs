@@ -53,6 +53,8 @@ namespace UsersAPI.Controllers
         public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var notification = await _userNotificationService.GetByIdAsync(id, cancellationToken);
+            if (notification == null)
+                return NotFound();
 
             return Ok(notification);
         }

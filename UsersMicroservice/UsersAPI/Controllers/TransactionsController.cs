@@ -53,6 +53,8 @@ namespace UsersAPI.Controllers
         public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var transaction = await _userTransactionService.GetByIdAsync(id, cancellationToken);
+            if (transaction == null)
+                return NotFound();
 
             return Ok(transaction);
         }

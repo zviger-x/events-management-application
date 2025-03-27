@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace Infrastructure.UseCases.EventUseCases
 {
-    public class EventDeleteUseCase : BaseUseCase<Event>, IDeleteUseCaseAsync
+    public class EventDeleteUseCase : BaseUseCase<Event>, IDeleteUseCaseAsync<Event>
     {
         public EventDeleteUseCase(IUnitOfWork unitOfWork, IMapper mapper, IValidator<Event> validator)
             : base(unitOfWork, mapper, validator)

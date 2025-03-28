@@ -11,7 +11,7 @@ using System.Text;
 
 namespace BusinessLogic.Services
 {
-    public class JwtTokenService : IJwtTokenService
+    public class TokenService : ITokenService
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -22,7 +22,7 @@ namespace BusinessLogic.Services
 
         private readonly int _refreshTokenExpirationMinutes;
 
-        public JwtTokenService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
 
@@ -43,7 +43,7 @@ namespace BusinessLogic.Services
 
         public int RefreshTokenExpirationMinutess => _refreshTokenExpirationMinutes;
 
-        public string GenerateToken(Guid id, string name, string email, UserRoles role)
+        public string GenerateJwtToken(Guid id, string name, string email, UserRoles role)
         {
             var claims = new[]
             {

@@ -11,9 +11,9 @@ namespace UsersAPI.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
-        private readonly IJwtTokenService _jwtTokenService;
+        private readonly ITokenService _jwtTokenService;
 
-        public AuthController(IAuthService authService, IJwtTokenService jwtTokenService)
+        public AuthController(IAuthService authService, ITokenService jwtTokenService)
         {
             _authService = authService;
             _jwtTokenService = jwtTokenService;

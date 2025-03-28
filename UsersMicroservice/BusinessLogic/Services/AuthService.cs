@@ -18,7 +18,7 @@ namespace BusinessLogic.Services
         private readonly IRegisterDTOValidator _registerValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
-        private readonly IJwtTokenService _jwtTokenService;
+        private readonly ITokenService _jwtTokenService;
 
         private readonly ICacheService _cacheService;
 
@@ -27,7 +27,7 @@ namespace BusinessLogic.Services
             ILoginDTOValidator loginValidator,
             IRegisterDTOValidator registerValidator,
             IPasswordHashingService passwordHashingService,
-            IJwtTokenService jwtTokenService,
+            ITokenService jwtTokenService,
             ICacheService cacheService)
             : base(unitOfWork, mapper)
         {
@@ -56,7 +56,7 @@ namespace BusinessLogic.Services
                 await _unitOfWork.UserRepository.CreateAsync(user, token);
             }, cancellationToken);
 
-            var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
             await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
@@ -75,7 +75,7 @@ namespace BusinessLogic.Services
                     LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
                     LoginValidationMessages.EmailOrPasswordIsInvalid);
 
-            var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
             await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
@@ -96,7 +96,7 @@ namespace BusinessLogic.Services
                 return null!;
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(result.UserId, cancellationToken);
-            var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
             return jwtToken;
         }
 

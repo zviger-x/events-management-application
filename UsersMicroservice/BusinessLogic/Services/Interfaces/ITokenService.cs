@@ -2,7 +2,7 @@
 
 namespace BusinessLogic.Services.Interfaces
 {
-    public interface IJwtTokenService
+    public interface ITokenService
     {
         int TokenExpirationMinutes { get; }
         
@@ -16,7 +16,7 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="email">The email of the user.</param>
         /// <param name="role">The role of the user.</param>
         /// <returns>A JWT token as a string.</returns>
-        string GenerateToken(Guid id, string name, string email, UserRoles role);
+        string GenerateJwtToken(Guid id, string name, string email, UserRoles role);
 
         /// <summary>
         /// Generates a random refresh token.

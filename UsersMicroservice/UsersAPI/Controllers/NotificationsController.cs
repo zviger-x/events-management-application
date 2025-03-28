@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace UsersAPI.Controllers
 {
+    #warning TODO: Создать gRPC сервис для работы с уведомлениями
+    // Этот класс для демонстрации и проверки корректности работы CRUD операций с уведомлениями.
+    // Он будет перенесён в gRPC сервис, потому что пользователю нет смысла взаимодействовать с этими методами.
     [ApiController]
     [Route("api/notifications")]
     public class NotificationsController : Controller
@@ -57,15 +60,6 @@ namespace UsersAPI.Controllers
                 return NotFound();
 
             return Ok(notification);
-        }
-
-        [Authorize]
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
-        {
-            var notifications = await _userNotificationService.GetAllAsync(cancellationToken);
-
-            return Ok(notifications);
         }
 
         [Authorize]

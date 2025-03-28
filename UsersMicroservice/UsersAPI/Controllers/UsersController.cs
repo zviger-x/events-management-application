@@ -98,15 +98,6 @@ namespace UsersAPI.Controllers
         }
 
         [AuthorizeRoles(UserRoles.Admin)]
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll(CancellationToken token)
-        {
-            var users = await _userService.GetAllAsync(token);
-
-            return Ok(users);
-        }
-
-        [AuthorizeRoles(UserRoles.Admin)]
         [HttpGet]
         public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1, CancellationToken token = default)
         {

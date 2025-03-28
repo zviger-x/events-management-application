@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace UsersAPI.Controllers
 {
+    #warning TODO: Создать gRPC сервис для работы с транзакциями
+    // Этот класс для демонстрации и проверки корректности работы CRUD операций с транзакциями.
+    // Он будет перенесён в gRPC сервис, потому что пользователю нет смысла взаимодействовать с этими методами.
     [ApiController]
     [Route("api/transactions")]
     public class TransactionsController : Controller
@@ -57,15 +60,6 @@ namespace UsersAPI.Controllers
                 return NotFound();
 
             return Ok(transaction);
-        }
-
-        [Authorize]
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
-        {
-            var transactions = await _userTransactionService.GetAllAsync(cancellationToken);
-
-            return Ok(transactions);
         }
 
         [Authorize]

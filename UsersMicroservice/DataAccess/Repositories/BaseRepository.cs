@@ -4,7 +4,6 @@ using DataAccess.Entities.Interfaces;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-#pragma warning disable CS8603
 namespace DataAccess.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T>
@@ -43,7 +42,7 @@ namespace DataAccess.Repositories
             if (entity != null)
                 _context.Entry(entity).State = EntityState.Detached;
 
-            return entity;
+            return entity!;
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)

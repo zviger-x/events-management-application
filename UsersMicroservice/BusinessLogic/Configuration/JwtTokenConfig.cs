@@ -1,6 +1,6 @@
-﻿namespace BusinessLogic.Configuration
+﻿#pragma warning disable CS8618
+namespace BusinessLogic.Configuration
 {
-    #pragma warning disable CS8618
     public class JwtTokenConfig
     {
         public string SecretKey { get; set; }

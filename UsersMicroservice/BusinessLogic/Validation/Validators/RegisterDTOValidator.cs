@@ -2,15 +2,13 @@
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
-using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class RegisterDTOValidator : BaseValidator<RegisterDTO>, IRegisterDTOValidator
+    public class RegisterDTOValidator : AbstractValidator<RegisterDTO>, IRegisterDTOValidator
     {
-        public RegisterDTOValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public RegisterDTOValidator()
         {
             RuleFor(u => u.Name)
                 .NotNull()
@@ -37,10 +35,7 @@ namespace BusinessLogic.Validation.Validators
                     .WithErrorCode(RegisterValidationErrorCodes.EmailIsEmpty)
                 .EmailAddress()
                     .WithMessage(RegisterValidationMessages.EmailIsInvalid)
-                    .WithErrorCode(RegisterValidationErrorCodes.EmailIsInvalid)
-                .MustAsync(IsUniqueEmail)
-                    .WithMessage(RegisterValidationMessages.EmailIsNotUnique)
-                    .WithErrorCode(RegisterValidationErrorCodes.EmailIsNotUnique);
+                    .WithErrorCode(RegisterValidationErrorCodes.EmailIsInvalid);
 
             RuleFor(u => u.Password)
                 .NotNull()
@@ -54,11 +49,6 @@ namespace BusinessLogic.Validation.Validators
                 .Equal(u => u.Password)
                     .WithMessage(RegisterValidationMessages.PasswordsDoNotMatch)
                     .WithErrorCode(RegisterValidationErrorCodes.PasswordsDoNotMatch);
-        }
-
-        private async Task<bool> IsUniqueEmail(string email, CancellationToken token)
-        {
-            return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
         }
     }
 }

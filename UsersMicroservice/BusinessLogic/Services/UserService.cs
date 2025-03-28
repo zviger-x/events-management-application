@@ -2,7 +2,10 @@
 using BusinessLogic.Caching.Constants;
 using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
+using BusinessLogic.Validation.ErrorCodes;
+using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -38,18 +41,14 @@ namespace BusinessLogic.Services
 
         public override Task CreateAsync(User entity, CancellationToken token = default)
         {
-            throw new InvalidOperationException("Please use the Register method from AuthService instead. This method cannot hash the password and return Jwt token");
-            // await _validator.ValidateAndThrowAsync(entity, token);
-            // 
-            // entity.Id = default;
-            // await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
-            // {
-            //     await _unitOfWork.UserRepository.CreateAsync(entity, token);
-            // }, token);
+            _logger.LogWarning("The deprecated Create method was used. This method is disabled because it does not have the ability to hash the password and generate tokens.");
+            throw new InvalidOperationException("Please use the Register method from AuthService instead. This method cannot hash the password and return Jwt token.");
         }
 
         public override async Task UpdateAsync(User entity, CancellationToken token = default)
         {
+            _logger.LogWarning("The deprecated Update method was used. The User model was mapped to UpdateUserDTO and the UpdateUserProfileAsync method was called. Please use the UpdateUserProfileAsync method instead.");
+            
             var updateDTO = _mapper.Map<UpdateUserDTO>(entity);
 
             await UpdateUserProfileAsync(updateDTO, token);
@@ -105,7 +104,7 @@ namespace BusinessLogic.Services
 
             var user = await base.GetByIdAsync(id, token);
             if (user == null)
-                return null;
+                return null!;
 
             user.PasswordHash = string.Empty;
             await _cacheService.SetAsync(CacheKeys.UserById(id), user, token);
@@ -131,20 +130,56 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        public async Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken)
+        public async Task ChangePasswordAsync(ChangePasswordDTO changePasswordDto, CancellationToken cancellationToken)
         {
-            await _changePasswordValidator.ValidateAndThrowAsync(changePassword, cancellationToken);
+            await _changePasswordValidator.ValidateAndThrowAsync(changePasswordDto, cancellationToken);
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(changePassword.Id, cancellationToken);
+            if (!await IsCurrentPassword(changePasswordDto, cancellationToken))
+                throw new ServiceValidationException(
+                    ChangePasswordValidationErrorCodes.CurrentPasswordIsInvalid,
+                    ChangePasswordValidationMessages.CurrentPasswordIsInvalid,
+                    nameof(changePasswordDto.CurrentPassword));
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(changePasswordDto.Id, cancellationToken);
             if (user == null)
                 throw new ArgumentException("There is no user with this Id.");
 
-            user.PasswordHash = _passwordHashingService.HashPassword(changePassword.NewPassword);
+            user.PasswordHash = _passwordHashingService.HashPassword(changePasswordDto.NewPassword);
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
                 await _unitOfWork.UserRepository.UpdateAsync(user, token);
             }, cancellationToken);
         }
+
+        private async Task<bool> IsCurrentPassword(ChangePasswordDTO dto, CancellationToken token = default)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(dto.Id);
+
+            if (user == null || !_passwordHashingService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
+                return false;
+
+            return true;
+        }
+
+        // Этот метод нужен был, при создании через дефолтные методы Create и Update, для проверки уникальности email.
+        // Но так как дефолтные методы заменены на более корректные Register, UpdateProfile и ChangePassword, в этом методе нет смысла
+        // Но реализация на всякий случай остаётся тут, как и ValidationMessages, и ValidationErrorCodes соответственно для модели User
+        //
+        // private async Task<bool> IsUniqueEmail(User user, string email, CancellationToken token)
+        // {
+        //     var userFromContext = await _unitOfWork.UserRepository.GetByIdAsync(user.Id);
+        // 
+        //     // Если пользователь не существует, то возвращаем true, потому что email уникален для нового пользователя
+        //     if (userFromContext == null)
+        //         return true;
+        // 
+        //     // Если email не изменился, то возвращаем true (не нужно проверять уникальность, это тот же email)
+        //     if (userFromContext.Email == user.Email)
+        //         return true;
+        // 
+        //     // Проверяем, существует ли другой пользователь с нашим новым email
+        //     return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
+        // }
     }
 }

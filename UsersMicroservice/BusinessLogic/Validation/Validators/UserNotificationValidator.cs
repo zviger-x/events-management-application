@@ -2,15 +2,13 @@
 using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
-using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class UserNotificationValidator : BaseValidator<UserNotification>, IUserNotificationValidator
+    public class UserNotificationValidator : AbstractValidator<UserNotification>, IUserNotificationValidator
     {
-        public UserNotificationValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public UserNotificationValidator()
         {
             RuleFor(n => n.Message)
                 .NotNull()
@@ -31,17 +29,7 @@ namespace BusinessLogic.Validation.Validators
                     .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsNull)
                 .NotEmpty()
                     .WithMessage(UserNotificationValidationMessages.UserIdIsEmpty)
-                    .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsEmpty)
-                .MustAsync(IsUserExists)
-                    .WithMessage(UserNotificationValidationMessages.UserIdIsInvalid)
-                    .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsInvalid);
-        }
-
-        private async Task<bool> IsUserExists(Guid guid, CancellationToken token)
-        {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid);
-
-            return user != null;
+                    .WithErrorCode(UserNotificationValidationErrorCodes.UserIdIsEmpty);
         }
     }
 }

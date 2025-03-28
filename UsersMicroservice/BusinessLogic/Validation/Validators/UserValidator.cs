@@ -2,15 +2,13 @@
 using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
-using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class UserValidator : BaseValidator<User>, IUserValidator
+    public class UserValidator : AbstractValidator<User>, IUserValidator
     {
-        public UserValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public UserValidator()
         {
             RuleFor(u => u.Name)
                 .NotNull()
@@ -37,26 +35,7 @@ namespace BusinessLogic.Validation.Validators
                     .WithErrorCode(UserValidationErrorCodes.EmailIsEmpty)
                 .EmailAddress()
                     .WithMessage(UserValidationMessages.EmailIsInvalid)
-                    .WithErrorCode(UserValidationErrorCodes.EmailIsInvalid)
-                .MustAsync(IsUniqueEmail)
-                    .WithMessage(UserValidationMessages.EmailIsNotUnique)
-                    .WithErrorCode(UserValidationErrorCodes.EmailIsNotUnique);
-        }
-
-        private async Task<bool> IsUniqueEmail(User user, string email, CancellationToken token)
-        {
-            var userFromContext = await _unitOfWork.UserRepository.GetByIdAsync(user.Id);
-
-            // Если пользователь не существует, то возвращаем true, потому что email уникален для нового пользователя
-            if (userFromContext == null)
-                return true;
-
-            // Если email не изменился, то возвращаем true (не нужно проверять уникальность, это тот же email)
-            if (userFromContext.Email == user.Email)
-                return true;
-
-            // Проверяем, существует ли другой пользователь с нашим новым email
-            return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
+                    .WithErrorCode(UserValidationErrorCodes.EmailIsInvalid);
         }
     }
 }

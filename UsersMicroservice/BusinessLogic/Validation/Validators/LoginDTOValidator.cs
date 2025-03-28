@@ -2,15 +2,13 @@
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
-using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class LoginDTOValidator : BaseValidator<LoginDTO>, ILoginDTOValidator
+    public class LoginDTOValidator : AbstractValidator<LoginDTO>, ILoginDTOValidator
     {
-        public LoginDTOValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public LoginDTOValidator()
         {
             RuleFor(u => u.Email)
                 .NotNull()

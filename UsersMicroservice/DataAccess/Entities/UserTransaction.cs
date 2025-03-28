@@ -3,6 +3,7 @@
 #pragma warning disable CS8618
 namespace DataAccess.Entities
 {
+    #warning TODO: EventName должен обновлятся через Kafka, при непосредственном обновлении данных ивента
     public class UserTransaction : IEntity
     {
         public Guid Id { get; set; }

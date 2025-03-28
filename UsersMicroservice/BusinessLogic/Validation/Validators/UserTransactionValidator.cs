@@ -2,15 +2,13 @@
 using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
-using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class UserTransactionValidator : BaseValidator<UserTransaction>, IUserTransactionValidator
+    public class UserTransactionValidator : AbstractValidator<UserTransaction>, IUserTransactionValidator
     {
-        public UserTransactionValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public UserTransactionValidator()
         {
             RuleFor(t => t.TransactionDate)
                 .NotNull()
@@ -31,12 +29,8 @@ namespace BusinessLogic.Validation.Validators
                     .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsNull)
                 .NotEmpty()
                     .WithMessage(UserTransactionValidationMessages.UserIdIsEmpty)
-                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsEmpty)
-                .MustAsync(IsUserExists)
-                    .WithMessage(UserTransactionValidationMessages.UserIdIsInvalid)
-                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsInvalid);
+                    .WithErrorCode(UserTransactionValidationErrorCodes.UserIdIsEmpty);
 
-            #warning TODO: Нужно добавить проверку на наличие ивента (gRPC)
             RuleFor(t => t.EventId)
                 .NotNull()
                     .WithMessage(UserTransactionValidationMessages.EventIdIsNull)
@@ -60,14 +54,6 @@ namespace BusinessLogic.Validation.Validators
                 .GreaterThan(0)
                     .WithMessage(UserTransactionValidationMessages.SeatNumberIsLessThanOrEqualToZero)
                     .WithErrorCode(UserTransactionValidationErrorCodes.SeatNumberIsInvalid);
-        }
-
-
-        private async Task<bool> IsUserExists(Guid guid, CancellationToken token)
-        {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid);
-
-            return user != null;
         }
     }
 }

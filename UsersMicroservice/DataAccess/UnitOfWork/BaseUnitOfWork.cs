@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.UnitOfWork
 {
-    #pragma warning disable CS8618
     public abstract class BaseUnitOfWork : IBaseUnitOfWork
     {
         protected readonly UserDbContext _context;
@@ -20,14 +19,12 @@ namespace DataAccess.UnitOfWork
         {
             _context = context;
             _serviceProvider = serviceProvider;
+            _repositories = new();
         }
 
         public IRepository<T> Repository<T>()
             where T : class, IEntity
         {
-            if (_repositories == null)
-                _repositories = new();
-
             var type = typeof(T);
             if (!_repositories.ContainsKey(type))
             {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using BusinessLogic.Caching.Constants;
 using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -9,8 +9,6 @@ using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
-using FluentValidation.Results;
-using System.Net.Http;
 
 namespace BusinessLogic.Services
 {
@@ -44,6 +42,12 @@ namespace BusinessLogic.Services
         {
             await _registerValidator.ValidateAndThrowAsync(userRegister, cancellationToken);
 
+            if (!await IsUniqueEmail(userRegister.Email, cancellationToken))
+                throw new ServiceValidationException(
+                    RegisterValidationErrorCodes.EmailIsNotUnique,
+                    RegisterValidationMessages.EmailIsNotUnique,
+                    nameof(userRegister.Email));
+
             var user = _mapper.Map<User>(userRegister);
             user.PasswordHash = _passwordHashingService.HashPassword(userRegister.Password);
 
@@ -67,16 +71,9 @@ namespace BusinessLogic.Services
             var user = await _unitOfWork.UserRepository.GetByEmailAsync(userLogin.Email, cancellationToken);
 
             if (user == null || !_passwordHashingService.VerifyPassword(userLogin.Password, user.PasswordHash))
-            {
-                throw new ValidationException(new List<ValidationFailure>
-                {
-                    new ValidationFailure()
-                    {
-                        ErrorCode = LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
-                        ErrorMessage = LoginValidationMessages.EmailOrPasswordIsInvalid
-                    }
-                });
-            }
+                throw new ServiceValidationException(
+                    LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
+                    LoginValidationMessages.EmailOrPasswordIsInvalid);
 
             var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
 
@@ -96,11 +93,16 @@ namespace BusinessLogic.Services
         {
             var result = await _jwtTokenService.ValidateRefreshTokenAsync(refreshToken, cancellationToken);
             if (!result.IsValid)
-                return null;
+                return null!;
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(result.UserId, cancellationToken);
             var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
             return jwtToken;
+        }
+
+        private async Task<bool> IsUniqueEmail(string email, CancellationToken token = default)
+        {
+            return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
         }
     }
 }

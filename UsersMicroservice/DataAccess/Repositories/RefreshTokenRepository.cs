@@ -36,10 +36,9 @@ namespace DataAccess.Repositories
 
             if (existingRefreshToken != null)
             {
-                existingRefreshToken.Token = refreshToken.Token;
-                existingRefreshToken.Expires = refreshToken.Expires;
+                refreshToken.Id = existingRefreshToken.Id;
 
-                await UpdateAsync(existingRefreshToken, cancellationToken);
+                await UpdateAsync(refreshToken, cancellationToken);
             }
             else
             {

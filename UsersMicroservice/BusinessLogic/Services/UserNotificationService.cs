@@ -27,7 +27,6 @@ namespace BusinessLogic.Services
                     UserNotificationValidationMessages.UserIdIsInvalid,
                     nameof(notification.UserId));
 
-            notification.Id = default;
             await _unitOfWork.UserNotificationRepository.CreateAsync(notification, token);
         }
 

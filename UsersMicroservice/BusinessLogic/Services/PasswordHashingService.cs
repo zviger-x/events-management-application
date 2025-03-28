@@ -1,6 +1,5 @@
 ﻿using BusinessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 
 namespace BusinessLogic.Services
 {
@@ -8,7 +7,7 @@ namespace BusinessLogic.Services
     {
         private readonly IPasswordHasher<string> _passwordHasher;
 
-        public PasswordHashingService(IConfiguration configuration)
+        public PasswordHashingService()
         {
             _passwordHasher = new PasswordHasher<string>();
         }

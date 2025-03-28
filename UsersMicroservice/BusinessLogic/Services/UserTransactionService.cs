@@ -29,7 +29,6 @@ namespace BusinessLogic.Services
 
             #warning TODO: Нужно добавить проверку на наличие ивента (gRPC запрос в микросервису ивентов)
 
-            transaction.Id = default;
             await _unitOfWork.UserTransactionRepository.CreateAsync(transaction, token);
         }
 

@@ -18,6 +18,7 @@ namespace DataAccess.Repositories
 
         public virtual async Task CreateAsync(T entity, CancellationToken token = default)
         {
+            entity.Id = default;
             await _context.AddAsync(entity, token);
             await _context.SaveChangesAsync(token);
             _context.Entry(entity).State = EntityState.Detached;

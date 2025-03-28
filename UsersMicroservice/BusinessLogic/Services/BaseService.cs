@@ -36,7 +36,6 @@ namespace BusinessLogic.Services
         {
             await _validator.ValidateAndThrowAsync(entity, token);
 
-            entity.Id = default;
             await _unitOfWork.Repository<T>().CreateAsync(entity, token);
         }
 

@@ -1,5 +1,4 @@
-﻿using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
+﻿using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
@@ -7,10 +6,9 @@ using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class SeatValidator : BaseValidator<Seat>, ISeatValidator
+    public class SeatValidator : AbstractValidator<Seat>, ISeatValidator
     {
-        public SeatValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public SeatValidator()
         {
             // TODO: Добавить проверку на наличие ивента
             RuleFor(s => s.EventId)

@@ -1,5 +1,4 @@
-﻿using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
+﻿using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
@@ -7,10 +6,9 @@ using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class ReviewValidator : BaseValidator<Review>, IReviewValidator
+    public class ReviewValidator : AbstractValidator<Review>, IReviewValidator
     {
-        public ReviewValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public ReviewValidator()
         {
             // TODO: Добавить проверку на наличие ивента
             RuleFor(r => r.EventId)

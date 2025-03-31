@@ -1,5 +1,4 @@
-﻿using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
+﻿using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using FluentValidation;
 using Infrastructure.Validation.Messages;
@@ -7,10 +6,9 @@ using Infrastructure.Validation.ErrorCodes;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class EventValidator : BaseValidator<Event>, IEventValidator
+    public class EventValidator : AbstractValidator<Event>, IEventValidator
     {
-        public EventValidator(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public EventValidator()
         {
             RuleFor(e => e.Name)
                 .NotNull()

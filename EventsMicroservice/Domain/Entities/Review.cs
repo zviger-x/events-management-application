@@ -1,6 +1,5 @@
 ﻿using Domain.Entities.Interfaces;
 
-#pragma warning disable CS8618
 namespace Domain.Entities
 {
     public class Review : IEntity
@@ -8,7 +7,7 @@ namespace Domain.Entities
         public Guid Id { get; set; }
         public Guid EventId { get; set; }
         public Guid UserId { get; set; }
-        public string Text { get; set; }
+        public string Text { get; set; } = default!;
         public DateTime CreationTime { get; set; }
     }
 }

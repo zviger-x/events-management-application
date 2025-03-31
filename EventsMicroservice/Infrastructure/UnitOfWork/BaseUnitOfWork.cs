@@ -7,7 +7,6 @@ using MongoDB.Driver;
 
 namespace Infrastructure.UnitOfWork
 {
-#pragma warning disable CS8618
     public abstract class BaseUnitOfWork : IBaseUnitOfWork
     {
         protected readonly EventDbContext _context;
@@ -20,14 +19,13 @@ namespace Infrastructure.UnitOfWork
         {
             _context = context;
             _serviceProvider = serviceProvider;
+
+            _repositories = new();
         }
 
         public IRepository<T> Repository<T>()
             where T : class, IEntity
         {
-            if (_repositories == null)
-                _repositories = new();
-
             var type = typeof(T);
             if (!_repositories.ContainsKey(type))
             {

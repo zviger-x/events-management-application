@@ -4,7 +4,6 @@ using MongoDB.Driver;
 using Infrastructure.Contexts;
 using Infrastructure.Extensions;
 
-#pragma warning disable CS8603
 namespace Infrastructure.Repositories
 {
     public class EventRepository : BaseRepository<Event>, IEventRepository

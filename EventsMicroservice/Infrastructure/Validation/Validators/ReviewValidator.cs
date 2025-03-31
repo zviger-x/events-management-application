@@ -12,7 +12,7 @@ namespace Infrastructure.Validation.Validators
         public ReviewValidator(IUnitOfWork unitOfWork)
             : base(unitOfWork)
         {
-            #warning TODO: Добавить проверку на наличие ивента
+            // TODO: Добавить проверку на наличие ивента
             RuleFor(r => r.EventId)
                 .NotNull()
                     .WithMessage(ReviewValidationMessages.EventIdIsNull)
@@ -21,7 +21,7 @@ namespace Infrastructure.Validation.Validators
                     .WithMessage(ReviewValidationMessages.EventIdIsEmpty)
                     .WithErrorCode(ReviewValidationErrorCodes.EventIdIsEmpty);
 
-            #warning TODO: Добавить проверку на наличие пользователя (gRPC)
+            // TODO: Добавить проверку на наличие пользователя (gRPC)
             RuleFor(r => r.UserId)
                 .NotNull()
                     .WithMessage(ReviewValidationMessages.UserIdIsNull)

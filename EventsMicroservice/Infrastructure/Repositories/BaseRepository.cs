@@ -4,7 +4,6 @@ using Domain.Entities;
 using MongoDB.Driver;
 using Infrastructure.Contexts;
 
-#pragma warning disable CS8603
 namespace Infrastructure.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T>

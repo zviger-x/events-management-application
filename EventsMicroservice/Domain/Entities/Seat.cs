@@ -1,6 +1,5 @@
 ﻿using Domain.Entities.Interfaces;
 
-#pragma warning disable CS8618
 namespace Domain.Entities
 {
     public class Seat : IEntity

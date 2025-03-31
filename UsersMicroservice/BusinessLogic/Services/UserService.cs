@@ -63,8 +63,7 @@ namespace BusinessLogic.Services
         {
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                var user = new User() { Id = id };
-                await _unitOfWork.UserRepository.DeleteAsync(user, token);
+                await base.DeleteAsync(id, token);
             }, token);
         }
 

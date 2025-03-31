@@ -96,6 +96,9 @@ namespace BusinessLogic.Services
                 return null!;
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(result.UserId, cancellationToken);
+            if (user == null)
+                return null!;
+
             var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
             return jwtToken;
         }

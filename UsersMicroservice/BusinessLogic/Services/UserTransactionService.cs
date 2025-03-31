@@ -27,7 +27,7 @@ namespace BusinessLogic.Services
                     UserTransactionValidationMessages.UserIdIsInvalid,
                     nameof(transaction.UserId));
 
-            #warning TODO: Нужно добавить проверку на наличие ивента (gRPC запрос в микросервису ивентов)
+            // TODO: Нужно добавить проверку на наличие ивента (gRPC запрос в микросервису ивентов)
 
             await _unitOfWork.UserTransactionRepository.CreateAsync(transaction, token);
         }

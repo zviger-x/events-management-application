@@ -1,12 +1,11 @@
 ﻿namespace BusinessLogic.Contracts
 {
-    #pragma warning disable CS8618
     public class RegisterDTO
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
+        public string Name { get; set; } = default!;
+        public string Surname { get; set; } = default!;
+        public string Email { get; set; } = default!;
+        public string Password { get; set; } = default!;
+        public string ConfirmPassword { get; set; } = default!;
     }
 }

@@ -1,11 +1,10 @@
-﻿#pragma warning disable CS8618
-namespace BusinessLogic.Configuration
+﻿namespace BusinessLogic.Configuration
 {
     public class JwtTokenConfig
     {
-        public string SecretKey { get; set; }
-        public string Issuer { get; set; }
-        public string Audience { get; set; }
+        public string SecretKey { get; set; } = default!;
+        public string Issuer { get; set; } = default!;
+        public string Audience { get; set; } = default!;
         public int TokenExpirationMinutes { get; set; }
         public int RefreshTokenExpirationMinutes { get; set; }
     }

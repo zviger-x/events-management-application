@@ -37,7 +37,7 @@ namespace UsersAPI.Filters
                 return;
             }
 
-            // Разрешаем, если пользователь запрашивает себя или если у него есть одна из разрешённых ролей
+            // Запрещаем, если пользователь запрашивает НЕ себя или если у него нет одной из разрешённых ролей
             if (userId != requestedId && !_allowedRoles.Any(role => userRoles.Contains(role)))
             {
                 context.Result = new ForbidResult();

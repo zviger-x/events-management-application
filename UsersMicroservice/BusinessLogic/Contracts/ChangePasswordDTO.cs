@@ -1,11 +1,10 @@
-﻿#pragma warning disable CS8618 
-namespace BusinessLogic.Contracts
+﻿namespace BusinessLogic.Contracts
 {
     public class ChangePasswordDTO
     {
         public Guid Id { get; set; }
-        public string CurrentPassword { get; set; }
-        public string NewPassword { get; set; }
-        public string ConfirmPassword { get; set; }
+        public string CurrentPassword { get; set; } = default!;
+        public string NewPassword { get; set; } = default!;
+        public string ConfirmPassword { get; set; } = default!;
     }
 }

@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS8618
-namespace DataAccess.Entities
+﻿namespace DataAccess.Entities
 {
     public enum UserRoles
     {

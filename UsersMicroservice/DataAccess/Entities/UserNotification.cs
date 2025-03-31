@@ -8,6 +8,6 @@ namespace DataAccess.Entities
         public Guid UserId { get; set; }
         public string Message { get; set; } = default!;
         public DateTime DateTime { get; set; }
-        public string Status { get; set; } = default!;
+        public NotificationStatuses Status { get; set; }
     }
 }

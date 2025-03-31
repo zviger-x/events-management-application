@@ -3,14 +3,10 @@ using BusinessLogic.Mapping;
 using DataAccess.Contexts;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using StackExchange.Redis;
-using System.Text;
 using UsersApi.Initialization;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
@@ -26,11 +22,12 @@ namespace UsersAPI
 
             // Add services to the container.
             var services = builder.Services;
+            var configuration = builder.Configuration;
 
             // Add configs
-            services.Configure<JwtTokenConfig>(builder.Configuration.GetSection("Jwt"));
-            services.Configure<RedisServerConfig>(builder.Configuration.GetSection("RedisServerConfig"));
-            services.Configure<SqlServerConfig>(builder.Configuration.GetSection("SqlServerConfig"));
+            services.Configure<JwtTokenConfig>(configuration.GetSection("Jwt"));
+            services.Configure<RedisServerConfig>(configuration.GetSection("RedisServerConfig"));
+            services.Configure<SqlServerConfig>(configuration.GetSection("SqlServerConfig"));
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -41,25 +38,10 @@ namespace UsersAPI
             builder.Logging.AddSerilog();
 
             // Redis
-            var redisConfig = builder.Configuration.GetSection("RedisServerConfig").Get<RedisServerConfig>();
-            if (redisConfig == null) 
-                throw new ArgumentNullException(nameof(redisConfig));
-            builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfig.ConnectionString));
-            builder.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = redisConfig.ConnectionString;
-                options.InstanceName = redisConfig.CachePrefix;
-            });
+            services.AddRedisServer(configuration);
 
             // DAL
-            var sqlConfig = builder.Configuration.GetSection("SqlServerConfig").Get<SqlServerConfig>();
-            if (sqlConfig == null)
-                throw new ArgumentNullException(nameof(sqlConfig));
-            services.AddDbContext<UserDbContext>(o =>
-            {
-                o.UseSqlServer(sqlConfig.ConnectionString);
-                o.EnableSensitiveDataLogging();
-            });
+            services.AddUserDbContext(configuration);
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -70,53 +52,12 @@ namespace UsersAPI
             services.AddCachingServices();
 
             // JWT
-            var jwtConfig = builder.Configuration.GetSection("Jwt").Get<JwtTokenConfig>();
-            if (jwtConfig == null)
-                throw new ArgumentNullException(nameof(jwtConfig));
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtConfig.Issuer,
-                        ValidAudience = jwtConfig.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+            services.AddJwtAuthentication(configuration);
             services.AddAuthorization();
-            
+
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(options =>
-            {
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                {
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer"
-                });
-
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
-            });
+            services.AddSwagger();
 
             var app = builder.Build();
 
@@ -133,7 +74,9 @@ namespace UsersAPI
                     dbContext.Database.Migrate();
             
                 // Regenerate db and seed demo data
-                var dbInitializer = new DBInitializer(dbContext, sqlConfig);
+                // TODO: Удалить, когда будет установлен дефолтный пользователь с правами админа
+                var sqlOptions = scope.ServiceProvider.GetRequiredService<IOptions<SqlServerConfig>>();
+                var dbInitializer = new DBInitializer(dbContext, sqlOptions);
                 dbInitializer.Initialize();
             }
 

@@ -35,6 +35,14 @@ namespace DataAccess.Contexts
                     v => (UserRoles)Enum.Parse(typeof(UserRoles), v)
                 );
 
+            // enum to string
+            modelBuilder.Entity<UserNotification>()
+                .Property(u => u.Status)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (NotificationStatuses)Enum.Parse(typeof(NotificationStatuses), v)
+                );
+
             modelBuilder.Entity<RefreshToken>()
                 .HasIndex(u => u.UserId)
                 .IsUnique();

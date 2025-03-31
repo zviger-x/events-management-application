@@ -1,19 +1,25 @@
 ﻿using DataAccess.Contexts;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using UsersAPI.Configuration;
 
 namespace UsersApi.Initialization
 {
+    // Этот класс исключительно для демонстрации работоспособности, чтобы данные заранее были внесены
+    // TODO: Убрать инициализатор БД и добавить по дефолту создание admin пользователя внутри БД.
     public class DBInitializer
     {
         private readonly UserDbContext _context;
         private readonly SqlServerConfig _config;
 
-        public DBInitializer(UserDbContext context, SqlServerConfig config)
+        public DBInitializer(UserDbContext context, IOptions<SqlServerConfig> config)
         {
             _context = context;
-            _config = config;
+            _config = config.Value;
+
+            if (_config == null)
+                throw new ArgumentNullException(nameof(config));
         }
 
         public void Initialize()
@@ -43,12 +49,12 @@ namespace UsersApi.Initialization
             
             var notifications = new UserNotification[]
             {
-                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_0", DateTime = DateTime.Now, Status = "read"},
-                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_1", DateTime = DateTime.Now, Status = "notread"},
-                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_0", DateTime = DateTime.Now, Status = "notread"},
-                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_1", DateTime = DateTime.Now, Status = "notread"},
-                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_2", DateTime = DateTime.Now, Status = "read"},
-                new UserNotification { UserId = users[2].Id, Message = "Notification_User_2_0", DateTime = DateTime.Now, Status = "read"},
+                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_0", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
+                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_1", DateTime = DateTime.Now, Status = NotificationStatuses.Pending},
+                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_0", DateTime = DateTime.Now, Status = NotificationStatuses.Pending},
+                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_1", DateTime = DateTime.Now, Status = NotificationStatuses.Pending},
+                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_2", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
+                new UserNotification { UserId = users[2].Id, Message = "Notification_User_2_0", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
             };
             _context.AddRange(notifications);
             

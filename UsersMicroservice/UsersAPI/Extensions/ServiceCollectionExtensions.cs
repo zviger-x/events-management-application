@@ -7,11 +7,49 @@ using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Services;
 using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Caching;
+using BusinessLogic.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
+using DataAccess.Contexts;
+using Microsoft.EntityFrameworkCore;
+using UsersAPI.Configuration;
+using StackExchange.Redis;
+using Serilog.Sinks.SystemConsole.Themes;
+using Serilog;
 
 namespace UsersAPI.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        public static void AddRedisServer(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConfig = configuration.GetSection("RedisServerConfig").Get<RedisServerConfig>();
+            if (redisConfig == null)
+                throw new ArgumentNullException(nameof(redisConfig));
+
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfig.ConnectionString));
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConfig.ConnectionString;
+                options.InstanceName = redisConfig.CachePrefix;
+            });
+        }
+
+        public static void AddUserDbContext(this IServiceCollection services, IConfiguration configuration)
+        {
+            var sqlConfig = configuration.GetSection("SqlServerConfig").Get<SqlServerConfig>();
+            if (sqlConfig == null)
+                throw new ArgumentNullException(nameof(sqlConfig));
+
+            services.AddDbContext<UserDbContext>(o =>
+            {
+                o.UseSqlServer(sqlConfig.ConnectionString);
+                o.EnableSensitiveDataLogging();
+            });
+        }
+
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IRepository<User>, UserRepository>();
@@ -53,6 +91,59 @@ namespace UsersAPI.Extensions
         public static void AddCachingServices(this IServiceCollection services)
         {
             services.AddScoped<ICacheService, RedisCacheService>();
+        }
+
+        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+
+            var jwtConfig = configuration.GetSection("Jwt").Get<JwtTokenConfig>();
+            if (jwtConfig == null)
+                throw new ArgumentNullException(nameof(jwtConfig));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtConfig.Issuer,
+                        ValidAudience = jwtConfig.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+        }
+
+        public static void AddSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
         }
     }
 }

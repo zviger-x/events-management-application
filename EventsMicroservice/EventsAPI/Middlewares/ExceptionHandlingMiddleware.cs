@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Application.Exceptions;
+using FluentValidation;
 
 namespace EventsAPI.Middlewares
 {
@@ -31,10 +32,17 @@ namespace EventsAPI.Middlewares
 
                 await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
             }
+            catch (ServiceValidationException ex)
+            {
+                _logger.LogError(ex, "Service validation exception occurred");
+                var response = GetSingleErrorResponse(ex.ErrorCode, ex.Message, ex.PropertyName);
+
+                await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
+            }
             catch (ArgumentException ex)
             {
                 _logger.LogError(ex, "Argument exception occurred");
-                var response = GetSingleErrorResponse("invalidArgument", ex.Message);
+                var response = GetSingleErrorResponse("invalidArgument", ex.Message, ex.ParamName!);
 
                 await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
             }
@@ -54,13 +62,26 @@ namespace EventsAPI.Middlewares
             await context.Response.WriteAsJsonAsync(response);
         }
 
-        private object GetSingleErrorResponse(string code, string message)
+        private object GetSingleErrorResponse(string code, string message, string propertyName = null!)
         {
+            // {
+            //     "errors": {
+            //         "unexpectedError": {
+            //             "propertyName": null,
+            //             "serverMessage": "An unexpected error occurred."
+            //         }
+            //     }
+            // }
+
             return new
             {
                 errors = new Dictionary<string, object>
                 {
-                    { code, new { serverMessage = message } }
+                    [code] = new
+                    {
+                        propertyName = propertyName,
+                        serverMessage = message
+                    }
                 }
             };
         }

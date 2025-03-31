@@ -55,6 +55,18 @@ namespace UsersAPI.Controllers
             return Ok();
         }
 
+        [AuthorizeRoles(UserRoles.Admin)]
+        [HttpPut("{id}/role")]
+        public async Task<IActionResult> ChangeRole([FromRoute] Guid id, [FromBody] ChangeUserRoleDTO changeUserRoleDTO, CancellationToken token)
+        {
+            if (id != changeUserRoleDTO.Id)
+                throw new ArgumentException("You are not allowed to modify this profile.");
+
+            await _userService.ChangeUserRoleAsync(changeUserRoleDTO, token);
+
+            return Ok();
+        }
+
         [Authorize]
         [ForCurrentUserOrRoles(UserRoles.Admin)]
         [HttpDelete("{id}")]

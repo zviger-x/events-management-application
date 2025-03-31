@@ -18,5 +18,13 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="changePassword">The data to change the user's password.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
         Task ChangePasswordAsync(ChangePasswordDTO changePassword, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Changes the user's role.
+        /// </summary>
+        /// <param name="changeUserRole">The data to change the user's role.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
+        /// <returns></returns>
+        Task ChangeUserRoleAsync(ChangeUserRoleDTO changeUserRole, CancellationToken cancellationToken = default);
     }
 }

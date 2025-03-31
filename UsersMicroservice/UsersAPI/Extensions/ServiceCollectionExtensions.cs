@@ -75,6 +75,7 @@ namespace UsersAPI.Extensions
             services.AddScoped<IChangePasswordDTOValidator, ChangePasswordDTOValidator>();
             services.AddScoped<IRegisterDTOValidator, RegisterDTOValidator>();
             services.AddScoped<ILoginDTOValidator, LoginDTOValidator>();
+            services.AddScoped<IChangeUserRoleDTOValidator, ChangeUserRoleDTOValidator>();
         }
 
         public static void AddServices(this IServiceCollection services)

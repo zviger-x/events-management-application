@@ -18,6 +18,8 @@ namespace BusinessLogic.Services
     {
         private readonly IUpdateUserDTOValidator _updateUserValidator;
         private readonly IChangePasswordDTOValidator _changePasswordValidator;
+        private readonly IChangeUserRoleDTOValidator _changeUserRoleValidator;
+
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly ICacheService _cacheService;
         private readonly ILogger<UserService> _logger;
@@ -27,6 +29,7 @@ namespace BusinessLogic.Services
             IUserValidator validator,
             IUpdateUserDTOValidator updateUserValidator,
             IChangePasswordDTOValidator changePasswordValidator,
+            IChangeUserRoleDTOValidator changeUserRoleValidator,
             IPasswordHashingService passwordHashingService,
             ICacheService cacheService,
             ILogger<UserService> logger)
@@ -34,6 +37,8 @@ namespace BusinessLogic.Services
         {
             _updateUserValidator = updateUserValidator;
             _changePasswordValidator = changePasswordValidator;
+            _changeUserRoleValidator = changeUserRoleValidator;
+
             _passwordHashingService = passwordHashingService;
             _cacheService = cacheService;
             _logger = logger;
@@ -152,6 +157,24 @@ namespace BusinessLogic.Services
             }, cancellationToken);
         }
 
+        public async Task ChangeUserRoleAsync(ChangeUserRoleDTO changeUserRole, CancellationToken cancellationToken = default)
+        {
+            await _changeUserRoleValidator.ValidateAndThrowAsync(changeUserRole, cancellationToken);
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(changeUserRole.Id, cancellationToken);
+            if (user == null)
+                throw new ArgumentException("There is no user with this Id.");
+
+            user.Role = changeUserRole.Role;
+
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            {
+                await _unitOfWork.UserRepository.UpdateAsync(user, token);
+            }, cancellationToken);
+
+            await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
+        }
+
         private async Task<bool> IsCurrentPassword(ChangePasswordDTO dto, CancellationToken token = default)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(dto.Id);
@@ -161,25 +184,5 @@ namespace BusinessLogic.Services
 
             return true;
         }
-
-        // Этот метод нужен был, при создании через дефолтные методы Create и Update, для проверки уникальности email.
-        // Но так как дефолтные методы заменены на более корректные Register, UpdateProfile и ChangePassword, в этом методе нет смысла
-        // Но реализация на всякий случай остаётся тут, как и ValidationMessages, и ValidationErrorCodes соответственно для модели User
-        //
-        // private async Task<bool> IsUniqueEmail(User user, string email, CancellationToken token)
-        // {
-        //     var userFromContext = await _unitOfWork.UserRepository.GetByIdAsync(user.Id);
-        // 
-        //     // Если пользователь не существует, то возвращаем true, потому что email уникален для нового пользователя
-        //     if (userFromContext == null)
-        //         return true;
-        // 
-        //     // Если email не изменился, то возвращаем true (не нужно проверять уникальность, это тот же email)
-        //     if (userFromContext.Email == user.Email)
-        //         return true;
-        // 
-        //     // Проверяем, существует ли другой пользователь с нашим новым email
-        //     return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
-        // }
     }
 }

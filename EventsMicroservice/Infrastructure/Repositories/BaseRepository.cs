@@ -18,6 +18,7 @@ namespace Infrastructure.Repositories
 
         public virtual async Task CreateAsync(T entity, CancellationToken token = default)
         {
+            entity.Id = Guid.NewGuid();
             await _context.Collection<T>().InsertOneAsync(entity, cancellationToken: token);
         }
 

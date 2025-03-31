@@ -1,5 +1,7 @@
-﻿using Application.UseCases.Interfaces;
+﻿using Application.MediatR.Commands.EventCommands;
+using Application.MediatR.Queries.EventQueries;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsAPI.Controllers
@@ -8,35 +10,21 @@ namespace EventsAPI.Controllers
     [Route("api/events")]
     public class EventController : Controller
     {
-        private readonly ICreateUseCaseAsync<Event> _createUseCaseAsync;
-        private readonly IUpdateUseCaseAsync<Event> _updateUseCaseAsync;
-        private readonly IDeleteUseCaseAsync<Event> _deleteUseCaseAsync;
-        private readonly IGetByIdUseCaseAsync<Event> _getByIdUseCaseAsync;
-        private readonly IGetAllUseCaseAsync<Event> _getAllUseCasesAsync;
-        private readonly IGetPagedUseCaseAsync<Event> _getPagedUseCasesAsync;
+        private readonly IMediator _mediator;
 
         private const int PageSize = 10;
 
-        public EventController(ICreateUseCaseAsync<Event> createUseCaseAsync,
-            IUpdateUseCaseAsync<Event> updateUseCaseAsync,
-            IDeleteUseCaseAsync<Event> deleteUseCaseAsync,
-            IGetByIdUseCaseAsync<Event> getByIdUseCaseAsync,
-            IGetAllUseCaseAsync<Event> getAllUseCasesAsync,
-            IGetPagedUseCaseAsync<Event> getPagedUseCasesAsync)
+        public EventController(IMediator mediator)
         {
-            _createUseCaseAsync = createUseCaseAsync;
-            _updateUseCaseAsync = updateUseCaseAsync;
-            _deleteUseCaseAsync = deleteUseCaseAsync;
-            _getByIdUseCaseAsync = getByIdUseCaseAsync;
-            _getAllUseCasesAsync = getAllUseCasesAsync;
-            _getPagedUseCasesAsync = getPagedUseCasesAsync;
+            _mediator = mediator;
         }
 
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] Event eventToCreate, CancellationToken cancellationToken)
         {
-            await _createUseCaseAsync.Execute(eventToCreate, cancellationToken);
+            var command = new EventCreateCommand { Event = eventToCreate };
+            await _mediator.Send(command);
 
             return Ok();
         }
@@ -47,7 +35,8 @@ namespace EventsAPI.Controllers
             if (id != eventToUpdate.Id)
                 throw new ArgumentException("You are not allowed to modify this event.");
 
-            await _updateUseCaseAsync.Execute(eventToUpdate, cancellationToken);
+            var command = new EventUpdateCommand { Event = eventToUpdate };
+            await _mediator.Send(command);
 
             return Ok();
         }
@@ -55,7 +44,8 @@ namespace EventsAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
-            await _deleteUseCaseAsync.Execute(id, cancellationToken);
+            var command = new EventDeleteCommand { Id = id };
+            await _mediator.Send(command);
 
             return Ok();
         }
@@ -63,7 +53,9 @@ namespace EventsAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var @event = await _getByIdUseCaseAsync.Execute(id, cancellationToken);
+            var query = new EventGetByIdQuery { Id = id };
+            var @event = await _mediator.Send(query);
+
             if (@event == null)
                 return NotFound();
 
@@ -73,7 +65,8 @@ namespace EventsAPI.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
         {
-            var collection = await _getAllUseCasesAsync.Execute(cancellationToken);
+            var query = new EventGetAllQuery();
+            var collection = await _mediator.Send(query);
 
             return Ok(collection);
         }
@@ -81,7 +74,8 @@ namespace EventsAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var page = await _getPagedUseCasesAsync.Execute(pageNumber, PageSize, cancellationToken);
+            var query = new EventGetPagedQuery { PageNumber = pageNumber, PageSize = PageSize };
+            var page = await _mediator.Send(query);
 
             return Ok(page);
         }

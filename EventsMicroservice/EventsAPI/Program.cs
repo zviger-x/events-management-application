@@ -7,6 +7,7 @@ using Infrastructure.Contexts;
 using Infrastructure.UnitOfWork;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.Reflection;
 
 namespace EventsAPI
 {
@@ -42,6 +43,7 @@ namespace EventsAPI
 
             // Use cases
             services.AddAutoMapper(typeof(MappingProfile));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
             services.AddValidators();
             services.AddUseCases();
 

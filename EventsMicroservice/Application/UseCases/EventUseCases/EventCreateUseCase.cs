@@ -18,7 +18,6 @@ namespace Application.UseCases.EventUseCases
         {
             await _validator.ValidateAndThrowAsync(@event);
 
-            @event.Id = Guid.NewGuid();
             @event.Seats = default!;
             @event.Reviews = default!;
 

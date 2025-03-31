@@ -11,6 +11,8 @@ namespace Infrastructure.Validation.Validators
         public SeatValidator()
         {
             // TODO: Добавить проверку на наличие ивента
+            // TODO: Добавить проверку на уникальность номера в конкретном ряду
+
             RuleFor(s => s.EventId)
                 .NotNull()
                     .WithMessage(SeatValidationMessages.EventIdIsNull)
@@ -24,7 +26,6 @@ namespace Infrastructure.Validation.Validators
                     .WithMessage(SeatValidationMessages.RowIsInvalid)
                     .WithErrorCode(SeatValidationErrorCodes.RowIsInvalid);
 
-            // TODO: Добавить проверку на уникальность номера в конкретном ряду
             RuleFor(s => s.Number)
                 .GreaterThan(0)
                     .WithMessage(SeatValidationMessages.NumberIsInvalid)

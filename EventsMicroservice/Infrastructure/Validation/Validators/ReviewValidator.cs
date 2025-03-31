@@ -11,6 +11,8 @@ namespace Infrastructure.Validation.Validators
         public ReviewValidator()
         {
             // TODO: Добавить проверку на наличие ивента
+            // TODO: Добавить проверку на наличие пользователя (gRPC)
+
             RuleFor(r => r.EventId)
                 .NotNull()
                     .WithMessage(ReviewValidationMessages.EventIdIsNull)
@@ -19,7 +21,6 @@ namespace Infrastructure.Validation.Validators
                     .WithMessage(ReviewValidationMessages.EventIdIsEmpty)
                     .WithErrorCode(ReviewValidationErrorCodes.EventIdIsEmpty);
 
-            // TODO: Добавить проверку на наличие пользователя (gRPC)
             RuleFor(r => r.UserId)
                 .NotNull()
                     .WithMessage(ReviewValidationMessages.UserIdIsNull)

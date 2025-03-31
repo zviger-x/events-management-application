@@ -3,7 +3,7 @@ using AutoMapper;
 using Domain.Entities.Interfaces;
 using FluentValidation;
 
-namespace Infrastructure.UseCases
+namespace Application.UseCases
 {
     public abstract class BaseUseCase : IDisposable
     {

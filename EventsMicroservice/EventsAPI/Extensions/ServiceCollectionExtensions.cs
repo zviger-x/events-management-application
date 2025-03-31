@@ -1,10 +1,10 @@
 ﻿using Application.Repositories.Interfaces;
+using Application.UseCases.EventUseCases;
 using Application.UseCases.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using EventsAPI.Configuration;
 using Infrastructure.Repositories;
-using Infrastructure.UseCases.EventUseCases;
 using Infrastructure.Validation.Validators;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;

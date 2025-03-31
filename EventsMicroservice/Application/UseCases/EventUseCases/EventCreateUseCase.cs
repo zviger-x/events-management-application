@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 
-namespace Infrastructure.UseCases.EventUseCases
+namespace Application.UseCases.EventUseCases
 {
     public class EventCreateUseCase : BaseUseCase<Event>, ICreateUseCaseAsync<Event>
     {

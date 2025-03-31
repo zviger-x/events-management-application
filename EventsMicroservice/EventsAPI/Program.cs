@@ -1,12 +1,10 @@
+using Application.Mapping;
 using Application.UnitOfWork.Interfaces;
-using AutoMapper;
 using EventsAPI.Configuration;
 using EventsAPI.Extensions;
 using EventsAPI.Middlewares;
 using Infrastructure.Contexts;
-using Infrastructure.Mapping;
 using Infrastructure.UnitOfWork;
-using MongoDB.Driver;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 

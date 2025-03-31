@@ -4,7 +4,7 @@ using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 
-namespace Infrastructure.UseCases.EventUseCases
+namespace Application.UseCases.EventUseCases
 {
     public class EventGetPagedUseCase : BaseUseCase<Event>, IGetPagedUseCaseAsync<Event>
     {

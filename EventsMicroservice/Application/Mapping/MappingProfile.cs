@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using Application.Contracts;
+using AutoMapper;
+using Domain.Entities;
 
 namespace Application.Mapping
 {
@@ -6,6 +8,8 @@ namespace Application.Mapping
     {
         public MappingProfile()
         {
+            CreateMap<Event, EventDTO>();
+            CreateMap<EventDTO, Event>();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Application.UseCases.Interfaces
     /// </summary>
     /// <typeparam name="T">The type of the entity to retrieve.</typeparam>
     public interface IGetPagedUseCaseAsync<T> : IUseCase<int, int, CancellationToken, Task<PagedCollection<T>>>
-        where T : class, IEntity
+        where T : class
     {
     }
 }

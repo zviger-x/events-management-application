@@ -1,6 +1,5 @@
 ﻿using Application.UnitOfWork.Interfaces;
 using AutoMapper;
-using Domain.Entities.Interfaces;
 using FluentValidation;
 
 namespace Application.UseCases
@@ -20,7 +19,7 @@ namespace Application.UseCases
     }
 
     public abstract class BaseUseCase<T> : BaseUseCase
-        where T : class, IEntity
+        where T : class
     {
         protected readonly IValidator<T> _validator;
 

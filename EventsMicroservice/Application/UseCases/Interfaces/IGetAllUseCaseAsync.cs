@@ -7,7 +7,7 @@ namespace Application.UseCases.Interfaces
     /// </summary>
     /// <typeparam name="T">The type of the entity to retrieve.</typeparam>
     public interface IGetAllUseCaseAsync<T> : IUseCase<CancellationToken, Task<IEnumerable<T>>>
-        where T : class, IEntity
+        where T : class
     {
     }
 }

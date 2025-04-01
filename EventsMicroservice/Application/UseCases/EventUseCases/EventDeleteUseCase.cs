@@ -3,7 +3,6 @@ using Application.UseCases.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using FluentValidation;
 
 namespace Application.UseCases.EventUseCases
 {

@@ -6,7 +6,7 @@ namespace Application.UseCases.Interfaces
     /// Removes an entity.
     /// </summary>
     public interface IDeleteUseCaseAsync<T> : IUseCase<Guid, CancellationToken, Task>
-        where T : class, IEntity
+        where T : class
     {
     }
 }

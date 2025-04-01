@@ -7,7 +7,7 @@ namespace Application.UseCases.Interfaces
     /// </summary>
     /// <typeparam name="T">Entity to update.</typeparam>
     public interface IUpdateUseCaseAsync<T> : IUseCase<T, CancellationToken, Task>
-        where T : class, IEntity
+        where T : class
     {
     }
 }

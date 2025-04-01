@@ -1,4 +1,5 @@
-﻿using Application.UnitOfWork.Interfaces;
+﻿using Application.Contracts;
+using Application.UnitOfWork.Interfaces;
 using Application.UseCases.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
@@ -7,19 +8,18 @@ using FluentValidation;
 
 namespace Application.UseCases.EventUseCases
 {
-    public class EventCreateUseCase : BaseUseCase<Event>, ICreateUseCaseAsync<Event>
+    public class EventCreateUseCase : BaseUseCase<EventDTO>, ICreateUseCaseAsync<EventDTO>
     {
-        public EventCreateUseCase(IUnitOfWork unitOfWork, IMapper mapper, IEventValidator validator)
+        public EventCreateUseCase(IUnitOfWork unitOfWork, IMapper mapper, IEventDTOValidator validator)
             : base(unitOfWork, mapper, validator)
         {
         }
 
-        public async Task Execute(Event @event, CancellationToken cancellationToken = default)
+        public async Task Execute(EventDTO eventDTO, CancellationToken cancellationToken = default)
         {
-            await _validator.ValidateAndThrowAsync(@event);
+            await _validator.ValidateAndThrowAsync(eventDTO);
 
-            @event.Seats = default!;
-            @event.Reviews = default!;
+            var @event = _mapper.Map<Event>(eventDTO);
 
             await _unitOfWork.EventRepository.CreateAsync(@event, cancellationToken).ConfigureAwait(false);
         }

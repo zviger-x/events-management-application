@@ -7,7 +7,7 @@ namespace Application.UseCases.Interfaces
     /// </summary>
     /// <typeparam name="T">Entity to create.</typeparam>
     public interface ICreateUseCaseAsync<T> : IUseCase<T, CancellationToken, Task>
-        where T : class, IEntity
+        where T : class
     {
     }
 }

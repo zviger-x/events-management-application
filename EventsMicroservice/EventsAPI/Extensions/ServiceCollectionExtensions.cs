@@ -1,4 +1,5 @@
-﻿using Application.Repositories.Interfaces;
+﻿using Application.Contracts;
+using Application.Repositories.Interfaces;
 using Application.UseCases.EventUseCases;
 using Application.UseCases.Interfaces;
 using Application.Validation.Validators.Interfaces;
@@ -48,8 +49,8 @@ namespace EventsAPI.Extensions
 
         public static void AddUseCases(this IServiceCollection services)
         {
-            services.AddScoped<ICreateUseCaseAsync<Event>, EventCreateUseCase>();
-            services.AddScoped<IUpdateUseCaseAsync<Event>, EventUpdateUseCase>();
+            services.AddScoped<ICreateUseCaseAsync<EventDTO>, EventCreateUseCase>();
+            services.AddScoped<IUpdateUseCaseAsync<EventDTO>, EventUpdateUseCase>();
             services.AddScoped<IDeleteUseCaseAsync<Event>, EventDeleteUseCase>();
             services.AddScoped<IGetByIdUseCaseAsync<Event>, EventGetByIdUseCase>();
             services.AddScoped<IGetAllUseCaseAsync<Event>, EventGetAllUseCase>();

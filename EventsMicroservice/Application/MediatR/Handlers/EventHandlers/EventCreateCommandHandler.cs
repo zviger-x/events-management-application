@@ -1,15 +1,15 @@
-﻿using Application.MediatR.Commands.EventCommands;
+﻿using Application.Contracts;
+using Application.MediatR.Commands.EventCommands;
 using Application.UseCases.Interfaces;
-using Domain.Entities;
 using MediatR;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
     public class EventCreateCommandHandler : IRequestHandler<EventCreateCommand>
     {
-        private readonly ICreateUseCaseAsync<Event> _createUseCaseAsync;
+        private readonly ICreateUseCaseAsync<EventDTO> _createUseCaseAsync;
 
-        public EventCreateCommandHandler(ICreateUseCaseAsync<Event> createUseCaseAsync)
+        public EventCreateCommandHandler(ICreateUseCaseAsync<EventDTO> createUseCaseAsync)
         {
             _createUseCaseAsync = createUseCaseAsync;
         }

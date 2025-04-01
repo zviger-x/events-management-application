@@ -1,4 +1,5 @@
-﻿using Application.MediatR.Commands.EventCommands;
+﻿using Application.Contracts;
+using Application.MediatR.Commands.EventCommands;
 using Application.MediatR.Queries.EventQueries;
 using Domain.Entities;
 using MediatR;
@@ -21,7 +22,7 @@ namespace EventsAPI.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Event eventToCreate, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAsync([FromBody] EventDTO eventToCreate, CancellationToken cancellationToken)
         {
             var command = new EventCreateCommand { Event = eventToCreate };
             await _mediator.Send(command);
@@ -30,7 +31,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] Event eventToUpdate, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] EventDTO eventToUpdate, CancellationToken cancellationToken)
         {
             if (id != eventToUpdate.Id)
                 throw new ArgumentException("You are not allowed to modify this event.");

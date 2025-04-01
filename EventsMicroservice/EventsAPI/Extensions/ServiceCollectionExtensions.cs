@@ -45,6 +45,8 @@ namespace EventsAPI.Extensions
             services.AddScoped<IEventValidator, EventValidator>();
             services.AddScoped<ISeatValidator, SeatValidator>();
             services.AddScoped<IReviewValidator, ReviewValidator>();
+
+            services.AddScoped<IEventDTOValidator, EventDTOValidator>();
         }
 
         public static void AddUseCases(this IServiceCollection services)

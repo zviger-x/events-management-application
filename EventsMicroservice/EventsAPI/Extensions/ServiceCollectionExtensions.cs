@@ -55,7 +55,6 @@ namespace EventsAPI.Extensions
             services.AddScoped<IUpdateUseCaseAsync<EventDTO>, EventUpdateUseCase>();
             services.AddScoped<IDeleteUseCaseAsync<Event>, EventDeleteUseCase>();
             services.AddScoped<IGetByIdUseCaseAsync<Event>, EventGetByIdUseCase>();
-            services.AddScoped<IGetAllUseCaseAsync<Event>, EventGetAllUseCase>();
             services.AddScoped<IGetPagedUseCaseAsync<Event>, EventGetPagedUseCase>();
         }
 

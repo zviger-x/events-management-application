@@ -1,7 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommands;
 using Application.MediatR.Queries.EventQueries;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -61,15 +60,6 @@ namespace EventsAPI.Controllers
                 return NotFound();
 
             return Ok(@event);
-        }
-
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
-        {
-            var query = new EventGetAllQuery();
-            var collection = await _mediator.Send(query);
-
-            return Ok(collection);
         }
 
         [HttpGet]

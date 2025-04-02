@@ -1,6 +1,4 @@
-﻿using Domain.Entities.Interfaces;
-
-namespace Application.UseCases.Interfaces
+﻿namespace Application.UseCases.Interfaces
 {
     /// <summary>
     /// Returns an entity by its id.

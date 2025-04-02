@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Domain.Entities.Interfaces;
 
 namespace Application.UseCases.Interfaces
 {

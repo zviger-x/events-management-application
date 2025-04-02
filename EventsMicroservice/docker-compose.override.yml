@@ -21,16 +21,18 @@ services:
     restart: always
     networks:
       - internal-docker-network
-
-  # ПРИ ИЗМЕНЕНИИ ПОРТОВ ИЛИ ИМЕНИ, ИЗМЕНИТЬ ИХ В mongo-entrypoint.sh
+      
   mongoserver:
     image: mongo:latest
     container_name: MongoServer
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_REPLICA_SET=rs0
+      - MONGO_HOSTNAME=MongoServer
+      - MONGO_PORT=27017
+    #   - MONGO_INITDB_ROOT_USERNAME=root
+    #   - MONGO_INITDB_ROOT_PASSWORD=rootpassword
     ports:
-      - "27017:27017"
+      - "27017"
     volumes:
       - mongo_data:/data/db
       - ./mongo-init-replica.sh:/mongo-init-replica.sh

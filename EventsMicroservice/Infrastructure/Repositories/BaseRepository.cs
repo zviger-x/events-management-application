@@ -31,7 +31,6 @@ namespace Infrastructure.Repositories
             await _context.Collection<T>().ReplaceOneAsync(filter, entity, cancellationToken: token);
         }
 
-
         /// <remarks>
         /// Removes an entity and automatically saves the changes to the database.
         /// Does not support cascading deletes.
@@ -42,8 +41,9 @@ namespace Infrastructure.Repositories
         /// try
         /// {
         ///     var deleteResult = await _context.[Collection].DeleteOneAsync(session, e => e.Id == entity.Id, cancellationToken: token);
+        ///     
+        ///     // Deleting related entities
         ///     if (deleteResult.DeletedCount > 0)
-        ///         // Deleting related entities
         ///         await _context.[RelatedCollection].DeleteManyAsync(session, re => re.eId == entity.Id, cancellationToken: token);
         ///         
         ///     await session.CommitTransactionAsync(token);

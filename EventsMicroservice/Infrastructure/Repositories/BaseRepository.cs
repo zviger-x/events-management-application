@@ -3,6 +3,7 @@ using Domain.Entities.Interfaces;
 using Domain.Entities;
 using MongoDB.Driver;
 using Infrastructure.Contexts;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -74,7 +75,12 @@ namespace Infrastructure.Repositories
 
         public virtual async Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
         {
-            var query = _context.Collection<T>().Find(_ => true);
+            return await GetPagedByFilterAsync(_ => true, pageNumber, pageSize, token);
+        }
+
+        protected async Task<PagedCollection<T>> GetPagedByFilterAsync(Expression<Func<T, bool>> filterExpression, int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            var query = _context.Collection<T>().Find(filterExpression);
 
             var totalCount = await query.CountDocumentsAsync(token);
             var totalPages = (int)Math.Ceiling(totalCount / (float)pageSize);

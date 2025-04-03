@@ -48,7 +48,7 @@ namespace Infrastructure.Repositories
                     s => s.EventId,
                     e => e.Seats)
                 .Lookup<Event, Review, Guid, Guid, IEnumerable<Review>>(
-                    _context.GetCollectionName<Seat>(),
+                    _context.GetCollectionName<Review>(),
                     e => e.Id,
                     r => r.EventId,
                     e => e.Reviews);

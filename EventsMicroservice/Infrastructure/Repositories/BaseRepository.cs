@@ -4,23 +4,29 @@ using Domain.Entities;
 using MongoDB.Driver;
 using Infrastructure.Contexts;
 using System.Linq.Expressions;
+using Infrastructure.Extensions;
 
 namespace Infrastructure.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T>
         where T : class, IEntity
     {
-        protected BaseRepository(EventDbContext context)
+
+        protected readonly EventDbContext _context;
+        protected readonly TransactionContext _transactionContext;
+
+        protected BaseRepository(EventDbContext context, TransactionContext transactionContext)
         {
             _context = context;
+            _transactionContext = transactionContext;
         }
 
-        protected EventDbContext _context { get; private set; }
+        protected IClientSessionHandle CurrentSession { get => _transactionContext.CurrentSession; }
 
         public virtual async Task<Guid> CreateAsync(T entity, CancellationToken token = default)
         {
             entity.Id = Guid.NewGuid();
-            await _context.Collection<T>().InsertOneAsync(entity, cancellationToken: token);
+            await _context.Collection<T>().InsertOneWithSessionAsync(CurrentSession, entity, cancellationToken: token);
 
             return entity.Id;
         }
@@ -28,7 +34,7 @@ namespace Infrastructure.Repositories
         public virtual async Task UpdateAsync(T entity, CancellationToken token = default)
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, entity.Id);
-            await _context.Collection<T>().ReplaceOneAsync(filter, entity, cancellationToken: token);
+            await _context.Collection<T>().ReplaceOneWithSessionAsync(CurrentSession, filter, entity, cancellationToken: token);
         }
 
         /// <remarks>
@@ -58,19 +64,19 @@ namespace Infrastructure.Repositories
         public virtual async Task DeleteAsync(T entity, CancellationToken token = default)
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, entity.Id);
-            await _context.Collection<T>().DeleteOneAsync(filter, cancellationToken: token);
+            await _context.Collection<T>().DeleteOneWithSessionAsync(CurrentSession, filter, cancellationToken: token);
         }
 
         public virtual async Task<T> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, id);
-            using var cursor = await _context.Collection<T>().FindAsync(filter, cancellationToken: token);
+            using var cursor = await _context.Collection<T>().FindWithSessionAsync(CurrentSession, filter, cancellationToken: token);
             return await cursor.FirstOrDefaultAsync(token);
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)
         {
-            return await _context.Collection<T>().Find(_ => true).ToListAsync();
+            return await _context.Collection<T>().FindWithSession(CurrentSession, _ => true).ToListAsync();
         }
 
         public virtual async Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
@@ -80,7 +86,7 @@ namespace Infrastructure.Repositories
 
         protected async Task<PagedCollection<T>> GetPagedByFilterAsync(Expression<Func<T, bool>> filterExpression, int pageNumber, int pageSize, CancellationToken token = default)
         {
-            var query = _context.Collection<T>().Find(filterExpression);
+            var query = _context.Collection<T>().FindWithSession(CurrentSession, filterExpression);
 
             var totalCount = await query.CountDocumentsAsync(token);
             var totalPages = (int)Math.Ceiling(totalCount / (float)pageSize);

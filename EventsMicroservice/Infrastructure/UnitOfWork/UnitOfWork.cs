@@ -12,8 +12,8 @@ namespace Infrastructure.UnitOfWork
         private Lazy<ISeatRepository> _seatRepository;
         private Lazy<ISeatConfigurationRepository> _seatConfigurationRepository;
 
-        public UnitOfWork(EventDbContext context, IServiceProvider serviceProvider)
-            : base(context, serviceProvider)
+        public UnitOfWork(EventDbContext context, TransactionContext transactionContext, IServiceProvider serviceProvider)
+            : base(context, transactionContext, serviceProvider)
         {
             _eventRepository = new Lazy<IEventRepository>(_serviceProvider.GetRequiredService<IEventRepository>);
             _eventCommentRepository = new Lazy<IEventCommentRepository>(_serviceProvider.GetRequiredService<IEventCommentRepository>);

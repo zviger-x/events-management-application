@@ -3,22 +3,21 @@ using Application.UnitOfWork.Interfaces;
 using Domain.Entities.Interfaces;
 using Infrastructure.Contexts;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
 
-#warning Решить проблему с транзакциями и сессиями!
 namespace Infrastructure.UnitOfWork
 {
     public abstract class BaseUnitOfWork : IBaseUnitOfWork
     {
         protected readonly EventDbContext _context;
+        protected readonly TransactionContext _transactionContext;
         protected readonly IServiceProvider _serviceProvider;
-        protected IClientSessionHandle _session;
 
         private Dictionary<Type, object> _repositories;
 
-        public BaseUnitOfWork(EventDbContext context, IServiceProvider serviceProvider)
+        public BaseUnitOfWork(EventDbContext context, TransactionContext transactionContext, IServiceProvider serviceProvider)
         {
             _context = context;
+            _transactionContext = transactionContext;
             _serviceProvider = serviceProvider;
 
             _repositories = new();
@@ -39,28 +38,28 @@ namespace Infrastructure.UnitOfWork
 
         public virtual async Task BeginTransactionAsync(CancellationToken token = default)
         {
-            _session = await _context.Client.StartSessionAsync(null, cancellationToken: token);
-            _session.StartTransaction();
+            _transactionContext.CurrentSession = await _context.Client.StartSessionAsync(null, cancellationToken: token);
+            _transactionContext.CurrentSession.StartTransaction();
         }
 
         public virtual async Task CommitTransactionAsync(CancellationToken token = default)
         {
-            if (_session == null)
+            if (_transactionContext.CurrentSession == null)
                 throw new InvalidOperationException("Transaction has not been started.");
 
-            await _session.CommitTransactionAsync(token);
-            _session.Dispose();
-            _session = null;
+            await _transactionContext.CurrentSession.CommitTransactionAsync(token);
+            _transactionContext.CurrentSession.Dispose();
+            _transactionContext.CurrentSession = null;
         }
 
         public virtual async Task RollbackTransactionAsync(CancellationToken token = default)
         {
-            if (_session == null)
+            if (_transactionContext.CurrentSession == null)
                 throw new InvalidOperationException("Transaction has not been started.");
 
-            await _session.AbortTransactionAsync();
-            _session.Dispose();
-            _session = null;
+            await _transactionContext.CurrentSession.AbortTransactionAsync();
+            _transactionContext.CurrentSession.Dispose();
+            _transactionContext.CurrentSession = null;
         }
 
         public virtual async Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default)
@@ -80,7 +79,8 @@ namespace Infrastructure.UnitOfWork
 
         public virtual void Dispose()
         {
-            _session?.Dispose();
+            _transactionContext.CurrentSession?.Dispose();
+            _transactionContext.CurrentSession = null;
         }
     }
 }

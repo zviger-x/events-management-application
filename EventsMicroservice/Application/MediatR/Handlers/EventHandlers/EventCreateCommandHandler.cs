@@ -6,6 +6,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
@@ -25,8 +26,13 @@ namespace Application.MediatR.Handlers.EventHandlers
                 throw new ArgumentException("There is no seat configuration with this Id.");
 
             var @event = _mapper.Map<Event>(request.Event);
-            var eventId = await _unitOfWork.EventRepository.CreateAsync(@event, cancellationToken).ConfigureAwait(false);
-            await GenerateSeats(eventId, seatConfiguration, cancellationToken);
+            
+            var eventId = default(Guid);
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            {
+                eventId = await _unitOfWork.EventRepository.CreateAsync(@event, token).ConfigureAwait(false);
+                await GenerateSeats(eventId, seatConfiguration, token);
+            }, cancellationToken);
 
             return eventId;
         }

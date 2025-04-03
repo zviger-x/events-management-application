@@ -6,8 +6,8 @@ namespace Infrastructure.Repositories
 {
     public class EventCommentRepository : BaseRepository<EventComment>, IEventCommentRepository
     {
-        public EventCommentRepository(EventDbContext context)
-            : base(context)
+        public EventCommentRepository(EventDbContext context, TransactionContext transactionContext)
+            : base(context, transactionContext)
         {
         }
 

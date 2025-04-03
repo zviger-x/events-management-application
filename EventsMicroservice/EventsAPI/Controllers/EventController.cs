@@ -6,8 +6,6 @@ using Application.MediatR.Queries.EventCommentQueries;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Application.MediatR.Queries.SeatConfigurationQueries;
-using System.Threading;
 
 namespace EventsAPI.Controllers
 {

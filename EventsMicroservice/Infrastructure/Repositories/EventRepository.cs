@@ -8,8 +8,8 @@ namespace Infrastructure.Repositories
 {
     public class EventRepository : BaseRepository<Event>, IEventRepository
     {
-        public EventRepository(EventDbContext context)
-            : base(context)
+        public EventRepository(EventDbContext context, TransactionContext transactionContext)
+            : base(context, transactionContext)
         {
         }
 
@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories
         public override async Task<Event> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             var query = _context.Events
-                .Aggregate()
+                .AggregateWithSession(CurrentSession)
                 .Match(e => e.Id == id)
                 .Lookup<Event, Seat, Guid, Guid, IEnumerable<Seat>>(
                     _context.GetCollectionName<Seat>(),

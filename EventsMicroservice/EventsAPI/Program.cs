@@ -37,6 +37,7 @@ namespace EventsAPI
             if (mongoConfig == null)
                 throw new ArgumentNullException(nameof(mongoConfig));
             services.AddMongoServer(mongoConfig);
+            services.AddScoped<TransactionContext>();
             services.AddScoped<EventDbContext>();
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

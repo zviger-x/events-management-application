@@ -6,9 +6,9 @@ using Application.Contracts;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class EventDTOValidator : AbstractValidator<EventDTO>, IEventDTOValidator
+    public class CreateEventDTOValidator : AbstractValidator<CreateEventDTO>, ICreateEventDTOValidator
     {
-        public EventDTOValidator()
+        public CreateEventDTOValidator()
         {
             RuleFor(e => e.Name)
                 .NotNull()
@@ -48,6 +48,8 @@ namespace Infrastructure.Validation.Validators
                 .LessThan(e => e.StartDate)
                     .WithMessage(EventValidationMessages.PurchaseDeadlineInvalid)
                     .WithErrorCode(EventValidationErrorCodes.PurchaseDeadlineInvalid);
+            
+            // TODO: Добавить проверку наличия конфигурации мест
         }
     }
 }

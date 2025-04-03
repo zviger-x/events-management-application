@@ -7,9 +7,9 @@ namespace Application.MediatR.Handlers.EventHandlers
 {
     public class EventCreateCommandHandler : IRequestHandler<EventCreateCommand>
     {
-        private readonly ICreateUseCaseAsync<EventDTO> _createUseCaseAsync;
+        private readonly ICreateUseCaseAsync<CreateEventDTO> _createUseCaseAsync;
 
-        public EventCreateCommandHandler(ICreateUseCaseAsync<EventDTO> createUseCaseAsync)
+        public EventCreateCommandHandler(ICreateUseCaseAsync<CreateEventDTO> createUseCaseAsync)
         {
             _createUseCaseAsync = createUseCaseAsync;
         }

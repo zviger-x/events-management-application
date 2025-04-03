@@ -8,14 +8,14 @@ using FluentValidation;
 
 namespace Application.UseCases.EventUseCases
 {
-    public class EventUpdateUseCase : BaseUseCase<EventDTO>, IUpdateUseCaseAsync<EventDTO>
+    public class EventUpdateUseCase : BaseUseCase<UpdateEventDTO>, IUpdateUseCaseAsync<UpdateEventDTO>
     {
-        public EventUpdateUseCase(IUnitOfWork unitOfWork, IMapper mapper, IEventDTOValidator validator)
+        public EventUpdateUseCase(IUnitOfWork unitOfWork, IMapper mapper, IUpdateEventDTOValidator validator)
             : base(unitOfWork, mapper, validator)
         {
         }
 
-        public async Task Execute(EventDTO eventDTO, CancellationToken cancellationToken = default)
+        public async Task Execute(UpdateEventDTO eventDTO, CancellationToken cancellationToken = default)
         {
             await _validator.ValidateAndThrowAsync(eventDTO);
 

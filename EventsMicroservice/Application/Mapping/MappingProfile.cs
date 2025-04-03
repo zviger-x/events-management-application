@@ -8,8 +8,11 @@ namespace Application.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Event, EventDTO>();
-            CreateMap<EventDTO, Event>();
+            CreateMap<Event, CreateEventDTO>();
+            CreateMap<CreateEventDTO, Event>();
+
+            CreateMap<Event, UpdateEventDTO>();
+            CreateMap<UpdateEventDTO, Event>();
         }
     }
 }

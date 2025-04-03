@@ -21,7 +21,7 @@ namespace EventsAPI.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] EventDTO eventToCreate, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateEventDTO eventToCreate, CancellationToken cancellationToken)
         {
             var command = new EventCreateCommand { Event = eventToCreate };
             await _mediator.Send(command);
@@ -30,7 +30,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] EventDTO eventToUpdate, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateEventDTO eventToUpdate, CancellationToken cancellationToken)
         {
             if (id != eventToUpdate.Id)
                 throw new ArgumentException("You are not allowed to modify this event.");

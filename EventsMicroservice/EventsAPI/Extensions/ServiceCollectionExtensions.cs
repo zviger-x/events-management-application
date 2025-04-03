@@ -46,13 +46,14 @@ namespace EventsAPI.Extensions
             services.AddScoped<ISeatValidator, SeatValidator>();
             services.AddScoped<IReviewValidator, ReviewValidator>();
 
-            services.AddScoped<IEventDTOValidator, EventDTOValidator>();
+            services.AddScoped<ICreateEventDTOValidator, CreateEventDTOValidator>();
+            services.AddScoped<IUpdateEventDTOValidator, UpdateEventDTOValidator>();
         }
 
         public static void AddUseCases(this IServiceCollection services)
         {
-            services.AddScoped<ICreateUseCaseAsync<EventDTO>, EventCreateUseCase>();
-            services.AddScoped<IUpdateUseCaseAsync<EventDTO>, EventUpdateUseCase>();
+            services.AddScoped<ICreateUseCaseAsync<CreateEventDTO>, EventCreateUseCase>();
+            services.AddScoped<IUpdateUseCaseAsync<UpdateEventDTO>, EventUpdateUseCase>();
             services.AddScoped<IDeleteUseCaseAsync<Event>, EventDeleteUseCase>();
             services.AddScoped<IGetByIdUseCaseAsync<Event>, EventGetByIdUseCase>();
             services.AddScoped<IGetPagedUseCaseAsync<Event>, EventGetPagedUseCase>();

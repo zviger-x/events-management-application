@@ -5,6 +5,6 @@ namespace Application.MediatR.Commands.EventCommands
 {
     public class EventUpdateCommand : IRequest
     {
-        public EventDTO Event { get; set; } = default!;
+        public UpdateEventDTO Event { get; set; } = default!;
     }
 }

@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Validation.Validators.Interfaces
 {
-    public interface IEventDTOValidator : IValidator<EventDTO>
+    public interface ICreateEventDTOValidator : IValidator<CreateEventDTO>
     {
     }
 }

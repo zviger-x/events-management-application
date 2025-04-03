@@ -6,7 +6,7 @@
         public string PropertyName { get; }
 
         public ServiceValidationException(string errorCode, string errorMessage)
-            : this(errorCode, errorMessage, null!)
+            : this(errorCode, errorMessage, null)
         {
         }
 

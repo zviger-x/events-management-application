@@ -11,7 +11,7 @@ namespace Infrastructure.UnitOfWork
     {
         protected readonly EventDbContext _context;
         protected readonly IServiceProvider _serviceProvider;
-        protected IClientSessionHandle? _session;
+        protected IClientSessionHandle _session;
 
         private Dictionary<Type, object> _repositories;
 

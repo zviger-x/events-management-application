@@ -56,18 +56,22 @@ namespace EventsAPI.Extensions
             services.AddScoped<IRepository<Event>, EventRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
 
+            services.AddScoped<IRepository<EventComment>, EventCommentRepository>();
+            services.AddScoped<IEventCommentRepository, EventCommentRepository>();
+
             services.AddScoped<IRepository<Seat>, SeatRepository>();
             services.AddScoped<ISeatRepository, SeatRepository>();
 
-            services.AddScoped<IRepository<EventComment>, EventCommentRepository>();
-            services.AddScoped<IEventCommentRepository, EventCommentRepository>();
+            services.AddScoped<IRepository<SeatConfiguration>, SeatConfigurationRepository>();
+            services.AddScoped<ISeatConfigurationRepository, SeatConfigurationRepository>();
         }
 
         public static void AddValidators(this IServiceCollection services)
         {
             services.AddScoped<IEventValidator, EventValidator>();
-            services.AddScoped<ISeatValidator, SeatValidator>();
             services.AddScoped<IEventCommentValidator, EventCommentValidator>();
+            services.AddScoped<ISeatValidator, SeatValidator>();
+            services.AddScoped<ISeatConfigurationValidator, SeatConfigurationValidator>();
 
             services.AddScoped<ICreateEventDTOValidator, CreateEventDTOValidator>();
             services.AddScoped<IUpdateEventDTOValidator, UpdateEventDTOValidator>();

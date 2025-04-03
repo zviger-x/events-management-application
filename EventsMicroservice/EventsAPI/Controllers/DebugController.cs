@@ -19,7 +19,7 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> GetPagedCommentsAsync(CancellationToken cancellationToken = default)
         {
             var query = new EventCommentGetPagedQuery { PageNumber = 1, PageSize = int.MaxValue };
-            var page = await _mediator.Send(query);
+            var page = await _mediator.Send(query, cancellationToken);
 
             return Ok(page);
         }

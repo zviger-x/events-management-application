@@ -5,6 +5,7 @@ using Infrastructure.Contexts;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
+#warning Решить проблему с транзакциями и сессиями!
 namespace Infrastructure.UnitOfWork
 {
     public abstract class BaseUnitOfWork : IBaseUnitOfWork

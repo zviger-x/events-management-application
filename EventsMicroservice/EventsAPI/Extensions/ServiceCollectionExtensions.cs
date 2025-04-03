@@ -1,6 +1,7 @@
 ﻿using Application.Repositories.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
+using Domain.Entities.Interfaces;
 using EventsAPI.Configuration;
 using Infrastructure.Repositories;
 using Infrastructure.Validation.Validators;
@@ -8,6 +9,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using Serilog;
+using System.Reflection;
 
 namespace EventsAPI.Extensions
 {
@@ -23,6 +26,29 @@ namespace EventsAPI.Extensions
                 var client = provider.GetRequiredService<IMongoClient>();
                 return client.GetDatabase(mongoServerConfig.DatabaseName);
             });
+
+            // Указываю, что мой Guid Id - действительный идентификатор
+            // и что нужно его использовать, а не стандартный ObjectId
+            // без изменения сущностей. Т.е. не придётся менять сущности
+            // и добавлять для каждой атрибут [BsonId]
+
+            Log.Information($"Registering Guid for MongoDB...");
+
+            var entityTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
+                .Where(t => typeof(IEntity).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+                .ToList();
+
+            var method = typeof(ServiceCollectionExtensions).GetMethod(nameof(RegisterGuid), BindingFlags.NonPublic | BindingFlags.Static);
+            foreach (var type in entityTypes)
+            {
+                Log.Information($"Register Guid as default mongo Id for {{{type.Name}}}");
+
+                var genericMethod = method.MakeGenericMethod(type);
+                genericMethod.Invoke(null, null);
+            }
+
+            Log.Information($"Registration completed");
         }
 
         public static void AddRepositories(this IServiceCollection services)
@@ -33,15 +59,15 @@ namespace EventsAPI.Extensions
             services.AddScoped<IRepository<Seat>, SeatRepository>();
             services.AddScoped<ISeatRepository, SeatRepository>();
 
-            services.AddScoped<IRepository<Review>, ReviewRepository>();
-            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IRepository<EventComment>, EventCommentRepository>();
+            services.AddScoped<IEventCommentRepository, EventCommentRepository>();
         }
 
         public static void AddValidators(this IServiceCollection services)
         {
             services.AddScoped<IEventValidator, EventValidator>();
             services.AddScoped<ISeatValidator, SeatValidator>();
-            services.AddScoped<IReviewValidator, ReviewValidator>();
+            services.AddScoped<IEventCommentValidator, EventCommentValidator>();
 
             services.AddScoped<ICreateEventDTOValidator, CreateEventDTOValidator>();
             services.AddScoped<IUpdateEventDTOValidator, UpdateEventDTOValidator>();
@@ -50,5 +76,15 @@ namespace EventsAPI.Extensions
         // public static void AddCachingServices(this IServiceCollection services)
         // {
         // }
+
+        private static void RegisterGuid<T>()
+            where T : class, IEntity
+        {
+            BsonClassMap.RegisterClassMap<T>(cm =>
+            {
+                cm.AutoMap();
+                cm.MapIdMember(c => c.Id);
+            });
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Entities.Interfaces;
-using MongoDB.Bson.Serialization;
+﻿using Domain.Entities.Interfaces;
 using MongoDB.Driver;
 
 namespace Infrastructure.Contexts
@@ -15,9 +13,8 @@ namespace Infrastructure.Contexts
         protected BaseDbContext(IMongoDatabase database)
         {
             _database = database;
-            _collections = new Dictionary<Type, object>();
 
-            RegisterMappings();
+            _collections = new Dictionary<Type, object>();
         }
 
         public IMongoDatabase Database => _database;
@@ -42,31 +39,6 @@ namespace Infrastructure.Contexts
             where T : class, IEntity
         {
             return typeof(T).Name.ToLower();
-        }
-
-        private void RegisterMappings()
-        {
-            if (_isMappingRegistered) return;
-            _isMappingRegistered = true;
-
-            // Указываю, что мой Guid Id - действительный идентификатор
-            // и что нужно его использовать, а не стандартный ObjectId
-            // без изменения сущностей. Т.е. не придётся менять сущности
-            // и добавлять для каждой атрибут [BsonId]
-
-            RegisterGuid<Event>();
-            RegisterGuid<Seat>();
-            RegisterGuid<Review>();
-        }
-
-        private void RegisterGuid<T>() 
-            where T : class, IEntity
-        {
-            BsonClassMap.RegisterClassMap<T>(cm =>
-            {
-                cm.AutoMap();
-                cm.MapIdMember(c => c.Id);
-            });
         }
     }
 }

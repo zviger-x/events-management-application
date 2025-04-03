@@ -1,7 +1,4 @@
-﻿using Application.Contracts;
-using Application.Repositories.Interfaces;
-using Application.UseCases.EventUseCases;
-using Application.UseCases.Interfaces;
+﻿using Application.Repositories.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using EventsAPI.Configuration;
@@ -48,15 +45,6 @@ namespace EventsAPI.Extensions
 
             services.AddScoped<ICreateEventDTOValidator, CreateEventDTOValidator>();
             services.AddScoped<IUpdateEventDTOValidator, UpdateEventDTOValidator>();
-        }
-
-        public static void AddUseCases(this IServiceCollection services)
-        {
-            services.AddScoped<ICreateUseCaseAsync<CreateEventDTO>, EventCreateUseCase>();
-            services.AddScoped<IUpdateUseCaseAsync<UpdateEventDTO>, EventUpdateUseCase>();
-            services.AddScoped<IDeleteUseCaseAsync<Event>, EventDeleteUseCase>();
-            services.AddScoped<IGetByIdUseCaseAsync<Event>, EventGetByIdUseCase>();
-            services.AddScoped<IGetPagedUseCaseAsync<Event>, EventGetPagedUseCase>();
         }
 
         // public static void AddCachingServices(this IServiceCollection services)

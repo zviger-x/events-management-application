@@ -43,9 +43,8 @@ namespace EventsAPI
 
             // Use cases
             services.AddAutoMapper(typeof(MappingProfile));
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
             services.AddValidators();
-            services.AddUseCases();
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();

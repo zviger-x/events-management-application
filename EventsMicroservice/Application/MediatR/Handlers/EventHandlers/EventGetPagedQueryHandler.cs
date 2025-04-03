@@ -1,22 +1,27 @@
 ﻿using Application.MediatR.Queries.EventQueries;
-using Application.UseCases.Interfaces;
+using Application.UnitOfWork.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using MediatR;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
-    public class EventGetPagedQueryHandler : IRequestHandler<EventGetPagedQuery, PagedCollection<Event>>
+    public class EventGetPagedQueryHandler : BaseHandler, IRequestHandler<EventGetPagedQuery, PagedCollection<Event>>
     {
-        private readonly IGetPagedUseCaseAsync<Event> _getPagedUseCaseAsync;
-
-        public EventGetPagedQueryHandler(IGetPagedUseCaseAsync<Event> getPagedUseCaseAsync)
+        public EventGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+            : base(unitOfWork, mapper)
         {
-            _getPagedUseCaseAsync = getPagedUseCaseAsync;
         }
 
         public async Task<PagedCollection<Event>> Handle(EventGetPagedQuery request, CancellationToken cancellationToken)
         {
-            return await _getPagedUseCaseAsync.Execute(request.PageNumber, request.PageSize, cancellationToken);
+            if (request.PageNumber< 1)
+                throw new ArgumentOutOfRangeException(nameof(request.PageNumber));
+
+            if (request.PageSize < 1)
+                throw new ArgumentOutOfRangeException(nameof(request.PageSize));
+
+            return await _unitOfWork.EventRepository.GetPagedAsync(request.PageNumber, request.PageSize, cancellationToken).ConfigureAwait(false);
         }
     }
 }

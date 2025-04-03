@@ -2,14 +2,14 @@
 using AutoMapper;
 using FluentValidation;
 
-namespace Application.UseCases
+namespace Application.MediatR.Handlers
 {
-    public abstract class BaseUseCase : IDisposable
+    public abstract class BaseHandler : IDisposable
     {
         protected readonly IUnitOfWork _unitOfWork;
         protected readonly IMapper _mapper;
 
-        public BaseUseCase(IUnitOfWork unitOfWork, IMapper mapper)
+        public BaseHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -18,12 +18,12 @@ namespace Application.UseCases
         public virtual void Dispose() => _unitOfWork.Dispose();
     }
 
-    public abstract class BaseUseCase<T> : BaseUseCase
-        where T : class
+    public abstract class BaseHandler<TValidatingObject> : BaseHandler
+        where TValidatingObject : class
     {
-        protected readonly IValidator<T> _validator;
+        protected readonly IValidator<TValidatingObject> _validator;
 
-        protected BaseUseCase(IUnitOfWork unitOfWork, IMapper mapper, IValidator<T> validator)
+        protected BaseHandler(IUnitOfWork unitOfWork, IMapper mapper, IValidator<TValidatingObject> validator)
             : base(unitOfWork, mapper)
         {
             _validator = validator;

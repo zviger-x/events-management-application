@@ -1,22 +1,28 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommands;
-using Application.UseCases.Interfaces;
+using Application.UnitOfWork.Interfaces;
+using Application.Validation.Validators.Interfaces;
+using AutoMapper;
+using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
-    public class EventCreateCommandHandler : IRequestHandler<EventCreateCommand>
+    public class EventCreateCommandHandler : BaseHandler<CreateEventDTO>, IRequestHandler<EventCreateCommand>
     {
-        private readonly ICreateUseCaseAsync<CreateEventDTO> _createUseCaseAsync;
-
-        public EventCreateCommandHandler(ICreateUseCaseAsync<CreateEventDTO> createUseCaseAsync)
+        public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateEventDTOValidator validator)
+            : base(unitOfWork, mapper, validator)
         {
-            _createUseCaseAsync = createUseCaseAsync;
         }
 
         public async Task Handle(EventCreateCommand request, CancellationToken cancellationToken)
         {
-            await _createUseCaseAsync.Execute(request.Event, cancellationToken);
+            await _validator.ValidateAndThrowAsync(request.Event);
+
+            var @event = _mapper.Map<Event>(request.Event);
+
+            await _unitOfWork.EventRepository.CreateAsync(@event, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -1,22 +1,23 @@
 ﻿using Application.MediatR.Commands.EventCommands;
-using Application.UseCases.Interfaces;
+using Application.UnitOfWork.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using MediatR;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
-    public class EventDeleteCommandHandler : IRequestHandler<EventDeleteCommand>
+    public class EventDeleteCommandHandler : BaseHandler, IRequestHandler<EventDeleteCommand>
     {
-        private readonly IDeleteUseCaseAsync<Event> _deleteUseCaseAsync;
-
-        public EventDeleteCommandHandler(IDeleteUseCaseAsync<Event> deleteUseCaseAsync)
+        public EventDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+            : base(unitOfWork, mapper)
         {
-            _deleteUseCaseAsync = deleteUseCaseAsync;
         }
 
         public async Task Handle(EventDeleteCommand request, CancellationToken cancellationToken)
         {
-            await _deleteUseCaseAsync.Execute(request.Id, cancellationToken);
+            var @event = new Event() { Id = request.Id };
+
+            await _unitOfWork.EventRepository.DeleteAsync(@event, cancellationToken).ConfigureAwait(false);
         }
     }
 }

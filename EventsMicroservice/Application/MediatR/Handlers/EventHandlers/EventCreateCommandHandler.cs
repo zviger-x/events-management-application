@@ -9,20 +9,20 @@ using MediatR;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
-    public class EventCreateCommandHandler : BaseHandler<CreateEventDTO>, IRequestHandler<EventCreateCommand>
+    public class EventCreateCommandHandler : BaseHandler<CreateEventDTO>, IRequestHandler<EventCreateCommand, Guid>
     {
         public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateEventDTOValidator validator)
             : base(unitOfWork, mapper, validator)
         {
         }
 
-        public async Task Handle(EventCreateCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(EventCreateCommand request, CancellationToken cancellationToken)
         {
             await _validator.ValidateAndThrowAsync(request.Event);
 
             var @event = _mapper.Map<Event>(request.Event);
 
-            await _unitOfWork.EventRepository.CreateAsync(@event, cancellationToken).ConfigureAwait(false);
+            return await _unitOfWork.EventRepository.CreateAsync(@event, cancellationToken).ConfigureAwait(false);
         }
     }
 }

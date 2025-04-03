@@ -16,10 +16,12 @@ namespace Infrastructure.Repositories
 
         protected EventDbContext _context { get; private set; }
 
-        public virtual async Task CreateAsync(T entity, CancellationToken token = default)
+        public virtual async Task<Guid> CreateAsync(T entity, CancellationToken token = default)
         {
             entity.Id = Guid.NewGuid();
             await _context.Collection<T>().InsertOneAsync(entity, cancellationToken: token);
+
+            return entity.Id;
         }
 
         public virtual async Task UpdateAsync(T entity, CancellationToken token = default)

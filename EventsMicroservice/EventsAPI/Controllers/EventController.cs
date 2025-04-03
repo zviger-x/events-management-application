@@ -24,9 +24,9 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] CreateEventDTO eventToCreate, CancellationToken cancellationToken)
         {
             var command = new EventCreateCommand { Event = eventToCreate };
-            await _mediator.Send(command);
+            var createdEntityId = await _mediator.Send(command);
 
-            return Ok();
+            return Ok(createdEntityId);
         }
 
         [HttpPut("{id}")]

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
 namespace Infrastructure.Contexts
@@ -12,6 +13,6 @@ namespace Infrastructure.Contexts
 
         public IMongoCollection<Event> Events => Collection<Event>();
         public IMongoCollection<Seat> Seats => Collection<Seat>();
-        public IMongoCollection<Review> Reviews => Collection<Review>();
+        public IMongoCollection<EventComment> EventComments => Collection<EventComment>();
     }
 }

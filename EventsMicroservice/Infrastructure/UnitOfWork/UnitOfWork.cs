@@ -9,21 +9,21 @@ namespace Infrastructure.UnitOfWork
     {
         private Lazy<IEventRepository> _eventRepository;
         private Lazy<ISeatRepository> _seatRepository;
-        private Lazy<IReviewRepository> _reviewRepository;
+        private Lazy<IEventCommentRepository> _eventCommentRepository;
 
         public UnitOfWork(EventDbContext context, IServiceProvider serviceProvider)
             : base(context, serviceProvider)
         {
             _eventRepository = new Lazy<IEventRepository>(_serviceProvider.GetRequiredService<IEventRepository>);
             _seatRepository = new Lazy<ISeatRepository>(_serviceProvider.GetRequiredService<ISeatRepository>);
-            _reviewRepository = new Lazy<IReviewRepository>(_serviceProvider.GetRequiredService<IReviewRepository>);
+            _eventCommentRepository = new Lazy<IEventCommentRepository>(_serviceProvider.GetRequiredService<IEventCommentRepository>);
         }
 
         public IEventRepository EventRepository => _eventRepository.Value;
 
         public ISeatRepository SeatRepository => _seatRepository.Value;
 
-        public IReviewRepository ReviewRepository => _reviewRepository.Value;
+        public IEventCommentRepository EventCommentRepository => _eventCommentRepository.Value;
 
         public override void Dispose()
         {
@@ -35,8 +35,8 @@ namespace Infrastructure.UnitOfWork
             if (_seatRepository.IsValueCreated)
                 _seatRepository.Value.Dispose();
 
-            if (_reviewRepository.IsValueCreated)
-                _reviewRepository.Value.Dispose();
+            if (_eventCommentRepository.IsValueCreated)
+                _eventCommentRepository.Value.Dispose();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Validation.ErrorCodes
 {
-    internal static class ReviewValidationErrorCodes
+    internal static class EventCommentValidationErrorCodes
     {
         public const string EventIdIsNull = "eventIdIsNull";
         public const string EventIdIsEmpty = "eventIdIsEmpty";

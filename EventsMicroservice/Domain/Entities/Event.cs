@@ -13,6 +13,6 @@ namespace Domain.Entities
         public DateTime PurchaseDeadline { get; set; }
         public byte[] Image { get; set; }
         public IEnumerable<Seat> Seats { get; set; }
-        public IEnumerable<Review> Reviews { get; set; }
+        public IEnumerable<EventComment> Comments { get; set; }
     }
 }

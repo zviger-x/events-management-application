@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
                 if (deleteEventResult.DeletedCount > 0)
                 {
                     await _context.Seats.DeleteManyAsync(session, s => s.EventId == entity.Id, cancellationToken: token);
-                    await _context.Reviews.DeleteManyAsync(session, r => r.EventId == entity.Id, cancellationToken: token);
+                    await _context.EventComments.DeleteManyAsync(session, ec => ec.EventId == entity.Id, cancellationToken: token);
                 }
 
                 await session.CommitTransactionAsync(token);
@@ -47,11 +47,11 @@ namespace Infrastructure.Repositories
                     e => e.Id,
                     s => s.EventId,
                     e => e.Seats)
-                .Lookup<Event, Review, Guid, Guid, IEnumerable<Review>>(
-                    _context.GetCollectionName<Review>(),
+                .Lookup<Event, EventComment, Guid, Guid, IEnumerable<EventComment>>(
+                    _context.GetCollectionName<EventComment>(),
                     e => e.Id,
-                    r => r.EventId,
-                    e => e.Reviews);
+                    ec => ec.EventId,
+                    e => e.Comments);
 
             return await query.FirstOrDefaultAsync();
         }

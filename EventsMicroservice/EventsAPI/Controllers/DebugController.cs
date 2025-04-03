@@ -1,4 +1,4 @@
-﻿using Application.MediatR.Queries.ReviewQueries;
+﻿using Application.MediatR.Queries.EventCommentQueries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,17 +10,15 @@ namespace EventsAPI.Controllers
     {
         private readonly IMediator _mediator;
 
-        private const int PageSize = int.MaxValue;
-
         public DebugController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpGet("reviews")]
-        public async Task<IActionResult> GetPagedReviewsAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
+        [HttpGet("event-comments")]
+        public async Task<IActionResult> GetPagedCommentsAsync(CancellationToken cancellationToken = default)
         {
-            var query = new ReviewGetPagedQuery { PageNumber = pageNumber, PageSize = PageSize };
+            var query = new EventCommentGetPagedQuery { PageNumber = 1, PageSize = int.MaxValue };
             var page = await _mediator.Send(query);
 
             return Ok(page);

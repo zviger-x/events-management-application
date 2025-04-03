@@ -6,6 +6,6 @@ namespace Application.UnitOfWork.Interfaces
     {
         IEventRepository EventRepository { get; }
         ISeatRepository SeatRepository { get; }
-        IReviewRepository ReviewRepository { get; }
+        IEventCommentRepository EventCommentRepository { get; }
     }
 }

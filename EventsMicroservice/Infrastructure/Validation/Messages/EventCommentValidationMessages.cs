@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Validation.Messages
 {
-    internal static class ReviewValidationMessages
+    internal static class EventCommentValidationMessages
     {
         public const string EventIdIsNull = "Event ID cannot be null.";
         public const string EventIdIsEmpty = "Event ID cannot be empty.";

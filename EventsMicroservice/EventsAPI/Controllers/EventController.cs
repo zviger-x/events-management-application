@@ -1,8 +1,8 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommands;
-using Application.MediatR.Commands.ReviewCommands;
+using Application.MediatR.Commands.EventCommentCommands;
 using Application.MediatR.Queries.EventQueries;
-using Application.MediatR.Queries.ReviewQueries;
+using Application.MediatR.Queries.EventCommentQueries;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +16,7 @@ namespace EventsAPI.Controllers
         private readonly IMediator _mediator;
 
         private const int EventsPageSize = 10;
-        private const int ReviewsPageSize = 10;
+        private const int CommentsPageSize = 10;
 
         public EventController(IMediator mediator)
         {
@@ -76,63 +76,59 @@ namespace EventsAPI.Controllers
             return Ok(page);
         }
 
-        /// ---- Event reviews ----
+        /// ---- Event comments ----
 
-        [HttpPost("{eventId}/reviews")]
-        public async Task<IActionResult> CreateReviewAsync([FromRoute] Guid eventId, [FromBody] Review reviewToCreate, CancellationToken token)
+        [HttpPost("{eventId}/comments")]
+        public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid eventId, [FromBody] EventComment commentToCreate, CancellationToken token)
         {
-            // TODO: Добавить проверку, что пользователь является участником ивента.
+            if (eventId != commentToCreate.EventId)
+                throw new ArgumentException("You are not allowed to create a comment for this event.");
 
-            if (eventId != reviewToCreate.EventId)
-                throw new ArgumentException("You are not allowed to create a review for this event.");
+            var command = new EventCommentCreateCommand { EventComment = commentToCreate };
+            var createdCommentId = await _mediator.Send(command);
 
-            var command = new ReviewCreateCommand { Review = reviewToCreate };
-            var createdReviewId = await _mediator.Send(command);
-
-            return Ok(createdReviewId);
+            return Ok(createdCommentId);
         }
 
-        [HttpPut("{eventId}/reviews/{reviewId}")]
-        public async Task<IActionResult> UpdateReviewAsync([FromRoute] Guid eventId, [FromRoute] Guid reviewId, [FromBody] Review reviewToUpdate, CancellationToken token)
+        [HttpPut("{eventId}/comments/{commentId}")]
+        public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] EventComment commentToUpdate, CancellationToken token)
         {
-            // TODO: Добавить проверку, что пользователь является участником ивента.
             // TODO: Добавить проверку, что пользователь является создателем отзыва.
 
-            if (eventId != reviewToUpdate.EventId)
-                throw new ArgumentException("You are not allowed to edit the review for this event.");
+            if (eventId != commentToUpdate.EventId)
+                throw new ArgumentException("You are not allowed to edit the comment for this event.");
 
-            if (reviewId != reviewToUpdate.Id)
-                throw new ArgumentException("You are not allowed to modify this review.");
+            if (commentId != commentToUpdate.Id)
+                throw new ArgumentException("You are not allowed to modify this comment.");
 
-            var command = new ReviewUpdateCommand { Review = reviewToUpdate };
+            var command = new EventCommentUpdateCommand { EventComment = commentToUpdate };
             await _mediator.Send(command);
 
             return Ok();
         }
 
 
-        [HttpDelete("{eventId}/reviews/{reviewId}")]
-        public async Task<IActionResult> DeleteReviewAsync([FromRoute] Guid eventId, [FromRoute] Guid reviewId, CancellationToken token)
+        [HttpDelete("{eventId}/comments/{commentId}")]
+        public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, CancellationToken token)
         {
-            // TODO: Добавить проверку, что пользователь является участником ивента.
             // TODO: Добавить проверку, что пользователь является создателем отзыва.
 
-            // if (id != reviewToUpdate.EventId)
-            //     throw new ArgumentException("You are not allowed to edit the review for this event.");
+            // if (id != commentToUpdate.EventId)
+            //     throw new ArgumentException("You are not allowed to edit the comment for this event.");
 
-            var command = new ReviewDeleteCommand { Id = reviewId };
+            var command = new EventCommentDeleteCommand { Id = commentId };
             await _mediator.Send(command);
 
             return Ok();
         }
 
-        [HttpGet("{eventId}/reviews")]
-        public async Task<IActionResult> GetPagedReviewsAsync([FromRoute] Guid eventId, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
+        [HttpGet("{eventId}/comments")]
+        public async Task<IActionResult> GetPagedCommentsAsync([FromRoute] Guid eventId, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var command = new ReviewGetPagedByEventQuery { EventId = eventId, PageNumber = pageNumber, PageSize = ReviewsPageSize };
-            var reviewsPage = await _mediator.Send(command);
+            var command = new EventCommentGetPagedByEventQuery { EventId = eventId, PageNumber = pageNumber, PageSize = CommentsPageSize };
+            var page = await _mediator.Send(command);
 
-            return Ok(reviewsPage);
+            return Ok(page);
         }
     }
 }

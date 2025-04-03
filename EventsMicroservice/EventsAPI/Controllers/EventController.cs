@@ -6,6 +6,8 @@ using Application.MediatR.Queries.EventCommentQueries;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Application.MediatR.Queries.SeatConfigurationQueries;
+using System.Threading;
 
 namespace EventsAPI.Controllers
 {
@@ -29,7 +31,7 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] CreateEventDTO eventToCreate, CancellationToken cancellationToken)
         {
             var command = new EventCreateCommand { Event = eventToCreate };
-            var createdEventId = await _mediator.Send(command);
+            var createdEventId = await _mediator.Send(command, cancellationToken);
 
             return Ok(createdEventId);
         }
@@ -41,7 +43,7 @@ namespace EventsAPI.Controllers
                 throw new ArgumentException("You are not allowed to modify this event.");
 
             var command = new EventUpdateCommand { Event = eventToUpdate };
-            await _mediator.Send(command);
+            await _mediator.Send(command, cancellationToken);
 
             return Ok();
         }
@@ -50,7 +52,7 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
             var command = new EventDeleteCommand { Id = id };
-            await _mediator.Send(command);
+            await _mediator.Send(command, cancellationToken);
 
             return Ok();
         }
@@ -59,7 +61,7 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var query = new EventGetByIdQuery { Id = id };
-            var @event = await _mediator.Send(query);
+            var @event = await _mediator.Send(query, cancellationToken);
 
             if (@event == null)
                 return NotFound();
@@ -71,7 +73,7 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
             var query = new EventGetPagedQuery { PageNumber = pageNumber, PageSize = EventsPageSize };
-            var page = await _mediator.Send(query);
+            var page = await _mediator.Send(query, cancellationToken);
 
             return Ok(page);
         }
@@ -85,7 +87,7 @@ namespace EventsAPI.Controllers
                 throw new ArgumentException("You are not allowed to create a comment for this event.");
 
             var command = new EventCommentCreateCommand { EventComment = commentToCreate };
-            var createdCommentId = await _mediator.Send(command);
+            var createdCommentId = await _mediator.Send(command, token);
 
             return Ok(createdCommentId);
         }
@@ -102,7 +104,7 @@ namespace EventsAPI.Controllers
                 throw new ArgumentException("You are not allowed to modify this comment.");
 
             var command = new EventCommentUpdateCommand { EventComment = commentToUpdate };
-            await _mediator.Send(command);
+            await _mediator.Send(command, token);
 
             return Ok();
         }
@@ -117,7 +119,7 @@ namespace EventsAPI.Controllers
             //     throw new ArgumentException("You are not allowed to edit the comment for this event.");
 
             var command = new EventCommentDeleteCommand { Id = commentId };
-            await _mediator.Send(command);
+            await _mediator.Send(command, token);
 
             return Ok();
         }
@@ -126,7 +128,7 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> GetPagedCommentsAsync([FromRoute] Guid eventId, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
             var command = new EventCommentGetPagedByEventQuery { EventId = eventId, PageNumber = pageNumber, PageSize = CommentsPageSize };
-            var page = await _mediator.Send(command);
+            var page = await _mediator.Send(command, cancellationToken);
 
             return Ok(page);
         }

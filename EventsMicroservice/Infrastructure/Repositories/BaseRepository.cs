@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
             _transactionContext = transactionContext;
         }
 
-        protected IClientSessionHandle CurrentSession { get => _transactionContext.CurrentSession; }
+        protected IClientSessionHandle CurrentSession { get => _transactionContext.Session; }
 
         public virtual async Task<Guid> CreateAsync(T entity, CancellationToken token = default)
         {

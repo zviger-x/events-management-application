@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
 
         public async Task CreateManyAsync(IEnumerable<Seat> seats, CancellationToken cancellationToken = default)
         {
-            await _context.Seats.InsertManyWithSessionAsync(_transactionContext.CurrentSession, seats, cancellationToken: cancellationToken);
+            await _context.Seats.InsertManyWithSessionAsync(CurrentSession, seats, cancellationToken: cancellationToken);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
 namespace Infrastructure.Contexts

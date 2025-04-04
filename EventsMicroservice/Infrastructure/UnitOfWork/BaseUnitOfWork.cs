@@ -38,28 +38,28 @@ namespace Infrastructure.UnitOfWork
 
         public virtual async Task BeginTransactionAsync(CancellationToken token = default)
         {
-            _transactionContext.CurrentSession = await _context.Client.StartSessionAsync(null, cancellationToken: token);
-            _transactionContext.CurrentSession.StartTransaction();
+            _transactionContext.Session = await _context.Client.StartSessionAsync(null, cancellationToken: token);
+            _transactionContext.Session.StartTransaction();
         }
 
         public virtual async Task CommitTransactionAsync(CancellationToken token = default)
         {
-            if (_transactionContext.CurrentSession == null)
+            if (_transactionContext.Session == null)
                 throw new InvalidOperationException("Transaction has not been started.");
 
-            await _transactionContext.CurrentSession.CommitTransactionAsync(token);
-            _transactionContext.CurrentSession.Dispose();
-            _transactionContext.CurrentSession = null;
+            await _transactionContext.Session.CommitTransactionAsync(token);
+            _transactionContext.Session.Dispose();
+            _transactionContext.Session = null;
         }
 
         public virtual async Task RollbackTransactionAsync(CancellationToken token = default)
         {
-            if (_transactionContext.CurrentSession == null)
+            if (_transactionContext.Session == null)
                 throw new InvalidOperationException("Transaction has not been started.");
 
-            await _transactionContext.CurrentSession.AbortTransactionAsync();
-            _transactionContext.CurrentSession.Dispose();
-            _transactionContext.CurrentSession = null;
+            await _transactionContext.Session.AbortTransactionAsync();
+            _transactionContext.Session.Dispose();
+            _transactionContext.Session = null;
         }
 
         public virtual async Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default)
@@ -79,8 +79,8 @@ namespace Infrastructure.UnitOfWork
 
         public virtual void Dispose()
         {
-            _transactionContext.CurrentSession?.Dispose();
-            _transactionContext.CurrentSession = null;
+            _transactionContext.Session?.Dispose();
+            _transactionContext.Session = null;
         }
     }
 }

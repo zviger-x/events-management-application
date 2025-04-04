@@ -5,16 +5,13 @@ namespace Infrastructure.Contexts
 {
     public abstract class BaseDbContext
     {
-        private static bool _isMappingRegistered = false;
-
         private Dictionary<Type, object> _collections;
         private IMongoDatabase _database;
 
         protected BaseDbContext(IMongoDatabase database)
         {
             _database = database;
-
-            _collections = new Dictionary<Type, object>();
+            _collections = new ();
         }
 
         public IMongoDatabase Database => _database;

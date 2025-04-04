@@ -4,6 +4,6 @@ namespace Infrastructure.Contexts
 {
     public class TransactionContext
     {
-        public IClientSessionHandle CurrentSession { get; set; }
+        public IClientSessionHandle Session { get; set; }
     }
 }

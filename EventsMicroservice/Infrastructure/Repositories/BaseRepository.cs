@@ -76,7 +76,7 @@ namespace Infrastructure.Repositories
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)
         {
-            return await _context.Collection<T>().FindWithSession(CurrentSession, _ => true).ToListAsync();
+            return await _context.Collection<T>().FindWithSession(CurrentSession, _ => true).ToListAsync(token);
         }
 
         public virtual async Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)

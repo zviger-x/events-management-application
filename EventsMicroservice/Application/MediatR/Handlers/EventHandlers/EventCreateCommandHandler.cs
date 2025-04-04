@@ -6,7 +6,6 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
@@ -58,9 +57,7 @@ namespace Application.MediatR.Handlers.EventHandlers
                 }
             }
 
-            #warning Изменить на массовое добавление, вместо одиночного!
-            foreach (var seat in seats)
-               await _unitOfWork.SeatRepository.CreateAsync(seat, cancellationToken);
+            await _unitOfWork.SeatRepository.CreateManyAsync(seats, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -19,6 +19,8 @@ namespace EventsAPI
 
             // Add services to the container.
             var services = builder.Services;
+            var configuration = builder.Configuration;
+            var logging = builder.Logging;
 
             // Add configs
 
@@ -27,8 +29,8 @@ namespace EventsAPI
                 .WriteTo.Console(theme: AnsiConsoleTheme.Code)
                 .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
                 .CreateLogger();
-            builder.Logging.ClearProviders();
-            builder.Logging.AddSerilog();
+            logging.ClearProviders();
+            logging.AddSerilog();
 
             // Redis
 
@@ -42,14 +44,18 @@ namespace EventsAPI
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Use cases
+            // Use cases (via MediatR)
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
 
+            // JWT
+            services.AddJwtAuthentication(configuration);
+            services.AddAuthorization();
+
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwagger();
 
             var app = builder.Build();
 
@@ -65,6 +71,7 @@ namespace EventsAPI
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

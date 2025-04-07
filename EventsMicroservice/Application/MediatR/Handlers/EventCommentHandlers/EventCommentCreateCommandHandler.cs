@@ -19,8 +19,6 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         {
             await _validator.ValidateAndThrowAsync(request.EventComment);
 
-            // TODO: Добавить проверку на то, является ли пользователь участником ивента
-
             return await _unitOfWork.EventCommentRepository.CreateAsync(request.EventComment, cancellationToken).ConfigureAwait(false);
         }
     }

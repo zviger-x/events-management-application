@@ -6,6 +6,8 @@ using Application.MediatR.Queries.EventCommentQueries;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using EventsAPI.Attributes;
 
 namespace EventsAPI.Controllers
 {
@@ -25,6 +27,7 @@ namespace EventsAPI.Controllers
 
         /// ---- Events ----
 
+        [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateEventDTO eventToCreate, CancellationToken cancellationToken)
         {
@@ -34,6 +37,7 @@ namespace EventsAPI.Controllers
             return Ok(createdEventId);
         }
 
+        [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateEventDTO eventToUpdate, CancellationToken cancellationToken)
         {
@@ -46,6 +50,7 @@ namespace EventsAPI.Controllers
             return Ok();
         }
 
+        [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
@@ -55,6 +60,7 @@ namespace EventsAPI.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
@@ -67,6 +73,7 @@ namespace EventsAPI.Controllers
             return Ok(@event);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
@@ -78,6 +85,7 @@ namespace EventsAPI.Controllers
 
         /// ---- Event comments ----
 
+        [Authorize]
         [HttpPost("{eventId}/comments")]
         public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid eventId, [FromBody] EventComment commentToCreate, CancellationToken token)
         {
@@ -90,6 +98,7 @@ namespace EventsAPI.Controllers
             return Ok(createdCommentId);
         }
 
+        [Authorize]
         [HttpPut("{eventId}/comments/{commentId}")]
         public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] EventComment commentToUpdate, CancellationToken token)
         {
@@ -107,7 +116,7 @@ namespace EventsAPI.Controllers
             return Ok();
         }
 
-
+        [Authorize]
         [HttpDelete("{eventId}/comments/{commentId}")]
         public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, CancellationToken token)
         {
@@ -122,6 +131,7 @@ namespace EventsAPI.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpGet("{eventId}/comments")]
         public async Task<IActionResult> GetPagedCommentsAsync([FromRoute] Guid eventId, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {

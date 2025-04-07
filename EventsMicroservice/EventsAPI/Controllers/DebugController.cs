@@ -1,6 +1,9 @@
 ﻿using Application.MediatR.Queries.EventCommentQueries;
 using Application.UnitOfWork.Interfaces;
+using Domain.Entities;
+using EventsAPI.Attributes;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsAPI.Controllers
@@ -34,5 +37,17 @@ namespace EventsAPI.Controllers
 
             return Ok(seats);
         }
+
+        [Authorize]
+        [HttpGet("authenticate")]
+        public IActionResult AuthenticateAll() => Ok();
+
+        [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
+        [HttpGet("authenticate-event-manager")]
+        public IActionResult AuthenticateEventManager() => Ok();
+
+        [AuthorizeRoles(UserRoles.Admin)]
+        [HttpGet("authenticate-admin")]
+        public IActionResult AuthenticateAdmin() => Ok();
     }
 }

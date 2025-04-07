@@ -60,7 +60,6 @@ namespace EventsAPI.Controllers
             return Ok();
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
@@ -73,7 +72,6 @@ namespace EventsAPI.Controllers
             return Ok(@event);
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
@@ -131,7 +129,6 @@ namespace EventsAPI.Controllers
             return Ok();
         }
 
-        [Authorize]
         [HttpGet("{eventId}/comments")]
         public async Task<IActionResult> GetPagedCommentsAsync([FromRoute] Guid eventId, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {

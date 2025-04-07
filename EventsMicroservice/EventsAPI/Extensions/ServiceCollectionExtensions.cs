@@ -3,6 +3,7 @@ using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using Domain.Entities.Interfaces;
 using EventsAPI.Configuration;
+using EventsAPI.Filters.Swagger;
 using Infrastructure.Repositories;
 using Infrastructure.Validation.Validators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -121,20 +122,7 @@ namespace EventsAPI.Extensions
                     Scheme = "Bearer"
                 });
 
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
+                options.OperationFilter<AuthorizeCheckOperationFilter>();
             });
         }
 

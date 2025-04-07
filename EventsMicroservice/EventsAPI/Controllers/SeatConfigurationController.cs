@@ -1,11 +1,13 @@
 ﻿using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.MediatR.Queries.SeatConfigurationQueries;
 using Domain.Entities;
+using EventsAPI.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsAPI.Controllers
 {
+    [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
     [ApiController]
     [Route("api/seat-configurations")]
     public class SeatConfigurationController : Controller

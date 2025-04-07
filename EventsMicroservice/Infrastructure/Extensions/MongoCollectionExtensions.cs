@@ -1,5 +1,7 @@
-﻿using MongoDB.Driver;
+﻿using MediatR;
+using MongoDB.Driver;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Infrastructure.Extensions
 {
@@ -74,19 +76,16 @@ namespace Infrastructure.Extensions
         }
 
         // ReplaceManyAsync
-        public static async Task<IEnumerable<ReplaceOneResult>> ReplaceManyWithSessionAsync<T>(
+        public static Task<BulkWriteResult<T>> ReplaceManyWithSessionAsync<T>(
             this IMongoCollection<T> collection,
             IClientSessionHandle session,
-            IEnumerable<(FilterDefinition<T> Filter, T Replacement)> replacements,
+            IEnumerable<ReplaceOneModel<T>> requests,
             ReplaceOptions options = null,
             CancellationToken cancellationToken = default)
         {
-            var tasks = replacements.Select(pair =>
-                session != null
-                    ? collection.ReplaceOneAsync(session, pair.Filter, pair.Replacement, options, cancellationToken)
-                    : collection.ReplaceOneAsync(pair.Filter, pair.Replacement, options, cancellationToken)
-            );
-            return await Task.WhenAll(tasks);
+            return session != null
+                ? collection.BulkWriteAsync(session, requests, cancellationToken: cancellationToken)
+                : collection.BulkWriteAsync(requests, cancellationToken: cancellationToken);
         }
 
         // DeleteOneAsync

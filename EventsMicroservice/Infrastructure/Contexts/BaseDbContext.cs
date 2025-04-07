@@ -3,6 +3,7 @@ using MongoDB.Driver;
 
 namespace Infrastructure.Contexts
 {
+    #warning TODO: заменить IMongoCollection на обёртку, требующую постоянно сессию в параметрах.
     public abstract class BaseDbContext
     {
         private Dictionary<Type, object> _collections;
@@ -11,7 +12,7 @@ namespace Infrastructure.Contexts
         protected BaseDbContext(IMongoDatabase database)
         {
             _database = database;
-            _collections = new ();
+            _collections = new();
         }
 
         public IMongoDatabase Database => _database;

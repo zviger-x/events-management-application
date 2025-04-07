@@ -37,6 +37,39 @@ namespace Infrastructure.Repositories
             }
         }
 
+        public override async Task DeleteManyAsync(IEnumerable<Event> entity, CancellationToken token = default)
+        {
+            using var session = await _context.Client.StartSessionAsync(cancellationToken: token);
+
+            session.StartTransaction();
+            try
+            {
+                var ids = entity.Select(e => e.Id);
+                var successfullyDeletedIds = new List<Guid>();
+
+                foreach (var id in ids)
+                {
+                    var result = await _context.Events.DeleteOneAsync(session, e => e.Id == id, cancellationToken: token);
+                    if (result.DeletedCount > 0)
+                        successfullyDeletedIds.Add(id);
+                }
+
+                // Удаляем связанные данные только для успешно удалённых event'ов
+                if (successfullyDeletedIds.Any())
+                {
+                    await _context.Seats.DeleteManyAsync(session, s => successfullyDeletedIds.Contains(s.EventId), cancellationToken: token);
+                    await _context.EventComments.DeleteManyAsync(session, ec => successfullyDeletedIds.Contains(ec.EventId), cancellationToken: token);
+                }
+
+                await session.CommitTransactionAsync(token);
+            }
+            catch
+            {
+                await session.AbortTransactionAsync(token);
+                throw;
+            }
+        }
+
         public override async Task<Event> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             var query = _context.Events

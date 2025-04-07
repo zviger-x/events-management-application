@@ -5,9 +5,12 @@ using MongoDB.Driver;
 using Infrastructure.Contexts;
 using System.Linq.Expressions;
 using Infrastructure.Extensions;
+using System.Linq;
+using System.Xml;
 
 namespace Infrastructure.Repositories
 {
+    #warning TODO: Убрать обнуление ID из репозитория, это не его ответственность.
     public abstract class BaseRepository<T> : IRepository<T>
         where T : class, IEntity
     {
@@ -31,10 +34,28 @@ namespace Infrastructure.Repositories
             return entity.Id;
         }
 
+        public virtual async Task CreateManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            foreach (var entity in entities)
+                entity.Id = Guid.NewGuid();
+
+            await _context.Collection<T>().InsertManyWithSessionAsync(CurrentSession, entities, cancellationToken: token);
+        }
+
         public virtual async Task UpdateAsync(T entity, CancellationToken token = default)
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, entity.Id);
             await _context.Collection<T>().ReplaceOneWithSessionAsync(CurrentSession, filter, entity, cancellationToken: token);
+        }
+
+        public virtual async Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            var requests = entities.Select(entity =>
+                new ReplaceOneModel<T>(
+                    Builders<T>.Filter.Eq(e => e.Id, entity.Id),
+                    entity));
+
+            await _context.Collection<T>().ReplaceManyWithSessionAsync(CurrentSession, requests, cancellationToken: token);
         }
 
         /// <remarks>
@@ -65,6 +86,17 @@ namespace Infrastructure.Repositories
         {
             var filter = Builders<T>.Filter.Eq(e => e.Id, entity.Id);
             await _context.Collection<T>().DeleteOneWithSessionAsync(CurrentSession, filter, cancellationToken: token);
+        }
+
+        /// <remarks>
+        /// Removes multiple entities and automatically saves the changes to the database within a transaction.
+        /// Does not support cascading deletes by default.
+        /// </remarks>
+        public virtual async Task DeleteManyAsync(IEnumerable<T> entity, CancellationToken token = default)
+        {
+            var ids = entity.Select(e => e.Id);
+            var filter = Builders<T>.Filter.In(e => e.Id, ids);
+            await _context.Collection<T>().DeleteManyWithSessionAsync(CurrentSession, filter, cancellationToken: token);
         }
 
         public virtual async Task<T> GetByIdAsync(Guid id, CancellationToken token = default)

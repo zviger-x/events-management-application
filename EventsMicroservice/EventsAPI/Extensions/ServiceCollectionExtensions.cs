@@ -69,6 +69,9 @@ namespace EventsAPI.Extensions
 
             services.AddScoped<IRepository<SeatConfiguration>, SeatConfigurationRepository>();
             services.AddScoped<ISeatConfigurationRepository, SeatConfigurationRepository>();
+
+            services.AddScoped<IRepository<EventUser>, EventUserRepository>();
+            services.AddScoped<IEventUserRepository, EventUserRepository>();
         }
 
         public static void AddValidators(this IServiceCollection services)

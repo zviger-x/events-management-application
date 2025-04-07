@@ -5,8 +5,6 @@ using MongoDB.Driver;
 using Infrastructure.Contexts;
 using System.Linq.Expressions;
 using Infrastructure.Extensions;
-using System.Linq;
-using System.Xml;
 
 namespace Infrastructure.Repositories
 {

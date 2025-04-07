@@ -4,9 +4,9 @@ using Infrastructure.Contexts;
 
 namespace Infrastructure.Repositories
 {
-    public class SeatRepository : BaseRepository<Seat>, ISeatRepository
+    public class EventUserRepository : BaseRepository<EventUser>, IEventUserRepository
     {
-        public SeatRepository(EventDbContext context, TransactionContext transactionContext)
+        public EventUserRepository(EventDbContext context, TransactionContext transactionContext)
             : base(context, transactionContext)
         {
         }

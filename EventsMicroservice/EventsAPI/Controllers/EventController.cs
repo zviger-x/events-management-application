@@ -82,6 +82,7 @@ namespace EventsAPI.Controllers
         }
 
         /// ---- Event comments ----
+        #warning TODO: УБРАТЬ В КОНТРОЛЛЕР КОМЕНТОВ!!
 
         [Authorize]
         [HttpPost("{eventId}/comments")]

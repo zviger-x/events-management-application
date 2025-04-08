@@ -127,6 +127,7 @@ namespace EventsAPI.Extensions
                 });
 
                 options.OperationFilter<AuthorizeCheckOperationFilter>();
+                options.OperationFilter<RouteGroupingOperationFilter>(1); // Число 1 соответствует events в "api/events/~"
             });
         }
 

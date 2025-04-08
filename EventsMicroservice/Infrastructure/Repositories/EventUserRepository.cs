@@ -10,5 +10,10 @@ namespace Infrastructure.Repositories
             : base(context, transactionContext)
         {
         }
+
+        public async Task<PagedCollection<EventUser>> GetPagedByEventAsync(Guid eventId, int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            return await GetPagedByFilterAsync(e => e.EventId == eventId, pageNumber, pageSize, token);
+        }
     }
 }

@@ -15,6 +15,12 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
         public async Task<PagedCollection<SeatConfiguration>> Handle(SeatConfigurationGetPagedQuery request, CancellationToken cancellationToken)
         {
+            if (request.PageNumber < 1)
+                throw new ArgumentOutOfRangeException(nameof(request.PageNumber));
+
+            if (request.PageSize < 1)
+                throw new ArgumentOutOfRangeException(nameof(request.PageSize));
+
             return await _unitOfWork.SeatConfigurationRepository.GetPagedAsync(request.PageNumber, request.PageSize, cancellationToken).ConfigureAwait(false);
         }
     }

@@ -25,7 +25,7 @@ namespace EventsAPI.Filters.Swagger
             if (routeParts.Length <= _groupByWordIndex)
                 return;
 
-            var groupName = $"Route [{routeParts[_groupByWordIndex]}]";
+            var groupName = $"Routes \"{routeParts[_groupByWordIndex]}\"";
             operation.Tags = new List<OpenApiTag> { new OpenApiTag { Name = groupName } };
         }
     }

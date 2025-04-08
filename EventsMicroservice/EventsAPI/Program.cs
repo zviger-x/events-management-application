@@ -55,7 +55,7 @@ namespace EventsAPI
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            services.AddSwagger();
+            services.AddSwagger(true, 1);
 
             var app = builder.Build();
 

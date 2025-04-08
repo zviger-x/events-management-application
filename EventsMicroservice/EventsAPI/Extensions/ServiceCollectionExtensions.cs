@@ -114,7 +114,7 @@ namespace EventsAPI.Extensions
                 });
         }
 
-        public static void AddSwagger(this IServiceCollection services)
+        public static void AddSwagger(this IServiceCollection services, bool useRouteGrouping = false, int routeWordOffset = 0)
         {
             services.AddSwaggerGen(options =>
             {
@@ -127,7 +127,9 @@ namespace EventsAPI.Extensions
                 });
 
                 options.OperationFilter<AuthorizeCheckOperationFilter>();
-                options.OperationFilter<RouteGroupingOperationFilter>(1); // Число 1 соответствует events в "api/events/~"
+
+                if (useRouteGrouping)
+                    options.OperationFilter<RouteGroupingOperationFilter>(routeWordOffset);
             });
         }
 

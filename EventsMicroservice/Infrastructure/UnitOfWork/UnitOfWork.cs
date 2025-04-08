@@ -8,6 +8,7 @@ namespace Infrastructure.UnitOfWork
     public class UnitOfWork : BaseUnitOfWork, IUnitOfWork
     {
         private Lazy<IEventRepository> _eventRepository;
+        private Lazy<IEventUserRepository> _eventUserRepository;
         private Lazy<IEventCommentRepository> _eventCommentRepository;
         private Lazy<ISeatRepository> _seatRepository;
         private Lazy<ISeatConfigurationRepository> _seatConfigurationRepository;
@@ -16,12 +17,15 @@ namespace Infrastructure.UnitOfWork
             : base(context, transactionContext, serviceProvider)
         {
             _eventRepository = new Lazy<IEventRepository>(_serviceProvider.GetRequiredService<IEventRepository>);
+            _eventUserRepository = new Lazy<IEventUserRepository>(_serviceProvider.GetRequiredService<IEventUserRepository>);
             _eventCommentRepository = new Lazy<IEventCommentRepository>(_serviceProvider.GetRequiredService<IEventCommentRepository>);
             _seatRepository = new Lazy<ISeatRepository>(_serviceProvider.GetRequiredService<ISeatRepository>);
             _seatConfigurationRepository = new Lazy<ISeatConfigurationRepository>(_serviceProvider.GetRequiredService<ISeatConfigurationRepository>);
         }
 
         public IEventRepository EventRepository => _eventRepository.Value;
+
+        public IEventUserRepository EventUserRepository => _eventUserRepository.Value;
 
         public IEventCommentRepository EventCommentRepository => _eventCommentRepository.Value;
 
@@ -35,6 +39,9 @@ namespace Infrastructure.UnitOfWork
 
             if (_eventRepository.IsValueCreated)
                 _eventRepository.Value.Dispose();
+
+            if (_eventUserRepository.IsValueCreated)
+                _eventUserRepository.Value.Dispose();
 
             if (_eventCommentRepository.IsValueCreated)
                 _eventCommentRepository.Value.Dispose();

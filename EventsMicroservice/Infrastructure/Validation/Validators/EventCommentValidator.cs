@@ -41,7 +41,7 @@ namespace Infrastructure.Validation.Validators
                     .WithErrorCode(EventCommentValidationErrorCodes.TextIsTooLong);
 
             RuleFor(r => r.CreationTime)
-                .GreaterThan(DateTime.MinValue)
+                .GreaterThan(_ => DateTime.MinValue)
                     .WithMessage(EventCommentValidationMessages.CreationTimeIsInvalid)
                     .WithErrorCode(EventCommentValidationErrorCodes.CreationTimeIsInvalid);
         }

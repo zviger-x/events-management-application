@@ -27,7 +27,7 @@ namespace Infrastructure.Validation.Validators
                     .WithErrorCode(EventValidationErrorCodes.DescriptionIsEmpty);
 
             RuleFor(e => e.StartDate)
-                .GreaterThan(DateTime.Now)
+                .GreaterThan(_ => DateTime.Now)
                     .WithMessage(EventValidationMessages.StartDateInvalid)
                     .WithErrorCode(EventValidationErrorCodes.StartDateInvalid);
 

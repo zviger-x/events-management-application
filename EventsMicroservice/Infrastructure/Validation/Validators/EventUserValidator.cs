@@ -27,7 +27,7 @@ namespace Infrastructure.Validation.Validators
                     .WithErrorCode(EventUserValidationErrorCodes.UserIdIsEmpty);
 
             RuleFor(eu => eu.RegisteredAt)
-                .LessThanOrEqualTo(DateTime.UtcNow)
+                .LessThanOrEqualTo(_ => DateTime.UtcNow)
                     .WithMessage(EventUserValidationMessages.RegistrationTimeIsInvalid)
                     .WithErrorCode(EventUserValidationErrorCodes.RegistrationTimeIsInvalid);
         }

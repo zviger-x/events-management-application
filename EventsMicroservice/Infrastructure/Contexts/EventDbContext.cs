@@ -11,7 +11,8 @@ namespace Infrastructure.Contexts
         }
 
         public IMongoCollection<Event> Events => Collection<Event>();
-        public IMongoCollection<Seat> Seats => Collection<Seat>();
         public IMongoCollection<EventComment> EventComments => Collection<EventComment>();
+        public IMongoCollection<EventUser> EventUsers => Collection<EventUser>();
+        public IMongoCollection<Seat> Seats => Collection<Seat>();
     }
 }

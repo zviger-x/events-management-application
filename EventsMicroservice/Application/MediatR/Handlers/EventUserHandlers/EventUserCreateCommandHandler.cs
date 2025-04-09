@@ -17,21 +17,51 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
         public async Task<Guid> Handle(EventUserCreateCommand request, CancellationToken cancellationToken)
         {
-            var eventUser = new EventUser { EventId = request.EventId, UserId = request.UserId, RegisteredAt = DateTime.UtcNow };
+            var eventUser = new EventUser
+            {
+                EventId = request.EventId,
+                UserId = request.UserId,
+                SeatId = request.SeatId,
+                RegisteredAt = DateTime.UtcNow
+            };
 
             await _validator.ValidateAndThrowAsync(eventUser);
 
+            // Проверка на существование ивента с таким ID
             var @event = await _unitOfWork.EventRepository.GetByIdAsync(eventUser.EventId, cancellationToken);
             if (@event == null)
-                throw new ArgumentException("There is no event with this Id.", nameof(eventUser.EventId));
+                throw new ArgumentException("There is no event with this Id.");
+
+            // Проверка на существование места на ивенте с таким ID
+            var seat = await _unitOfWork.SeatRepository.GetByIdAsync(eventUser.SeatId, cancellationToken);
+            if (seat == null)
+                throw new ArgumentException("There is no seat with this Id.");
+
+            // Проверка принадлежит ли место к этому ивенту
+            if (seat.EventId != @event.Id)
+                throw new ArgumentException("This seat does not belong to this event");
+
+            // Проверка на то, что место куплено
+            if (seat.IsBought)
+                throw new ArgumentException("This seat has already been bought");
 
             // TODO: Добавить проверку наличия пользователя (gRPC запрос)
 
+            // Проверка подписан ли пользователь на этот ивент.
+            // TODO: А нужна ли проверка на то, что пользователь подписан на ивент? Может в будущем реализовать возможность покупки нескольких билетов?
             var isRegistered = (await _unitOfWork.EventUserRepository.GetAllAsync(cancellationToken)).Any(e => e.UserId == request.UserId);
             if (isRegistered)
                 throw new ArgumentException("User is already registered.");
 
-            return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, cancellationToken).ConfigureAwait(false);
+            // Помечаем сиденье купленным и создаём "ивент" пользователя
+            // Возвращаем из транзакции ID созданного EventUser
+            return await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            {
+                seat.IsBought = true;
+                await _unitOfWork.SeatRepository.UpdateAsync(seat);
+
+                return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, cancellationToken).ConfigureAwait(false);
+            }, cancellationToken);
         }
     }
 }

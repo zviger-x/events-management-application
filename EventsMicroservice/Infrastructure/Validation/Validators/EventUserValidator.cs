@@ -26,6 +26,14 @@ namespace Infrastructure.Validation.Validators
                     .WithMessage(EventUserValidationMessages.UserIdIsEmpty)
                     .WithErrorCode(EventUserValidationErrorCodes.UserIdIsEmpty);
 
+            RuleFor(eu => eu.SeatId)
+                .NotNull()
+                    .WithMessage(EventUserValidationMessages.SeatIdIsNull)
+                    .WithErrorCode(EventUserValidationErrorCodes.SeatIdIsNull)
+                .NotEmpty()
+                    .WithMessage(EventUserValidationMessages.SeatIdIsEmpty)
+                    .WithErrorCode(EventUserValidationErrorCodes.SeatIdIsEmpty);
+
             RuleFor(eu => eu.RegisteredAt)
                 .LessThanOrEqualTo(_ => DateTime.UtcNow)
                     .WithMessage(EventUserValidationMessages.RegistrationTimeIsInvalid)

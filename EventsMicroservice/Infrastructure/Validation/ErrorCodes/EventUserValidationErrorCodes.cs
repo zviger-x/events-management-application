@@ -8,6 +8,9 @@
         public const string UserIdIsNull = "userIdIsNull";
         public const string UserIdIsEmpty = "userIdIsEmpty";
 
+        public const string SeatIdIsNull = "seatIdIsNull";
+        public const string SeatIdIsEmpty = "seatIdIsEmpty";
+
         public const string RegistrationTimeIsInvalid = "registrationTimeIsInvalid";
     }
 }

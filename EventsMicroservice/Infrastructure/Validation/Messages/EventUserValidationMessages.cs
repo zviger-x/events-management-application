@@ -8,6 +8,9 @@
         public const string UserIdIsNull = "User ID cannot be null.";
         public const string UserIdIsEmpty = "User ID cannot be empty.";
 
+        public const string SeatIdIsNull = "Seat ID cannot be null.";
+        public const string SeatIdIsEmpty = "Seat ID cannot be empty.";
+
         public const string RegistrationTimeIsInvalid = "Registration time cannot be in the future.";
     }
 }

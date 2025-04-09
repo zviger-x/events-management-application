@@ -23,11 +23,11 @@ namespace EventsAPI.Controllers
         }
 
         [Authorize]
-        [HttpPost("/api/events/{id}/register")]
-        public async Task<IActionResult> RegisterUser([FromRoute] Guid id, CancellationToken cancellationToken)
+        [HttpPost("/api/events/{eventId}/seats/{seatId}/register")]
+        public async Task<IActionResult> RegisterUser([FromRoute] Guid eventId, [FromRoute] Guid seatId, CancellationToken cancellationToken)
         {
             var userId = User.GetUserIdOrThrow();
-            var command = new EventUserCreateCommand { EventId = id, UserId = userId };
+            var command = new EventUserCreateCommand { EventId = eventId, UserId = userId, SeatId = seatId };
 
             var registeredUserId = await _mediator.Send(command, cancellationToken);
 

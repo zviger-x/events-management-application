@@ -16,9 +16,21 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
         public async Task Handle(EventUserDeleteCommand request, CancellationToken cancellationToken)
         {
-            var eventUser = new EventUser() { Id = request.Id };
+            var eventUser = await _unitOfWork.EventUserRepository.GetByIdAsync(request.Id, cancellationToken);
+            if (eventUser == null)
+                return;
 
-            await _unitOfWork.EventUserRepository.DeleteAsync(eventUser, cancellationToken).ConfigureAwait(false);
+            var seat = await _unitOfWork.SeatRepository.GetByIdAsync(eventUser.SeatId, cancellationToken);
+            if (seat == null)
+                throw new ArgumentNullException(nameof(seat), "No seat found for which user is registered.");
+
+            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            {
+                seat.IsBought = false;
+                await _unitOfWork.SeatRepository.UpdateAsync(seat, cancellationToken);
+
+                await _unitOfWork.EventUserRepository.DeleteAsync(eventUser, cancellationToken).ConfigureAwait(false);
+            });
         }
     }
 }

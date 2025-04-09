@@ -26,6 +26,7 @@ namespace Infrastructure.Repositories
                 {
                     await _context.Seats.DeleteManyAsync(session, s => s.EventId == entity.Id, cancellationToken: token);
                     await _context.EventComments.DeleteManyAsync(session, ec => ec.EventId == entity.Id, cancellationToken: token);
+                    await _context.EventUsers.DeleteManyAsync(session, eu => eu.EventId == entity.Id, cancellationToken: token);
                 }
 
                 await session.CommitTransactionAsync(token);

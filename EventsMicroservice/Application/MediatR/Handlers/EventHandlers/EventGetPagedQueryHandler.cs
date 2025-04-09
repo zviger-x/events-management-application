@@ -3,6 +3,7 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Shared.Common;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {

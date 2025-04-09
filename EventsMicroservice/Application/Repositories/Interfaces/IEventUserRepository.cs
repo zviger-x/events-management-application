@@ -1,4 +1,6 @@
 ﻿using Domain.Entities;
+using Shared.Common;
+using Shared.Repositories.Interfaces;
 
 namespace Application.Repositories.Interfaces
 {

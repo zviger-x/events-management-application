@@ -1,7 +1,7 @@
-﻿using Application.Repositories.Interfaces;
-using Domain.Entities.Interfaces;
+﻿using Shared.Entities.Interfaces;
+using Shared.Repositories.Interfaces;
 
-namespace Application.UnitOfWork.Interfaces
+namespace Shared.UnitOfWork
 {
     public interface IBaseUnitOfWork : IDisposable
     {

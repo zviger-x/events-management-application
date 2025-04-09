@@ -1,9 +1,10 @@
 ﻿using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.MediatR.Queries.SeatConfigurationQueries;
 using Domain.Entities;
-using EventsAPI.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Attributes;
+using Shared.Enums;
 
 namespace EventsAPI.Controllers
 {

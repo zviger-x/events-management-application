@@ -1,4 +1,4 @@
-﻿namespace EventsAPI.Configuration
+﻿namespace Shared.Configuration
 {
     public class JwtTokenConfig
     {

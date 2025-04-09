@@ -7,7 +7,8 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using EventsAPI.Attributes;
+using Shared.Attributes;
+using Shared.Enums;
 
 namespace EventsAPI.Controllers
 {

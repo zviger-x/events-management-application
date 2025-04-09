@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities.Interfaces
+﻿namespace Shared.Entities.Interfaces
 {
     public interface IEntity
     {

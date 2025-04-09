@@ -2,11 +2,12 @@ using Application.Mapping;
 using Application.UnitOfWork.Interfaces;
 using EventsAPI.Configuration;
 using EventsAPI.Extensions;
-using EventsAPI.Middlewares;
 using Infrastructure.Contexts;
 using Infrastructure.UnitOfWork;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using Shared.Extensions;
+using Shared.Middlewares;
 using System.Reflection;
 
 namespace EventsAPI
@@ -50,7 +51,7 @@ namespace EventsAPI
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
 
             // JWT
-            services.AddJwtAuthentication(configuration);
+            services.AddJwtAuthentication(configuration, "jwt");
             services.AddAuthorization();
 
             services.AddControllers();

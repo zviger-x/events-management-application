@@ -1,8 +1,8 @@
-﻿using Application.Repositories.Interfaces;
-using Application.UnitOfWork.Interfaces;
-using Domain.Entities.Interfaces;
-using Infrastructure.Contexts;
+﻿using Infrastructure.Contexts;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Entities.Interfaces;
+using Shared.Repositories.Interfaces;
+using Shared.UnitOfWork;
 
 namespace Infrastructure.UnitOfWork
 {

@@ -1,10 +1,10 @@
 ﻿using Application.MediatR.Queries.EventCommentQueries;
 using Application.UnitOfWork.Interfaces;
-using Domain.Entities;
-using EventsAPI.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Attributes;
+using Shared.Enums;
 
 namespace EventsAPI.Controllers
 {

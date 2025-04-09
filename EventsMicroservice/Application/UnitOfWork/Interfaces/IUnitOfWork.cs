@@ -1,4 +1,5 @@
 ﻿using Application.Repositories.Interfaces;
+using Shared.UnitOfWork;
 
 namespace Application.UnitOfWork.Interfaces
 {

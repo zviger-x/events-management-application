@@ -1,9 +1,9 @@
-﻿using Domain.Entities.Interfaces;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
+using Shared.Entities.Interfaces;
 
 namespace Infrastructure.Contexts
 {
-    #warning TODO: заменить IMongoCollection на обёртку, требующую постоянно сессию в параметрах.
+#warning TODO: заменить IMongoCollection на обёртку, требующую постоянно сессию в параметрах.
     public abstract class BaseDbContext
     {
         private Dictionary<Type, object> _collections;

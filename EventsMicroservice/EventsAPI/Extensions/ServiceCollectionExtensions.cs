@@ -1,21 +1,17 @@
 ﻿using Application.Repositories.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
-using Domain.Entities.Interfaces;
 using EventsAPI.Configuration;
-using EventsAPI.Filters.Swagger;
 using Infrastructure.Repositories;
 using Infrastructure.Validation.Validators;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Serilog;
+using Shared.Entities.Interfaces;
+using Shared.Repositories.Interfaces;
 using System.Reflection;
-using System.Text;
 
 namespace EventsAPI.Extensions
 {
@@ -24,7 +20,7 @@ namespace EventsAPI.Extensions
         public static void AddMongoServer(this IServiceCollection services, MongoServerConfig mongoServerConfig)
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
-
+            
             services.AddSingleton<IMongoClient>(new MongoClient(mongoServerConfig.ConnectionString));
             services.AddScoped<IMongoDatabase>(provider =>
             {
@@ -37,6 +33,7 @@ namespace EventsAPI.Extensions
             // без изменения сущностей. Т.е. не придётся менять сущности
             // и добавлять для каждой атрибут [BsonId]
 
+            // Вынести эту логику куда-нибудь в другое место
             Log.Information($"Registering Guid for MongoDB...");
 
             var entityTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -89,50 +86,6 @@ namespace EventsAPI.Extensions
         // public static void AddCachingServices(this IServiceCollection services)
         // {
         // }
-
-        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
-        {
-
-            var jwtConfig = configuration.GetSection("Jwt").Get<JwtTokenConfig>();
-            if (jwtConfig == null)
-                throw new ArgumentNullException(nameof(jwtConfig));
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtConfig.Issuer,
-                        ValidAudience = jwtConfig.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
-        }
-
-        public static void AddSwagger(this IServiceCollection services, bool useRouteGrouping = false, int routeWordOffset = 0)
-        {
-            services.AddSwaggerGen(options =>
-            {
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                {
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer"
-                });
-
-                options.OperationFilter<AuthorizeCheckOperationFilter>();
-                options.OperationFilter<RolesOperationFilter>();
-
-                if (useRouteGrouping)
-                    options.OperationFilter<RouteGroupingOperationFilter>(routeWordOffset);
-            });
-        }
 
         private static void RegisterGuid<T>()
             where T : class, IEntity

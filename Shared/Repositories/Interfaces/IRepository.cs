@@ -1,7 +1,7 @@
-﻿using Domain.Entities;
-using Domain.Entities.Interfaces;
+﻿using Shared.Common;
+using Shared.Entities.Interfaces;
 
-namespace Application.Repositories.Interfaces
+namespace Shared.Repositories.Interfaces
 {
     public interface IRepository<T> : IDisposable
         where T : class, IEntity

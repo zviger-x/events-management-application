@@ -1,7 +1,9 @@
-﻿using Application.Exceptions;
-using FluentValidation;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
 
-namespace EventsAPI.Middlewares
+namespace Shared.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
@@ -62,17 +64,21 @@ namespace EventsAPI.Middlewares
             await context.Response.WriteAsJsonAsync(response);
         }
 
+        /// <summary>
+        /// Returns an object in a standardized format:
+        /// <code>
+        /// {
+        ///     "errors": {
+        ///         "unexpectedError": {
+        ///             "propertyName": null,
+        ///             "serverMessage": "An unexpected error occurred."
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        /// </summary>
         private object GetSingleErrorResponse(string code, string message, string propertyName = null)
         {
-            // {
-            //     "errors": {
-            //         "unexpectedError": {
-            //             "propertyName": null,
-            //             "serverMessage": "An unexpected error occurred."
-            //         }
-            //     }
-            // }
-
             return new
             {
                 errors = new Dictionary<string, object>

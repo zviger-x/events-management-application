@@ -1,8 +1,7 @@
-﻿using Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
-using System.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Shared.Enums;
 
-namespace EventsAPI.Attributes
+namespace Shared.Attributes
 {
     public class AuthorizeRolesAttribute : AuthorizeAttribute
     {

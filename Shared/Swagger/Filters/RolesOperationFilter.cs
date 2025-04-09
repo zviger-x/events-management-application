@@ -2,7 +2,7 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace EventsAPI.Filters.Swagger
+namespace Shared.Swagger.Filters
 {
     public class RolesOperationFilter : IOperationFilter
     {
@@ -22,10 +22,10 @@ namespace EventsAPI.Filters.Swagger
                 .Select(r => r.Trim())
                 .Distinct();
 
-            operation.Description = $"Требуется авторизация";
+            operation.Description = $"Authorization required";
 
             if (roles.Any())
-                operation.Description += $"<br/><br/>Требуемые роли: <b>{string.Join(", ", roles)}<b/>";
+                operation.Description += $"<br/><br/>Required roles: <b>{string.Join(", ", roles)}<b/>";
         }
     }
 }

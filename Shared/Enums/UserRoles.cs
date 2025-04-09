@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+﻿namespace Shared.Enums
 {
     public enum UserRoles
     {

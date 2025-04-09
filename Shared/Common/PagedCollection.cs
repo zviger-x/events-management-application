@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+﻿namespace Shared.Common
 {
     public class PagedCollection<T>
     {

@@ -1,14 +1,14 @@
-﻿using Application.Repositories.Interfaces;
-using Domain.Entities.Interfaces;
-using Domain.Entities;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using Infrastructure.Contexts;
 using System.Linq.Expressions;
 using Infrastructure.Extensions;
+using Shared.Common;
+using Shared.Repositories.Interfaces;
+using Shared.Entities.Interfaces;
 
 namespace Infrastructure.Repositories
 {
-    #warning TODO: Убрать обнуление ID из репозитория, это не его ответственность.
+#warning TODO: Убрать обнуление ID из репозитория, это не его ответственность.
     public abstract class BaseRepository<T> : IRepository<T>
         where T : class, IEntity
     {

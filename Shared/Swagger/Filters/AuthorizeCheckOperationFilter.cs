@@ -2,7 +2,7 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace EventsAPI.Filters.Swagger
+namespace Shared.Swagger.Filters
 {
     public class AuthorizeCheckOperationFilter : IOperationFilter
     {

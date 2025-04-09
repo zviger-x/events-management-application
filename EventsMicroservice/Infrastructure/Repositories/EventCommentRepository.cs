@@ -1,6 +1,7 @@
 ﻿using Application.Repositories.Interfaces;
 using Domain.Entities;
 using Infrastructure.Contexts;
+using Shared.Common;
 
 namespace Infrastructure.Repositories
 {

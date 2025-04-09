@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using MediatR;
+using Shared.Common;
 
 namespace Application.MediatR.Queries.EventCommentQueries
 {

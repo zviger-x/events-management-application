@@ -127,6 +127,7 @@ namespace EventsAPI.Extensions
                 });
 
                 options.OperationFilter<AuthorizeCheckOperationFilter>();
+                options.OperationFilter<RolesOperationFilter>();
 
                 if (useRouteGrouping)
                     options.OperationFilter<RouteGroupingOperationFilter>(routeWordOffset);

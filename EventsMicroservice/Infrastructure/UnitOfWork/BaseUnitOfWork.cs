@@ -77,6 +77,23 @@ namespace Infrastructure.UnitOfWork
             }
         }
 
+        public async Task<T> InvokeWithTransactionAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken token = default)
+        {
+            await BeginTransactionAsync(token);
+            try
+            {
+                var result = await action(token);
+                await CommitTransactionAsync(token);
+
+                return result;
+            }
+            catch
+            {
+                await RollbackTransactionAsync(token);
+                throw;
+            }
+        }
+
         public virtual void Dispose()
         {
             _transactionContext.Session?.Dispose();

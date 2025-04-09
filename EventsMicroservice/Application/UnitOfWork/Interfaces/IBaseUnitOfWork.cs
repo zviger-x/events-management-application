@@ -32,5 +32,14 @@ namespace Application.UnitOfWork.Interfaces
         /// <param name="action">The action to execute within the transaction.</param>
         /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         Task InvokeWithTransactionAsync(Func<CancellationToken, Task> action, CancellationToken token = default);
+
+        /// <summary>
+        /// Executes an action within a transaction.
+        /// Saving all changes to the database and commits the current transaction.
+        /// </summary>
+        /// <param name="action">The action to execute within the transaction.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
+        /// <returns>An object that can be returned within a transaction</returns>
+        Task<T> InvokeWithTransactionAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken token = default);
     }
 }

@@ -70,6 +70,7 @@ namespace Shared.Extensions
         /// registers it with the service collection, and returns the configured instance.
         /// </summary>
         /// <typeparam name="TConfig">The type of the configuration class to bind to.</typeparam>
+        /// <param name="services">The service collection to register the configuration with.</param>
         /// <param name="configuration">The application's configuration root.</param>
         /// <param name="sectionName">The name of the configuration section to bind.</param>
         /// <returns>The registered configuration instance.</returns>

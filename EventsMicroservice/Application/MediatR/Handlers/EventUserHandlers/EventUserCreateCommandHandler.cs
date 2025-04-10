@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
@@ -31,20 +31,20 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             // Проверка на существование ивента с таким ID
             var @event = await _unitOfWork.EventRepository.GetByIdAsync(eventUser.EventId, cancellationToken);
             if (@event == null)
-                throw new ArgumentException("There is no event with this Id.");
+                throw new ParameterException("There is no event with this Id.");
 
             // Проверка на существование места на ивенте с таким ID
             var seat = await _unitOfWork.SeatRepository.GetByIdAsync(eventUser.SeatId, cancellationToken);
             if (seat == null)
-                throw new ArgumentException("There is no seat with this Id.");
+                throw new ParameterException("There is no seat with this Id.");
 
             // Проверка принадлежит ли место к этому ивенту
             if (seat.EventId != @event.Id)
-                throw new ArgumentException("This seat does not belong to this event");
+                throw new ParameterException("This seat does not belong to this event");
 
             // Проверка на то, что место куплено
             if (seat.IsBought)
-                throw new ArgumentException("This seat has already been bought");
+                throw new ParameterException("This seat has already been bought");
 
             // TODO: Добавить проверку наличия пользователя (gRPC запрос)
 
@@ -52,7 +52,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             // TODO: А нужна ли проверка на то, что пользователь подписан на ивент? Может в будущем реализовать возможность покупки нескольких билетов?
             var isRegistered = (await _unitOfWork.EventUserRepository.GetAllAsync(cancellationToken)).Any(e => e.UserId == request.UserId);
             if (isRegistered)
-                throw new ArgumentException("User is already registered.");
+                throw new ParameterException("User is already registered.");
 
             // Помечаем сиденье купленным и создаём "ивент" пользователя
             // Возвращаем из транзакции ID созданного EventUser

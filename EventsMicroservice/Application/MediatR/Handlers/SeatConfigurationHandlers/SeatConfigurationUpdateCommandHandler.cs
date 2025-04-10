@@ -5,8 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
-using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
@@ -20,10 +19,10 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         public async Task Handle(SeatConfigurationUpdateCommand request, CancellationToken cancellationToken)
         {
             if (request.SeatConfiguration == null)
-                throw new ArgumentNullException(nameof(request.SeatConfiguration));
+                throw new ParameterNullException(nameof(request.SeatConfiguration));
 
             if (request.RouteSeatId != request.SeatConfiguration.Id)
-                throw new ArgumentException("You are not allowed to modify this configuration.");
+                throw new ParameterException("You are not allowed to modify this configuration.");
 
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 

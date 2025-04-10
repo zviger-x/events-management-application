@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions.ServerExceptions;
 using FluentValidationException = FluentValidation.ValidationException;
-using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
-using UnauthorizedAccessException = Shared.Exceptions.ServerExceptions.UnauthorizedAccessException;
 
 namespace Shared.Middlewares
 {
@@ -59,13 +57,13 @@ namespace Shared.Middlewares
             {
                 case FluentValidationException:
                 case ValidationException:
-                case ArgumentException:
+                case ParameterException:
                     return StatusCodes.Status400BadRequest;
 
                 case NotFoundException:
                     return StatusCodes.Status404NotFound;
 
-                case UnauthorizedAccessException:
+                case UnauthorizedException:
                     return StatusCodes.Status401Unauthorized;
 
                 case ForbiddenAccessException:

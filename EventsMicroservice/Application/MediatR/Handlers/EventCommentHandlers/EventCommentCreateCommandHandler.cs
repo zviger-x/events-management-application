@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
@@ -19,10 +19,10 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         public async Task<Guid> Handle(EventCommentCreateCommand request, CancellationToken cancellationToken)
         {
             if (request.EventComment == null)
-                throw new ArgumentNullException(nameof(request.EventComment));
+                throw new ParameterNullException(nameof(request.EventComment));
 
             if (request.RouteEventId != request.EventComment.EventId)
-                throw new ArgumentException("You are not allowed to create a comment for this event.");
+                throw new ParameterException("You are not allowed to create a comment for this event.");
 
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 

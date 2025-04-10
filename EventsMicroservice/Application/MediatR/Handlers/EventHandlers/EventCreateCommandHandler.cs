@@ -6,8 +6,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
-using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
@@ -21,13 +20,13 @@ namespace Application.MediatR.Handlers.EventHandlers
         public async Task<Guid> Handle(EventCreateCommand request, CancellationToken cancellationToken)
         {
             if (request.Event == null)
-                throw new ArgumentNullException(nameof(request.Event));
+                throw new ParameterNullException(nameof(request.Event));
 
             await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
 
             var seatConfiguration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Event.SeatConfigurationId, cancellationToken);
             if (seatConfiguration == null)
-                throw new ArgumentException("There is no seat configuration with this Id.");
+                throw new ParameterException("There is no seat configuration with this Id.");
 
             var @event = _mapper.Map<Event>(request.Event);
             

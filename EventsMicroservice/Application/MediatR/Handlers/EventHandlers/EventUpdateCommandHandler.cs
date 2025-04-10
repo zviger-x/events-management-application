@@ -6,8 +6,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
-using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
@@ -21,10 +20,10 @@ namespace Application.MediatR.Handlers.EventHandlers
         public async Task Handle(EventUpdateCommand request, CancellationToken cancellationToken)
         {
             if (request.Event == null)
-                throw new ArgumentNullException(nameof(request.Event));
+                throw new ParameterNullException(nameof(request.Event));
 
             if (request.RouteEventId != request.Event.Id)
-                throw new ArgumentException("You are not allowed to modify this event.");
+                throw new ParameterException("You are not allowed to modify this event.");
 
             await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
 

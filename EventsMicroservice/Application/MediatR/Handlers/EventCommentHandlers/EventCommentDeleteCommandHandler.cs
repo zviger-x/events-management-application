@@ -2,7 +2,7 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
-using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
@@ -22,7 +22,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
                 return;
 
             if (request.RouteEventId != comment.EventId)
-                throw new ArgumentException("You are not allowed to delete this comment for the event.");
+                throw new ParameterException("You are not allowed to delete this comment for the event.");
 
             await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken).ConfigureAwait(false);
         }

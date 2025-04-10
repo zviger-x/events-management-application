@@ -24,7 +24,6 @@ namespace EventsAPI.Controllers
 
         [Authorize]
         [HttpPost("/api/events/{eventId}/comments")]
-        [ValidateIdFormRouteAndBody("eventId", "EventId", "EventId")]
         public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid eventId, [FromBody] EventComment commentToCreate, CancellationToken token)
         {
             var command = new EventCommentCreateCommand { RouteEventId = eventId, EventComment = commentToCreate };

@@ -3,14 +3,14 @@
     /// <summary>
     /// Error that occurs when attempting to access without authorization
     /// </summary>
-    public class UnauthorizedAccessException : ServerException
+    public class UnauthorizedException : ServerException
     {
-        public UnauthorizedAccessException(string errorMessage, string propertyName = null)
+        public UnauthorizedException(string errorMessage, string propertyName = null)
             : base(errorMessage, propertyName)
         {
         }
 
-        public UnauthorizedAccessException(string errorCode, string errorMessage, string propertyName = null)
+        public UnauthorizedException(string errorCode, string errorMessage, string propertyName = null)
             : base(errorCode, errorMessage, propertyName)
         {
         }

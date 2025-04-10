@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
@@ -19,7 +19,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         public async Task<Guid> Handle(SeatConfigurationCreateCommand request, CancellationToken cancellationToken)
         {
             if (request.SeatConfiguration == null)
-                throw new ArgumentNullException(nameof(request.SeatConfiguration));
+                throw new ParameterNullException(nameof(request.SeatConfiguration));
 
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 

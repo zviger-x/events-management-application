@@ -40,10 +40,10 @@ namespace EventsAPI.Controllers
         }
 
         [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateEventDTO eventToUpdate, CancellationToken cancellationToken)
+        [HttpPut("{eventId}")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] Guid eventId, [FromBody] UpdateEventDTO eventToUpdate, CancellationToken cancellationToken)
         {
-            if (id != eventToUpdate.Id)
+            if (eventId != eventToUpdate.Id)
                 throw new ArgumentException("You are not allowed to modify this event.");
 
             var command = new EventUpdateCommand { Event = eventToUpdate };
@@ -53,19 +53,19 @@ namespace EventsAPI.Controllers
         }
 
         [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
+        [HttpDelete("{eventId}")]
+        public async Task<IActionResult> DeleteAsync(Guid eventId, CancellationToken cancellationToken)
         {
-            var command = new EventDeleteCommand { Id = id };
+            var command = new EventDeleteCommand { Id = eventId };
             await _mediator.Send(command, cancellationToken);
 
             return Ok();
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        [HttpGet("{eventId}")]
+        public async Task<IActionResult> GetByIdAsync(Guid eventId, CancellationToken cancellationToken)
         {
-            var query = new EventGetByIdQuery { Id = id };
+            var query = new EventGetByIdQuery { Id = eventId };
             var @event = await _mediator.Send(query, cancellationToken);
 
             if (@event == null)

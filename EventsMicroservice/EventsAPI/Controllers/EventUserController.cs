@@ -36,10 +36,10 @@ namespace EventsAPI.Controllers
         }
 
         [AuthorizeRoles(UserRoles.Admin)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> UnregisterUser([FromRoute] Guid id, CancellationToken cancellationToken)
+        [HttpDelete("{eventUserId}")]
+        public async Task<IActionResult> UnregisterUser([FromRoute] Guid eventUserId, CancellationToken cancellationToken)
         {
-            var command = new EventUserDeleteCommand { Id = id };
+            var command = new EventUserDeleteCommand { Id = eventUserId };
 
             await _mediator.Send(command, cancellationToken);
 
@@ -59,11 +59,11 @@ namespace EventsAPI.Controllers
         }
 
         [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
-        [HttpGet("/api/events/{id}/users")]
-        public async Task<IActionResult> GetPagedByEvent([FromRoute] Guid id, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
+        [HttpGet("/api/events/{eventId}/users")]
+        public async Task<IActionResult> GetPagedByEvent([FromRoute] Guid eventId, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
             var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = PageSize };
-            var query = new EventUserGetPagedByEventQuery { EventId = id, PageParameters = pageParameters };
+            var query = new EventUserGetPagedByEventQuery { EventId = eventId, PageParameters = pageParameters };
 
             var page = await _mediator.Send(query, cancellationToken);
 

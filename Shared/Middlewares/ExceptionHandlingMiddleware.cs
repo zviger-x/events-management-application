@@ -1,7 +1,9 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Shared.Exceptions;
+using Shared.Exceptions.ServerExceptions;
+using FluentValidationException = FluentValidation.ValidationException;
+using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
+using UnauthorizedAccessException = Shared.Exceptions.ServerExceptions.UnauthorizedAccessException;
 
 namespace Shared.Middlewares
 {
@@ -22,38 +24,25 @@ namespace Shared.Middlewares
             {
                 await _next(context);
             }
-            catch (ValidationException ex)
-            {
-                _logger.LogError(ex.Message, "Validation exception occurred");
-                var response = new
-                {
-                    errors = ex.Errors.ToDictionary(
-                        e => e.ErrorCode,
-                        e => new { e.PropertyName, serverMessage = e.ErrorMessage })
-                };
-
-                await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
-            }
-            catch (ServiceValidationException ex)
-            {
-                _logger.LogError(ex, "Service validation exception occurred");
-                var response = GetSingleErrorResponse(ex.ErrorCode, ex.Message, ex.PropertyName);
-
-                await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "Argument exception occurred");
-                var response = GetSingleErrorResponse("invalidArgument", ex.Message, ex.ParamName);
-
-                await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unexpected error occurred");
-                var response = GetSingleErrorResponse("unexpectedError", "An unexpected error occurred");
+                _logger.LogError(ex, "An error occurred");
 
-                await SendErrorAsJsonAsync(context, response, StatusCodes.Status500InternalServerError);
+                var response = ex switch
+                {
+                    // Ошибки в валидаторах
+                    FluentValidationException fluentValidationEx =>
+                        GetErrorResponse(ValidationException.GetValidationExceptions(fluentValidationEx)),
+
+                    // Ошибки в бизнес логике
+                    ServerException serverEx => GetErrorResponse(serverEx),
+
+                    // Любые другие ошибки
+                    _ => GetErrorResponse("unexpectedError", "An unexpected error occurred")
+                };
+                var responseStatus = GetResponseStatusCode(ex);
+
+                await SendErrorAsJsonAsync(context, response, responseStatus);
             }
         }
 
@@ -62,6 +51,34 @@ namespace Shared.Middlewares
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(response);
+        }
+
+        private int GetResponseStatusCode(Exception ex)
+        {
+            switch (ex)
+            {
+                case FluentValidationException:
+                case ValidationException:
+                case ArgumentException:
+                    return StatusCodes.Status400BadRequest;
+
+                case NotFoundException:
+                    return StatusCodes.Status404NotFound;
+
+                case UnauthorizedAccessException:
+                    return StatusCodes.Status401Unauthorized;
+
+                case ForbiddenAccessException:
+                    return StatusCodes.Status403Forbidden;
+
+                case ConflictException:
+                    return StatusCodes.Status409Conflict;
+
+                case ServerException:
+                case Exception:
+                default:
+                    return StatusCodes.Status500InternalServerError;
+            }
         }
 
         /// <summary>
@@ -77,19 +94,49 @@ namespace Shared.Middlewares
         /// }
         /// </code>
         /// </summary>
-        private object GetSingleErrorResponse(string code, string message, string propertyName = null)
+        private object GetErrorResponse(string code, string message, string propertyName = null)
         {
-            return new
-            {
-                errors = new Dictionary<string, object>
-                {
-                    [code] = new
-                    {
-                        propertyName = propertyName,
-                        serverMessage = message
-                    }
-                }
-            };
+            return GetErrorResponse(new ServerException(code, message, propertyName));
+        }
+
+        /// <summary>
+        /// Returns an object in a standardized format:
+        /// <code>
+        /// {
+        ///     "errors": {
+        ///         "unexpectedError": {
+        ///             "propertyName": null,
+        ///             "serverMessage": "An unexpected error occurred."
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        /// </summary>
+        private object GetErrorResponse(ServerException ex)
+        {
+            return GetErrorResponse([ex]);
+        }
+
+        /// <summary>
+        /// Returns an object in a standardized format:
+        /// <code>
+        /// {
+        ///     "errors": {
+        ///         "unexpectedError": {
+        ///             "propertyName": null,
+        ///             "serverMessage": "An unexpected error occurred."
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        /// </summary>
+        private object GetErrorResponse(IEnumerable<ServerException> exceptions)
+        {
+            var errorDictionary = exceptions.ToDictionary(
+                ex => ex.ErrorCode,
+                ex => new { ex.PropertyName, ex.Message });
+
+            return new { errors = errorDictionary };
         }
     }
 }

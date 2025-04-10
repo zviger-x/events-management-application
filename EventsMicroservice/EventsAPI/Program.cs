@@ -49,7 +49,7 @@ namespace EventsAPI
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Use cases (via MediatR)
+            // Business logic
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));

@@ -42,14 +42,16 @@ namespace EventsAPI.Extensions
             Log.Information($"Registering Guid for MongoDB...");
 
             var entityTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .Union([Assembly.GetAssembly(typeof(Event))])
                 .SelectMany(a => a.GetTypes())
                 .Where(t => typeof(IEntity).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
                 .ToList();
 
             var method = typeof(ServiceCollectionExtensions).GetMethod(nameof(RegisterGuid), BindingFlags.NonPublic | BindingFlags.Static);
+            var maxLength = entityTypes.Max(t => t.Name.Length);
             foreach (var type in entityTypes)
             {
-                Log.Information($"Register Guid as default mongo Id for {{{type.Name}}}");
+                Log.Information($"Register Guid as default mongo Id for {{{type.Name}}}{new(' ', maxLength - type.Name.Length)} from [{type.Assembly.GetName().Name}]");
 
                 var genericMethod = method.MakeGenericMethod(type);
                 genericMethod.Invoke(null, null);

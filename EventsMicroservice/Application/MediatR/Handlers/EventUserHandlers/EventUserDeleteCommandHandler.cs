@@ -20,17 +20,17 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             if (eventUser == null)
                 return;
 
-            var seat = await _unitOfWork.SeatRepository.GetByIdAsync(eventUser.SeatId, cancellationToken);
-            if (seat == null)
-                throw new ArgumentNullException(nameof(seat), "No seat found for which user is registered.");
-
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                seat.IsBought = false;
-                await _unitOfWork.SeatRepository.UpdateAsync(seat, cancellationToken);
+                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(eventUser.SeatId, token);
+                if (seat != null)
+                {
+                    seat.IsBought = false;
+                    await _unitOfWork.SeatRepository.UpdateAsync(seat, token);
+                }
 
-                await _unitOfWork.EventUserRepository.DeleteAsync(eventUser, cancellationToken).ConfigureAwait(false);
-            });
+                await _unitOfWork.EventUserRepository.DeleteAsync(eventUser, token).ConfigureAwait(false);
+            }, cancellationToken);
         }
     }
 }

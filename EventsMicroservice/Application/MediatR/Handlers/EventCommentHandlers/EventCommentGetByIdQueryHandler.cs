@@ -3,6 +3,7 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
@@ -15,7 +16,11 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task<EventComment> Handle(EventCommentGetByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.EventCommentRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+            var comment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+            if (comment == null)
+                throw new NotFoundException("Comment not found.");
+
+            return comment;
         }
     }
 }

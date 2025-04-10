@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
@@ -17,7 +18,10 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task<Guid> Handle(EventCommentCreateCommand request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.EventComment);
+            if (request.EventComment == null)
+                throw new ArgumentNullException(nameof(request.EventComment));
+
+            await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
             return await _unitOfWork.EventCommentRepository.CreateAsync(request.EventComment, cancellationToken).ConfigureAwait(false);
         }

@@ -6,6 +6,8 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
+using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
@@ -18,7 +20,10 @@ namespace Application.MediatR.Handlers.EventHandlers
 
         public async Task<Guid> Handle(EventCreateCommand request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.Event);
+            if (request.Event == null)
+                throw new ArgumentNullException(nameof(request.Event));
+
+            await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
 
             var seatConfiguration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Event.SeatConfigurationId, cancellationToken);
             if (seatConfiguration == null)
@@ -26,14 +31,13 @@ namespace Application.MediatR.Handlers.EventHandlers
 
             var @event = _mapper.Map<Event>(request.Event);
             
-            var eventId = default(Guid);
-            await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+            return await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                eventId = await _unitOfWork.EventRepository.CreateAsync(@event, token).ConfigureAwait(false);
+                var eventId = await _unitOfWork.EventRepository.CreateAsync(@event, token).ConfigureAwait(false);
                 await GenerateSeats(eventId, seatConfiguration, token);
-            }, cancellationToken);
 
-            return eventId;
+                return eventId;
+            }, cancellationToken);
         }
 
         private async Task GenerateSeats(Guid eventId, SeatConfiguration seatConfiguration, CancellationToken cancellationToken)

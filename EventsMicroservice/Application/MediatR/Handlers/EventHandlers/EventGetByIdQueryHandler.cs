@@ -3,6 +3,7 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
@@ -15,7 +16,11 @@ namespace Application.MediatR.Handlers.EventHandlers
 
         public async Task<Event> Handle(EventGetByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.EventRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+            var @event = await _unitOfWork.EventRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+            if (@event == null)
+                throw new NotFoundException("Event not found.");
+
+            return @event;
         }
     }
 }

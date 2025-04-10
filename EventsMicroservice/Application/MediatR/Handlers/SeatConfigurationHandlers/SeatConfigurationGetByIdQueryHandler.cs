@@ -3,6 +3,7 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
@@ -15,7 +16,11 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
         public async Task<SeatConfiguration> Handle(SeatConfigurationGetByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+            var configuration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+            if (configuration == null)
+                throw new NotFoundException("Configuration not found.");
+
+            return configuration;
         }
     }
 }

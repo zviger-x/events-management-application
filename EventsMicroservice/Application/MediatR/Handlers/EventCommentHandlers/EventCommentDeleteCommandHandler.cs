@@ -1,7 +1,6 @@
 ﻿using Application.MediatR.Commands.EventCommentCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
-using Domain.Entities;
 using MediatR;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
@@ -15,7 +14,9 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task Handle(EventCommentDeleteCommand request, CancellationToken cancellationToken)
         {
-            var comment = new EventComment { Id = request.Id };
+            var comment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.Id, cancellationToken);
+            if (comment == null)
+                return;
 
             await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken).ConfigureAwait(false);
         }

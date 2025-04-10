@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
@@ -25,7 +26,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
                 RegisteredAt = DateTime.UtcNow
             };
 
-            await _validator.ValidateAndThrowAsync(eventUser);
+            await _validator.ValidateAndThrowAsync(eventUser, cancellationToken);
 
             // Проверка на существование ивента с таким ID
             var @event = await _unitOfWork.EventRepository.GetByIdAsync(eventUser.EventId, cancellationToken);

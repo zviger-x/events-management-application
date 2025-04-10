@@ -6,6 +6,7 @@ using FluentValidation;
 using MediatR;
 using Shared.Common;
 using Shared.Validation.Interfaces;
+using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
@@ -18,6 +19,9 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
         public async Task<PagedCollection<SeatConfiguration>> Handle(SeatConfigurationGetPagedQuery request, CancellationToken cancellationToken)
         {
+            if (request.PageParameters == null)
+                throw new ArgumentNullException(nameof(request.PageParameters));
+
             await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
             return await _unitOfWork.SeatConfigurationRepository.GetPagedAsync(

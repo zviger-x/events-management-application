@@ -18,9 +18,12 @@ namespace Application.MediatR.Handlers.EventHandlers
 
         public async Task Handle(EventUpdateCommand request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.Event);
-            var @event = _mapper.Map<Event>(request.Event);
+            if (request.Event == null)
+                throw new ArgumentNullException(nameof(request.Event));
 
+            await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
+
+            var @event = _mapper.Map<Event>(request.Event);
             await _unitOfWork.EventRepository.UpdateAsync(@event, cancellationToken).ConfigureAwait(false);
         }
     }

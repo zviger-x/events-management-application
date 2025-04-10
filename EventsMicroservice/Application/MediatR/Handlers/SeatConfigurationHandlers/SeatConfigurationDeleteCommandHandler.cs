@@ -1,7 +1,6 @@
 ﻿using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
-using Domain.Entities;
 using MediatR;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
@@ -15,7 +14,9 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
         public async Task Handle(SeatConfigurationDeleteCommand request, CancellationToken cancellationToken)
         {
-            var configuration = new SeatConfiguration { Id = request.Id };
+            var configuration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Id, cancellationToken);
+            if (configuration == null)
+                return;
 
             await _unitOfWork.SeatConfigurationRepository.DeleteAsync(configuration, cancellationToken).ConfigureAwait(false);
         }

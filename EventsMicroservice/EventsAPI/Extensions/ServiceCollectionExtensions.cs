@@ -9,23 +9,26 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Serilog;
+using Shared.Caching.Interfaces;
+using Shared.Caching;
 using Shared.Entities.Interfaces;
 using Shared.Repositories.Interfaces;
 using System.Reflection;
+using StackExchange.Redis;
 
 namespace EventsAPI.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddMongoServer(this IServiceCollection services, MongoServerConfig mongoServerConfig)
+        public static void AddMongoServer(this IServiceCollection services, MongoServerConfig config)
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
-            
-            services.AddSingleton<IMongoClient>(new MongoClient(mongoServerConfig.ConnectionString));
+
+            services.AddSingleton<IMongoClient>(new MongoClient(config.ConnectionString));
             services.AddScoped<IMongoDatabase>(provider =>
             {
                 var client = provider.GetRequiredService<IMongoClient>();
-                return client.GetDatabase(mongoServerConfig.DatabaseName);
+                return client.GetDatabase(config.DatabaseName);
             });
 
             // Указываю, что мой Guid Id - действительный идентификатор
@@ -83,9 +86,21 @@ namespace EventsAPI.Extensions
             services.AddScoped<IUpdateEventDTOValidator, UpdateEventDTOValidator>();
         }
 
-        // public static void AddCachingServices(this IServiceCollection services)
-        // {
-        // }
+        public static void AddCachingServices(this IServiceCollection services)
+        {
+            services.AddScoped<ICacheService, RedisCacheService>();
+        }
+
+        public static void AddRedisServer(this IServiceCollection services, RedisServerConfig config)
+        {
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(config.ConnectionString));
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = config.ConnectionString;
+                options.InstanceName = config.CachePrefix;
+            });
+        }
 
         private static void RegisterGuid<T>()
             where T : class, IEntity

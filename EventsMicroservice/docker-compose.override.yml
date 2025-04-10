@@ -41,16 +41,16 @@ services:
       - internal-docker-network
     entrypoint: ["/bin/bash", "/mongo-init-replica.sh"]
 
-  #redis:
-  #  image: redis:latest
-  #  container_name: Redis
-  #  volumes:
-  #    - redis_data:/data
-  #  ports:
-  #    - "6379:6379"
-  #  restart: always
-  #  networks:
-  #    - internal-docker-network
+  redis:
+    image: redis:latest
+    container_name: RedisServer
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      - internal-docker-network
 
 networks:
   internal-docker-network:
@@ -58,4 +58,4 @@ networks:
 
 volumes:
   mongo_data:
-  #redis_data:
+  redis_data:

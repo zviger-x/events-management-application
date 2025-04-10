@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Shared.Attributes;
 using Shared.Enums;
+using Shared.Common;
 
 namespace EventsAPI.Controllers
 {
@@ -16,10 +17,10 @@ namespace EventsAPI.Controllers
     [Route("api/events")]
     public class EventController : Controller
     {
-        private readonly IMediator _mediator;
-
         private const int EventsPageSize = 10;
         private const int CommentsPageSize = 10;
+
+        private readonly IMediator _mediator;
 
         public EventController(IMediator mediator)
         {
@@ -76,7 +77,9 @@ namespace EventsAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var query = new EventGetPagedQuery { PageNumber = pageNumber, PageSize = EventsPageSize };
+            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = EventsPageSize };
+            var query = new EventGetPagedQuery { PageParameters = pageParameters };
+
             var page = await _mediator.Send(query, cancellationToken);
 
             return Ok(page);
@@ -134,7 +137,9 @@ namespace EventsAPI.Controllers
         [HttpGet("{eventId}/comments")]
         public async Task<IActionResult> GetPagedCommentsAsync([FromRoute] Guid eventId, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var command = new EventCommentGetPagedByEventQuery { EventId = eventId, PageNumber = pageNumber, PageSize = CommentsPageSize };
+            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = CommentsPageSize };
+            var command = new EventCommentGetPagedByEventQuery { EventId = eventId, PageParameters = pageParameters };
+
             var page = await _mediator.Send(command, cancellationToken);
 
             return Ok(page);

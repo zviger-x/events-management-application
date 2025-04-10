@@ -4,6 +4,7 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Attributes;
+using Shared.Common;
 using Shared.Enums;
 
 namespace EventsAPI.Controllers
@@ -13,9 +14,9 @@ namespace EventsAPI.Controllers
     [Route("api/seat-configurations")]
     public class SeatConfigurationController : Controller
     {
-        private readonly IMediator _mediator;
-
         private const int PageSize = 10;
+
+        private readonly IMediator _mediator;
 
         public SeatConfigurationController(IMediator mediator)
         {
@@ -67,7 +68,9 @@ namespace EventsAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var query = new SeatConfigurationGetPagedQuery { PageNumber = pageNumber, PageSize = PageSize };
+            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = PageSize };
+            var query = new SeatConfigurationGetPagedQuery { PageParameters = pageParameters };
+
             var page = await _mediator.Send(query, cancellationToken);
 
             return Ok(page);

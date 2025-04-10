@@ -2,27 +2,29 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using FluentValidation;
 using MediatR;
 using Shared.Common;
+using Shared.Validation.Interfaces;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
-    public class SeatConfigurationGetPagedQueryHandler : BaseHandler, IRequestHandler<SeatConfigurationGetPagedQuery, PagedCollection<SeatConfiguration>>
+    public class SeatConfigurationGetPagedQueryHandler : BaseHandler<PageParameters>, IRequestHandler<SeatConfigurationGetPagedQuery, PagedCollection<SeatConfiguration>>
     {
-        public SeatConfigurationGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
-            : base(unitOfWork, mapper)
+        public SeatConfigurationGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IPageParametersValidator validator)
+            : base(unitOfWork, mapper, validator)
         {
         }
 
         public async Task<PagedCollection<SeatConfiguration>> Handle(SeatConfigurationGetPagedQuery request, CancellationToken cancellationToken)
         {
-            if (request.PageNumber < 1)
-                throw new ArgumentOutOfRangeException(nameof(request.PageNumber));
+            await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
-            if (request.PageSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(request.PageSize));
-
-            return await _unitOfWork.SeatConfigurationRepository.GetPagedAsync(request.PageNumber, request.PageSize, cancellationToken).ConfigureAwait(false);
+            return await _unitOfWork.SeatConfigurationRepository.GetPagedAsync(
+                request.PageParameters.PageNumber,
+                request.PageParameters.PageSize,
+                cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 }

@@ -2,27 +2,30 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using FluentValidation;
 using MediatR;
 using Shared.Common;
+using Shared.Validation.Interfaces;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
-    public class EventUserGetPagedByEventQueryHandler : BaseHandler, IRequestHandler<EventUserGetPagedByEventQuery, PagedCollection<EventUser>>
+    public class EventUserGetPagedByEventQueryHandler : BaseHandler<PageParameters>, IRequestHandler<EventUserGetPagedByEventQuery, PagedCollection<EventUser>>
     {
-        public EventUserGetPagedByEventQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
-            : base(unitOfWork, mapper)
+        public EventUserGetPagedByEventQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IPageParametersValidator validator)
+            : base(unitOfWork, mapper, validator)
         {
         }
 
         public async Task<PagedCollection<EventUser>> Handle(EventUserGetPagedByEventQuery request, CancellationToken cancellationToken)
         {
-            if (request.PageNumber < 1)
-                throw new ArgumentOutOfRangeException(nameof(request.PageNumber));
+            await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
-            if (request.PageSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(request.PageSize));
-
-            return await _unitOfWork.EventUserRepository.GetPagedByEventAsync(request.EventId, request.PageNumber, request.PageSize, cancellationToken).ConfigureAwait(false);
+            return await _unitOfWork.EventUserRepository.GetPagedByEventAsync(
+                request.EventId,
+                request.PageParameters.PageNumber,
+                request.PageParameters.PageSize,
+                cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 }

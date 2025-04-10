@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Attributes;
+using Shared.Common;
 using Shared.Enums;
 
 namespace EventsAPI.Controllers
@@ -49,7 +50,8 @@ namespace EventsAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPaged([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var query = new EventUserGetPagedQuery { PageNumber = pageNumber, PageSize = PageSize };
+            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = PageSize };
+            var query = new EventUserGetPagedQuery { PageParameters = pageParameters };
 
             var page = await _mediator.Send(query, cancellationToken);
 
@@ -60,7 +62,8 @@ namespace EventsAPI.Controllers
         [HttpGet("/api/events/{id}/users")]
         public async Task<IActionResult> GetPagedByEvent([FromRoute] Guid id, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var query = new EventUserGetPagedByEventQuery { EventId = id, PageNumber = pageNumber, PageSize = PageSize };
+            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = PageSize };
+            var query = new EventUserGetPagedByEventQuery { EventId = id, PageParameters = pageParameters };
 
             var page = await _mediator.Send(query, cancellationToken);
 

@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Attributes;
+using Shared.Common;
 using Shared.Enums;
 
 namespace EventsAPI.Controllers
@@ -24,7 +25,9 @@ namespace EventsAPI.Controllers
         [HttpGet("event-comments")]
         public async Task<IActionResult> GetPagedCommentsAsync(CancellationToken cancellationToken = default)
         {
-            var query = new EventCommentGetPagedQuery { PageNumber = 1, PageSize = int.MaxValue };
+            var pageParameters = new PageParameters { PageNumber = 1, PageSize = 100 };
+            var query = new EventCommentGetPagedQuery { PageParameters = pageParameters };
+
             var page = await _mediator.Send(query, cancellationToken);
 
             return Ok(page);

@@ -15,6 +15,8 @@ using Shared.Entities.Interfaces;
 using Shared.Repositories.Interfaces;
 using System.Reflection;
 using StackExchange.Redis;
+using Shared.Validation.Interfaces;
+using Shared.Validation.Validators;
 
 namespace EventsAPI.Extensions
 {
@@ -84,6 +86,9 @@ namespace EventsAPI.Extensions
 
             services.AddScoped<ICreateEventDTOValidator, CreateEventDTOValidator>();
             services.AddScoped<IUpdateEventDTOValidator, UpdateEventDTOValidator>();
+
+            // From shared
+            services.AddScoped<IPageParametersValidator, PageParametersValidator>();
         }
 
         public static void AddCachingServices(this IServiceCollection services)

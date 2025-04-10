@@ -26,7 +26,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
-            return await _unitOfWork.EventCommentRepository.CreateAsync(request.EventComment, cancellationToken).ConfigureAwait(false);
+            return await _unitOfWork.EventCommentRepository.CreateAsync(request.EventComment, cancellationToken);
         }
     }
 }

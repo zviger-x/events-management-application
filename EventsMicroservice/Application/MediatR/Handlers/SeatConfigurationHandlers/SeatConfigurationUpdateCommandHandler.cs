@@ -26,7 +26,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 
-            await _unitOfWork.SeatConfigurationRepository.UpdateAsync(request.SeatConfiguration, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.SeatConfigurationRepository.UpdateAsync(request.SeatConfiguration, cancellationToken);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
             if (configuration == null)
                 return;
 
-            await _unitOfWork.SeatConfigurationRepository.DeleteAsync(configuration, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.SeatConfigurationRepository.DeleteAsync(configuration, cancellationToken);
         }
     }
 }

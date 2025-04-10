@@ -32,7 +32,7 @@ namespace Application.MediatR.Handlers.EventHandlers
             
             return await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                var eventId = await _unitOfWork.EventRepository.CreateAsync(@event, token).ConfigureAwait(false);
+                var eventId = await _unitOfWork.EventRepository.CreateAsync(@event, token);
                 await GenerateSeats(eventId, seatConfiguration, token);
 
                 return eventId;
@@ -60,7 +60,7 @@ namespace Application.MediatR.Handlers.EventHandlers
                 }
             }
 
-            await _unitOfWork.SeatRepository.CreateManyAsync(seats, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.SeatRepository.CreateManyAsync(seats, cancellationToken);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
                 request.PageParameters.PageNumber,
                 request.PageParameters.PageSize,
                 cancellationToken)
-                .ConfigureAwait(false);
+                ;
         }
     }
 }

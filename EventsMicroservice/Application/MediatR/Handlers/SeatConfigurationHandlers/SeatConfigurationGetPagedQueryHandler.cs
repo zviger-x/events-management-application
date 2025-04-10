@@ -28,7 +28,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
                 request.PageParameters.PageNumber,
                 request.PageParameters.PageSize,
                 cancellationToken)
-                .ConfigureAwait(false);
+                ;
         }
     }
 }

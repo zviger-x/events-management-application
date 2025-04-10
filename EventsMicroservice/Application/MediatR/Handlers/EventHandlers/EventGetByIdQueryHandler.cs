@@ -16,7 +16,7 @@ namespace Application.MediatR.Handlers.EventHandlers
 
         public async Task<Event> Handle(EventGetByIdQuery request, CancellationToken cancellationToken)
         {
-            var @event = await _unitOfWork.EventRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
+            var @event = await _unitOfWork.EventRepository.GetByIdAsync(request.Id, cancellationToken);
             if (@event == null)
                 throw new NotFoundException("Event not found.");
 

@@ -61,7 +61,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
                 seat.IsBought = true;
                 await _unitOfWork.SeatRepository.UpdateAsync(seat);
 
-                return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, cancellationToken).ConfigureAwait(false);
+                return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, cancellationToken);
             }, cancellationToken);
         }
     }

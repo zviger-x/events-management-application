@@ -24,7 +24,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (request.RouteEventId != comment.EventId)
                 throw new ParameterException("You are not allowed to delete this comment for the event.");
 
-            await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken);
         }
     }
 }

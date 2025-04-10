@@ -29,7 +29,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
                     await _unitOfWork.SeatRepository.UpdateAsync(seat, token);
                 }
 
-                await _unitOfWork.EventUserRepository.DeleteAsync(eventUser, token).ConfigureAwait(false);
+                await _unitOfWork.EventUserRepository.DeleteAsync(eventUser, token);
             }, cancellationToken);
         }
     }

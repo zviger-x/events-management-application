@@ -23,7 +23,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 
-            return await _unitOfWork.SeatConfigurationRepository.CreateAsync(request.SeatConfiguration, cancellationToken).ConfigureAwait(false);
+            return await _unitOfWork.SeatConfigurationRepository.CreateAsync(request.SeatConfiguration, cancellationToken);
         }
     }
 }

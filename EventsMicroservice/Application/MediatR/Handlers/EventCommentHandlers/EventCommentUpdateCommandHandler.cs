@@ -31,7 +31,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
-            await _unitOfWork.EventCommentRepository.UpdateAsync(request.EventComment, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.EventCommentRepository.UpdateAsync(request.EventComment, cancellationToken);
         }
     }
 }

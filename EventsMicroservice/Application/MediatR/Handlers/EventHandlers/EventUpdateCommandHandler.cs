@@ -28,7 +28,7 @@ namespace Application.MediatR.Handlers.EventHandlers
             await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
 
             var @event = _mapper.Map<Event>(request.Event);
-            await _unitOfWork.EventRepository.UpdateAsync(@event, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.EventRepository.UpdateAsync(@event, cancellationToken);
         }
     }
 }

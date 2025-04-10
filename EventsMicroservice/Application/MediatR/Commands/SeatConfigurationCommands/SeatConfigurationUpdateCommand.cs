@@ -5,6 +5,7 @@ namespace Application.MediatR.Commands.SeatConfigurationCommands
 {
     public class SeatConfigurationUpdateCommand : IRequest
     {
-        public SeatConfiguration SeatConfiguration { get; set; }
+        public required Guid RouteSeatId { get; set; }
+        public required SeatConfiguration SeatConfiguration { get; set; }
     }
 }

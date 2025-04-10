@@ -29,16 +29,13 @@ namespace EventsAPI.Controllers
             var command = new SeatConfigurationCreateCommand { SeatConfiguration = seatConfigurationToCreate };
             var createdConfigurationId = await _mediator.Send(command, cancellationToken);
 
-            return Ok(createdConfigurationId);
+            return StatusCode(StatusCodes.Status201Created, new { Id = createdConfigurationId });
         }
 
         [HttpPut("{seatId}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid seatId, [FromBody] SeatConfiguration seatConfigurationToUpdate, CancellationToken cancellationToken)
         {
-            if (seatId != seatConfigurationToUpdate.Id)
-                throw new ArgumentException("You are not allowed to modify this configuration.");
-
-            var command = new SeatConfigurationUpdateCommand { SeatConfiguration = seatConfigurationToUpdate };
+            var command = new SeatConfigurationUpdateCommand { RouteSeatId = seatId, SeatConfiguration = seatConfigurationToUpdate };
             await _mediator.Send(command, cancellationToken);
 
             return Ok();
@@ -50,7 +47,7 @@ namespace EventsAPI.Controllers
             var command = new SeatConfigurationDeleteCommand { Id = seatId };
             await _mediator.Send(command, cancellationToken);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpGet("{seatId}")]
@@ -58,9 +55,6 @@ namespace EventsAPI.Controllers
         {
             var query = new SeatConfigurationGetByIdQuery { Id = seatId };
             var configuration = await _mediator.Send(query, cancellationToken);
-
-            if (configuration == null)
-                return NotFound();
 
             return Ok(configuration);
         }

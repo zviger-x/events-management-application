@@ -6,6 +6,6 @@ namespace Application.MediatR.Queries.SeatConfigurationQueries
 {
     public class SeatConfigurationGetPagedQuery : IRequest<PagedCollection<SeatConfiguration>>
     {
-        public PageParameters PageParameters { get; set; }
+        public required PageParameters PageParameters { get; set; }
     }
 }

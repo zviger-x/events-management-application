@@ -6,7 +6,7 @@ namespace Application.MediatR.Queries.EventUserQueries
 {
     public class EventUserGetPagedByEventQuery : IRequest<PagedCollection<EventUser>>
     {
-        public Guid EventId { get; set; }
-        public PageParameters PageParameters { get; set; }
+        public required Guid EventId { get; set; }
+        public required PageParameters PageParameters { get; set; }
     }
 }

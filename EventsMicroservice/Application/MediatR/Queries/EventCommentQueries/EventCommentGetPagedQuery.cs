@@ -6,6 +6,6 @@ namespace Application.MediatR.Queries.EventCommentQueries
 {
     public class EventCommentGetPagedQuery : IRequest<PagedCollection<EventComment>>
     {
-        public PageParameters PageParameters { get; set; }
+        public required PageParameters PageParameters { get; set; }
     }
 }

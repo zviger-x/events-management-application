@@ -4,8 +4,8 @@ namespace Application.MediatR.Commands.EventUserCommands
 {
     public class EventUserCreateCommand : IRequest<Guid>
     {
-        public Guid EventId { get; set; }
-        public Guid UserId { get; set; }
-        public Guid SeatId { get; set; }
+        public required Guid EventId { get; set; }
+        public required Guid UserId { get; set; }
+        public required Guid SeatId { get; set; }
     }
 }

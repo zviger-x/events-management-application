@@ -5,6 +5,7 @@ namespace Application.MediatR.Commands.EventCommands
 {
     public class EventUpdateCommand : IRequest
     {
-        public UpdateEventDTO Event { get; set; }
+        public required Guid RouteEventId { get; set; }
+        public required UpdateEventDTO Event { get; set; }
     }
 }

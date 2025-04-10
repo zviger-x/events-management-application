@@ -5,6 +5,7 @@ namespace Application.MediatR.Commands.EventCommentCommands
 {
     public class EventCommentCreateCommand : IRequest<Guid>
     {
-        public EventComment EventComment { get; set; }
+        public required Guid RouteEventId { get; set; }
+        public required EventComment EventComment { get; set; }
     }
 }

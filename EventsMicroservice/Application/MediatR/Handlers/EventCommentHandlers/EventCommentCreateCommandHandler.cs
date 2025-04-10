@@ -21,6 +21,9 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (request.EventComment == null)
                 throw new ArgumentNullException(nameof(request.EventComment));
 
+            if (request.RouteEventId != request.EventComment.EventId)
+                throw new ArgumentException("You are not allowed to create a comment for this event.");
+
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
             return await _unitOfWork.EventCommentRepository.CreateAsync(request.EventComment, cancellationToken).ConfigureAwait(false);

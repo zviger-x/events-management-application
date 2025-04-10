@@ -26,8 +26,7 @@ namespace Shared.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred");
-
+                var responseStatus = GetResponseStatusCode(ex);
                 var response = ex switch
                 {
                     // Ошибки в валидаторах
@@ -40,7 +39,8 @@ namespace Shared.Middlewares
                     // Любые другие ошибки
                     _ => GetErrorResponse("unexpectedError", "An unexpected error occurred")
                 };
-                var responseStatus = GetResponseStatusCode(ex);
+
+                LogError(ex, responseStatus);
 
                 await SendErrorAsJsonAsync(context, response, responseStatus);
             }
@@ -79,6 +79,14 @@ namespace Shared.Middlewares
                 default:
                     return StatusCodes.Status500InternalServerError;
             }
+        }
+
+        private void LogError(Exception ex, int statusCode)
+        {
+            if (statusCode < StatusCodes.Status500InternalServerError)
+                _logger.LogError($"An error occurred: {ex.Message}");
+            else
+                _logger.LogError(ex, "An unexpected error occurred");
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using Domain.Entities;
 using FluentValidation;
 using MediatR;
 using ArgumentNullException = Shared.Exceptions.ServerExceptions.ArgumentNullException;
+using ArgumentException = Shared.Exceptions.ServerExceptions.ArgumentException;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
@@ -20,6 +21,9 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         {
             if (request.SeatConfiguration == null)
                 throw new ArgumentNullException(nameof(request.SeatConfiguration));
+
+            if (request.RouteSeatId != request.SeatConfiguration.Id)
+                throw new ArgumentException("You are not allowed to modify this configuration.");
 
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 

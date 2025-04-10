@@ -6,7 +6,7 @@ namespace Application.MediatR.Queries.EventCommentQueries
 {
     public class EventCommentGetPagedByEventQuery : IRequest<PagedCollection<EventComment>>
     {
-        public Guid EventId { get; set; }
-        public PageParameters PageParameters { get; set; }
+        public required Guid EventId { get; set; }
+        public required PageParameters PageParameters { get; set; }
     }
 }

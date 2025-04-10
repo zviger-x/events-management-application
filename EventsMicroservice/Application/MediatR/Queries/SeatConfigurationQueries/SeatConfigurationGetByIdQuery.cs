@@ -5,6 +5,6 @@ namespace Application.MediatR.Queries.SeatConfigurationQueries
 {
     public class SeatConfigurationGetByIdQuery : IRequest<SeatConfiguration>
     {
-        public Guid Id { get; set; }
+        public required Guid Id { get; set; }
     }
 }

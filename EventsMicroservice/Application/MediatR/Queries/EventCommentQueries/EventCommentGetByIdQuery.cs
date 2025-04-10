@@ -5,6 +5,6 @@ namespace Application.MediatR.Queries.EventCommentQueries
 {
     public class EventCommentGetByIdQuery : IRequest<EventComment>
     {
-        public Guid Id { get; set; }
+        public required Guid Id { get; set; }
     }
 }

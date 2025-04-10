@@ -32,7 +32,7 @@ namespace EventsAPI.Controllers
 
             var registeredUserId = await _mediator.Send(command, cancellationToken);
 
-            return Ok(registeredUserId);
+            return StatusCode(StatusCodes.Status201Created, new { Id = registeredUserId });
         }
 
         [AuthorizeRoles(UserRoles.Admin)]
@@ -43,7 +43,7 @@ namespace EventsAPI.Controllers
 
             await _mediator.Send(command, cancellationToken);
 
-            return Ok();
+            return NoContent();
         }
 
         [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]

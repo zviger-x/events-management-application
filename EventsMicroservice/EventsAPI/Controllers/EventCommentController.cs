@@ -5,6 +5,7 @@ using Application.MediatR.Commands.EventCommentCommands;
 using Application.MediatR.Queries.EventCommentQueries;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Shared.Attributes;
 
 namespace EventsAPI.Controllers
 {
@@ -23,30 +24,20 @@ namespace EventsAPI.Controllers
 
         [Authorize]
         [HttpPost("/api/events/{eventId}/comments")]
+        [ValidateIdFormRouteAndBody("eventId", "EventId", "EventId")]
         public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid eventId, [FromBody] EventComment commentToCreate, CancellationToken token)
         {
-            if (eventId != commentToCreate.EventId)
-                throw new ArgumentException("You are not allowed to create a comment for this event.");
-
-            var command = new EventCommentCreateCommand { EventComment = commentToCreate };
+            var command = new EventCommentCreateCommand { RouteEventId = eventId, EventComment = commentToCreate };
             var createdCommentId = await _mediator.Send(command, token);
 
-            return Ok(createdCommentId);
+            return StatusCode(StatusCodes.Status201Created, new { Id = createdCommentId });
         }
 
         [Authorize]
         [HttpPut("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] EventComment commentToUpdate, CancellationToken token)
         {
-            // TODO: Добавить проверку, что пользователь является создателем отзыва.
-
-            if (eventId != commentToUpdate.EventId)
-                throw new ArgumentException("You are not allowed to edit the comment for this event.");
-
-            if (commentId != commentToUpdate.Id)
-                throw new ArgumentException("You are not allowed to modify this comment.");
-
-            var command = new EventCommentUpdateCommand { EventComment = commentToUpdate };
+            var command = new EventCommentUpdateCommand { RouteEventId = eventId, RouteCommentId = commentId, EventComment = commentToUpdate };
             await _mediator.Send(command, token);
 
             return Ok();
@@ -56,15 +47,10 @@ namespace EventsAPI.Controllers
         [HttpDelete("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, CancellationToken token)
         {
-            // TODO: Добавить проверку, что пользователь является создателем отзыва.
-
-            // if (id != commentToUpdate.EventId)
-            //     throw new ArgumentException("You are not allowed to edit the comment for this event.");
-
-            var command = new EventCommentDeleteCommand { Id = commentId };
+            var command = new EventCommentDeleteCommand { RouteEventId = eventId, Id = commentId };
             await _mediator.Send(command, token);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpGet("/api/events/{eventId}/comments")]

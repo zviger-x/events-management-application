@@ -4,6 +4,6 @@ namespace Application.MediatR.Commands.EventUserCommands
 {
     public class EventUserDeleteCommand : IRequest
     {
-        public Guid Id { get; set; }
+        public required Guid Id { get; set; }
     }
 }

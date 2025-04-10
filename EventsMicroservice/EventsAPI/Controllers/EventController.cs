@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Attributes;
 using Shared.Enums;
 using Shared.Common;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace EventsAPI.Controllers
 {
     [ApiController]
     [Route("api/events")]
+    [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
     public class EventController : Controller
     {
         private const int PageSize = 10;
@@ -22,51 +25,44 @@ namespace EventsAPI.Controllers
             _mediator = mediator;
         }
 
-        [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] CreateEventDTO eventToCreate, CancellationToken cancellationToken)
         {
             var command = new EventCreateCommand { Event = eventToCreate };
             var createdEventId = await _mediator.Send(command, cancellationToken);
 
-            return Ok(createdEventId);
+            return StatusCode(StatusCodes.Status201Created, new { Id = createdEventId });
         }
 
-        [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
         [HttpPut("{eventId}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid eventId, [FromBody] UpdateEventDTO eventToUpdate, CancellationToken cancellationToken)
         {
-            if (eventId != eventToUpdate.Id)
-                throw new ArgumentException("You are not allowed to modify this event.");
-
-            var command = new EventUpdateCommand { Event = eventToUpdate };
+            var command = new EventUpdateCommand { RouteEventId = eventId, Event = eventToUpdate };
             await _mediator.Send(command, cancellationToken);
 
             return Ok();
         }
 
-        [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
         [HttpDelete("{eventId}")]
         public async Task<IActionResult> DeleteAsync(Guid eventId, CancellationToken cancellationToken)
         {
             var command = new EventDeleteCommand { Id = eventId };
             await _mediator.Send(command, cancellationToken);
 
-            return Ok();
+            return NoContent();
         }
 
+        [AllowAnonymous]
         [HttpGet("{eventId}")]
         public async Task<IActionResult> GetByIdAsync(Guid eventId, CancellationToken cancellationToken)
         {
             var query = new EventGetByIdQuery { Id = eventId };
             var @event = await _mediator.Send(query, cancellationToken);
 
-            if (@event == null)
-                return NotFound();
-
             return Ok(@event);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {

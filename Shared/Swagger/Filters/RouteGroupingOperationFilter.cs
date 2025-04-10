@@ -9,7 +9,7 @@ namespace Shared.Swagger.Filters
 
         public RouteGroupingOperationFilter(int groupByWordIndex)
         {
-            _groupByWordIndex = groupByWordIndex;
+            _groupByWordIndex = Math.Max(0, groupByWordIndex);
         }
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)

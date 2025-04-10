@@ -6,6 +6,7 @@ using Infrastructure.Contexts;
 using Infrastructure.UnitOfWork;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using Shared.Configuration;
 using Shared.Extensions;
 using Shared.Middlewares;
 using System.Reflection;
@@ -24,6 +25,10 @@ namespace EventsAPI
             var logging = builder.Logging;
 
             // Add configs
+            var redisServerConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
+            var cacheConfig       = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
+            var mongoServerConfig = services.ConfigureAndReceive<MongoServerConfig>(configuration, "MongoServerConfig");
+            var jwtTokenConfig    = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -33,13 +38,12 @@ namespace EventsAPI
             logging.ClearProviders();
             logging.AddSerilog();
 
-            // Redis
+            // Caching
+            services.AddCachingServices();
+            services.AddRedisServer(redisServerConfig);
 
             // Data access
-            var mongoConfig = builder.Configuration.GetSection("MongoServerConfig").Get<MongoServerConfig>();
-            if (mongoConfig == null)
-                throw new ArgumentNullException(nameof(mongoConfig));
-            services.AddMongoServer(mongoConfig);
+            services.AddMongoServer(mongoServerConfig);
             services.AddScoped<TransactionContext>();
             services.AddScoped<EventDbContext>();
             services.AddRepositories();
@@ -51,7 +55,7 @@ namespace EventsAPI
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
 
             // JWT
-            services.AddJwtAuthentication(configuration, "jwt");
+            services.AddJwtAuthentication(jwtTokenConfig);
             services.AddAuthorization();
 
             services.AddControllers();

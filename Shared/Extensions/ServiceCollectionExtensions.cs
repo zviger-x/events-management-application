@@ -11,12 +11,13 @@ namespace Shared.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration, string section)
+        /// <summary>
+        /// Adds JWT Bearer authentication using the specified token configuration.
+        /// </summary>
+        /// <param name="services">The service collection to register authentication services with.</param>
+        /// <param name="config">The JWT token configuration containing issuer, audience, and secret key.</param>
+        public static void AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig config)
         {
-        
-            var jwtConfig = configuration.GetSection(section).Get<JwtTokenConfig>();
-            if (jwtConfig == null)
-                throw new ArgumentNullException(nameof(jwtConfig));
         
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -27,14 +28,23 @@ namespace Shared.Extensions
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtConfig.Issuer,
-                        ValidAudience = jwtConfig.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey)),
+                        ValidIssuer = config.Issuer,
+                        ValidAudience = config.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.SecretKey)),
                         ClockSkew = TimeSpan.Zero
                     };
                 });
         }
 
+        /// <summary>
+        /// Adds and configures Swagger generation.
+        /// </summary>
+        /// <param name="services">The service collection to register Swagger services with.</param>
+        /// <param name="useRouteGrouping">
+        /// Indicates whether to enable route grouping based on controller paths.
+        /// If true, applies a grouping filter on a portion of the route path.
+        /// </param>
+        /// <param name="routeWordOffset">Used to offset the index of the word in the route by which it will be grouped</param>
         public static void AddSwagger(this IServiceCollection services, bool useRouteGrouping = false, int routeWordOffset = 0)
         {
             services.AddSwaggerGen(options =>
@@ -53,6 +63,33 @@ namespace Shared.Extensions
                 if (useRouteGrouping)
                     options.OperationFilter<RouteGroupingOperationFilter>(routeWordOffset);
             });
+        }
+
+        /// <summary>
+        /// Binds a configuration section to a strongly-typed configuration class, 
+        /// registers it with the service collection, and returns the configured instance.
+        /// </summary>
+        /// <typeparam name="TConfig">The type of the configuration class to bind to.</typeparam>
+        /// <param name="configuration">The application's configuration root.</param>
+        /// <param name="sectionName">The name of the configuration section to bind.</param>
+        /// <returns>The registered configuration instance.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the specified configuration section is not found or the configuration object could not be created.
+        /// </exception>
+        public static TConfig ConfigureAndReceive<TConfig>(this IServiceCollection services, IConfiguration configuration, string sectionName)
+            where TConfig : class, new()
+        {
+            var section = configuration.GetSection(sectionName);
+
+            if (!section.Exists())
+                throw new InvalidOperationException($"Configuration section '{sectionName}' not found.");
+
+            var config = section.Get<TConfig>();
+            if (config == null)
+                throw new InvalidOperationException($"Failed to create configuration object for section '{sectionName}'.");
+
+            services.Configure<TConfig>(section);
+            return config;
         }
     }
 }

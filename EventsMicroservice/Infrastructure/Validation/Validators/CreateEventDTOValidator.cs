@@ -6,9 +6,9 @@ using Application.Contracts;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class CreateEventDTOValidator : AbstractValidator<CreateEventDTO>, ICreateEventDTOValidator
+    public class CreateEventDtoValidator : AbstractValidator<CreateEventDto>, ICreateEventDtoValidator
     {
-        public CreateEventDTOValidator()
+        public CreateEventDtoValidator()
         {
             RuleFor(e => e.Name)
                 .NotNull()

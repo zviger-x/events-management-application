@@ -6,9 +6,9 @@ using Application.Contracts;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class UpdateEventDTOValidator : AbstractValidator<UpdateEventDTO>, IUpdateEventDTOValidator
+    public class UpdateEventDtoValidator : AbstractValidator<UpdateEventDto>, IUpdateEventDtoValidator
     {
-        public UpdateEventDTOValidator()
+        public UpdateEventDtoValidator()
         {
             RuleFor(e => e.Name)
                 .NotNull()

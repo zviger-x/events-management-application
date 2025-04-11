@@ -26,7 +26,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateEventDTO eventToCreate, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateEventDto eventToCreate, CancellationToken cancellationToken)
         {
             var command = new EventCreateCommand { Event = eventToCreate };
             var createdEventId = await _mediator.Send(command, cancellationToken);
@@ -35,7 +35,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPut("{eventId}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid eventId, [FromBody] UpdateEventDTO eventToUpdate, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAsync([FromRoute] Guid eventId, [FromBody] UpdateEventDto eventToUpdate, CancellationToken cancellationToken)
         {
             var command = new EventUpdateCommand { RouteEventId = eventId, Event = eventToUpdate };
             await _mediator.Send(command, cancellationToken);

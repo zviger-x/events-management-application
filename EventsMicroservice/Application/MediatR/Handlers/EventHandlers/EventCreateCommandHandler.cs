@@ -10,9 +10,9 @@ using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
-    public class EventCreateCommandHandler : BaseHandler<CreateEventDTO>, IRequestHandler<EventCreateCommand, Guid>
+    public class EventCreateCommandHandler : BaseHandler<CreateEventDto>, IRequestHandler<EventCreateCommand, Guid>
     {
-        public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateEventDTOValidator validator)
+        public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateEventDtoValidator validator)
             : base(unitOfWork, mapper, validator)
         {
         }

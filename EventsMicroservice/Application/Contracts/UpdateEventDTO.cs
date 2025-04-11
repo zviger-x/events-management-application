@@ -1,6 +1,6 @@
 ﻿namespace Application.Contracts
 {
-    public class UpdateEventDTO
+    public class UpdateEventDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

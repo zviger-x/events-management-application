@@ -1,6 +1,6 @@
 ﻿namespace Application.Contracts
 {
-    public class CreateEventDTO
+    public class CreateEventDto
     {
         public string Name { get; set; }
         public string Description { get; set; }

@@ -80,12 +80,12 @@ namespace Infrastructure.Extensions
             this IMongoCollection<T> collection,
             IClientSessionHandle session,
             IEnumerable<ReplaceOneModel<T>> requests,
-            ReplaceOptions options = null,
+            BulkWriteOptions options = null,
             CancellationToken cancellationToken = default)
         {
             return session != null
-                ? collection.BulkWriteAsync(session, requests, cancellationToken: cancellationToken)
-                : collection.BulkWriteAsync(requests, cancellationToken: cancellationToken);
+                ? collection.BulkWriteAsync(session, requests, options, cancellationToken: cancellationToken)
+                : collection.BulkWriteAsync(requests, options, cancellationToken: cancellationToken);
         }
 
         // DeleteOneAsync

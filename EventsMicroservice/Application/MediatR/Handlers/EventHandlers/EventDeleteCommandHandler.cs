@@ -1,4 +1,5 @@
-﻿using Application.MediatR.Commands.EventCommands;
+﻿using Application.Caching.Constants;
+using Application.MediatR.Commands.EventCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -18,6 +19,8 @@ namespace Application.MediatR.Handlers.EventHandlers
             var @event = await _unitOfWork.EventRepository.GetByIdAsync(request.Id, cancellationToken);
             if (@event == null)
                 return;
+
+            await _cacheService.RemoveAsync(CacheKeys.EventById(@event.Id), cancellationToken);
 
             await _unitOfWork.EventRepository.DeleteAsync(@event, cancellationToken);
         }

@@ -1,4 +1,5 @@
-﻿using Application.Contracts;
+﻿using Application.Caching.Constants;
+using Application.Contracts;
 using Application.MediatR.Commands.EventCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
@@ -30,6 +31,8 @@ namespace Application.MediatR.Handlers.EventHandlers
 
             var @event = _mapper.Map<Event>(request.Event);
             await _unitOfWork.EventRepository.UpdateAsync(@event, cancellationToken);
+
+            await _cacheService.RemoveAsync(CacheKeys.EventById(@event.Id), cancellationToken);
         }
     }
 }

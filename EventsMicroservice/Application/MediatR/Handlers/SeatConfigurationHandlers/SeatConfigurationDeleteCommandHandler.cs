@@ -8,8 +8,8 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
     public class SeatConfigurationDeleteCommandHandler : BaseHandler, IRequestHandler<SeatConfigurationDeleteCommand>
     {
-        public SeatConfigurationDeleteCommandHandler(IUnitOfWork unitOfWork, ICacheService cacheService, IMapper mapper)
-            : base(unitOfWork, cacheService, mapper)
+        public SeatConfigurationDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 

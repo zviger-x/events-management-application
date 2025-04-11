@@ -10,8 +10,8 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
     public class SeatConfigurationGetByIdQueryHandler : BaseHandler, IRequestHandler<SeatConfigurationGetByIdQuery, SeatConfiguration>
     {
-        public SeatConfigurationGetByIdQueryHandler(IUnitOfWork unitOfWork, ICacheService cacheService, IMapper mapper)
-            : base(unitOfWork, cacheService, mapper)
+        public SeatConfigurationGetByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 

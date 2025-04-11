@@ -1,4 +1,5 @@
-﻿using Application.MediatR.Queries.EventQueries;
+﻿using Application.Caching.Constants;
+using Application.MediatR.Queries.EventQueries;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
@@ -25,11 +26,23 @@ namespace Application.MediatR.Handlers.EventHandlers
 
             await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
-            return await _unitOfWork.EventRepository.GetPagedAsync(
+            var cachedPage = await _cacheService.GetAsync<PagedCollection<Event>>(
+                CacheKeys.PagedEvents(request.PageParameters.PageNumber, request.PageParameters.PageSize),
+                cancellationToken);
+            if (cachedPage != null)
+                return cachedPage;
+
+            var page = await _unitOfWork.EventRepository.GetPagedAsync(
                 request.PageParameters.PageNumber,
                 request.PageParameters.PageSize,
-                cancellationToken)
-                ;
+                cancellationToken);
+
+            await _cacheService.SetAsync(
+                CacheKeys.PagedEvents(request.PageParameters.PageNumber, request.PageParameters.PageSize),
+                page,
+                cancellationToken);
+
+            return page;
         }
     }
 }

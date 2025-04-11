@@ -5,14 +5,15 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentUpdateCommandHandler : BaseHandler<EventComment>, IRequestHandler<EventCommentUpdateCommand>
     {
-        public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IEventCommentValidator validator)
-            : base(unitOfWork, mapper, validator)
+        public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IEventCommentValidator validator)
+            : base(unitOfWork, mapper, cacheService, validator)
         {
         }
 

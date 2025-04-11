@@ -3,14 +3,15 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
     public class EventGetByIdQueryHandler : BaseHandler, IRequestHandler<EventGetByIdQuery, Event>
     {
-        public EventGetByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
-            : base(unitOfWork, mapper)
+        public EventGetByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 

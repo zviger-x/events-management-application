@@ -2,13 +2,14 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
+using Shared.Caching.Interfaces;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
     public class SeatConfigurationDeleteCommandHandler : BaseHandler, IRequestHandler<SeatConfigurationDeleteCommand>
     {
-        public SeatConfigurationDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
-            : base(unitOfWork, mapper)
+        public SeatConfigurationDeleteCommandHandler(IUnitOfWork unitOfWork, ICacheService cacheService, IMapper mapper)
+            : base(unitOfWork, cacheService, mapper)
         {
         }
 

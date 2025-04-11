@@ -5,14 +5,15 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
     public class EventUserCreateCommandHandler : BaseHandler<EventUser>, IRequestHandler<EventUserCreateCommand, Guid>
     {
-        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IEventUserValidator validator)
-            : base(unitOfWork, mapper, validator)
+        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IEventUserValidator validator)
+            : base(unitOfWork, mapper, cacheService, validator)
         {
         }
 

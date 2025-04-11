@@ -3,14 +3,15 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatHandlers
 {
     public class SeatGetByEventQueryHandler : BaseHandler, IRequestHandler<SeatGetByEventQuery, IEnumerable<Seat>>
     {
-        public SeatGetByEventQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
-            : base(unitOfWork, mapper)
+        public SeatGetByEventQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 

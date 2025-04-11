@@ -4,13 +4,14 @@ using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Shared.Caching.Interfaces;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
     public class EventUserDeleteCommandHandler : BaseHandler<EventUser>, IRequestHandler<EventUserDeleteCommand>
     {
-        public EventUserDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IEventUserValidator validator)
-            : base(unitOfWork, mapper, validator)
+        public EventUserDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IEventUserValidator validator)
+            : base(unitOfWork, mapper, cacheService, validator)
         {
         }
 

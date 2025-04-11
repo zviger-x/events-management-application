@@ -2,14 +2,15 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentDeleteCommandHandler : BaseHandler, IRequestHandler<EventCommentDeleteCommand>
     {
-        public EventCommentDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
-            : base(unitOfWork, mapper)
+        public EventCommentDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 

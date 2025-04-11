@@ -6,14 +6,15 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
     public class EventCreateCommandHandler : BaseHandler<CreateEventDto>, IRequestHandler<EventCreateCommand, Guid>
     {
-        public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateEventDtoValidator validator)
-            : base(unitOfWork, mapper, validator)
+        public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, ICreateEventDtoValidator validator)
+            : base(unitOfWork, mapper, cacheService, validator)
         {
         }
 

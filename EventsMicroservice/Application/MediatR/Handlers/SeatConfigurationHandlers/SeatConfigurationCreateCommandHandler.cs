@@ -5,14 +5,15 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
     public class SeatConfigurationCreateCommandHandler : BaseHandler<SeatConfiguration>, IRequestHandler<SeatConfigurationCreateCommand, Guid>
     {
-        public SeatConfigurationCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ISeatConfigurationValidator validator)
-            : base(unitOfWork, mapper, validator)
+        public SeatConfigurationCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, ISeatConfigurationValidator validator)
+            : base(unitOfWork, mapper, cacheService, validator)
         {
         }
 

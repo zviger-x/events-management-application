@@ -4,6 +4,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Common;
 using Shared.Exceptions.ServerExceptions;
 using Shared.Validation.Interfaces;
@@ -12,8 +13,8 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
     public class SeatConfigurationGetPagedQueryHandler : BaseHandler<PageParameters>, IRequestHandler<SeatConfigurationGetPagedQuery, PagedCollection<SeatConfiguration>>
     {
-        public SeatConfigurationGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IPageParametersValidator validator)
-            : base(unitOfWork, mapper, validator)
+        public SeatConfigurationGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IPageParametersValidator validator)
+            : base(unitOfWork, mapper, cacheService, validator)
         {
         }
 

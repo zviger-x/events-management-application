@@ -5,7 +5,6 @@ using Application.MediatR.Commands.EventCommentCommands;
 using Application.MediatR.Queries.EventCommentQueries;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Shared.Attributes;
 
 namespace EventsAPI.Controllers
 {

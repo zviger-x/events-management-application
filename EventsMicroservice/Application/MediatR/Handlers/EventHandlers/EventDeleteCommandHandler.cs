@@ -2,13 +2,14 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
+using Shared.Caching.Interfaces;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
     public class EventDeleteCommandHandler : BaseHandler, IRequestHandler<EventDeleteCommand>
     {
-        public EventDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
-            : base(unitOfWork, mapper)
+        public EventDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 

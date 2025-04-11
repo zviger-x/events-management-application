@@ -4,6 +4,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Shared.Caching.Interfaces;
 using Shared.Common;
 using Shared.Exceptions.ServerExceptions;
 using Shared.Validation.Interfaces;
@@ -12,8 +13,8 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentGetPagedByEventQueryHandler : BaseHandler<PageParameters>, IRequestHandler<EventCommentGetPagedByEventQuery, PagedCollection<EventComment>>
     {
-        public EventCommentGetPagedByEventQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IPageParametersValidator validator)
-            : base(unitOfWork, mapper, validator)
+        public EventCommentGetPagedByEventQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IPageParametersValidator validator)
+            : base(unitOfWork, mapper, cacheService, validator)
         {
         }
 

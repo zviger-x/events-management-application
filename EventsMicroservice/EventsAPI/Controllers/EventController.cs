@@ -7,7 +7,6 @@ using Shared.Attributes;
 using Shared.Enums;
 using Shared.Common;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace EventsAPI.Controllers
 {

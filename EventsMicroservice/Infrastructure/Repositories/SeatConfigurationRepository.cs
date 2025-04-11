@@ -6,8 +6,8 @@ namespace Infrastructure.Repositories
 {
     public class SeatConfigurationRepository : BaseRepository<SeatConfiguration>, ISeatConfigurationRepository
     {
-        public SeatConfigurationRepository(EventDbContext context, TransactionContext transactionContext)
-            : base(context, transactionContext)
+        public SeatConfigurationRepository(EventDbContext context)
+            : base(context)
         {
         }
     }

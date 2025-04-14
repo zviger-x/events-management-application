@@ -31,6 +31,33 @@
         Task SetAsync<T>(string key, T value, TimeSpan expirationTime, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Retrieves a value from the cache by its key, or fetches and stores it using the provided delegate if not found.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to retrieve or fetch.</typeparam>
+        /// <param name="key">The key associated with the cached value.</param>
+        /// <param name="getDataAsyncFunc">A function to get the data if it is not found in the cache.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
+        /// <returns>
+        /// The cached or fetched value. Returns <see langword="null"/> if the value could not be retrieved or fetched; 
+        /// in this case, the value will not be cached.
+        /// </returns>
+        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getDataAsyncFunc, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieves a value from the cache by its key, or fetches and stores it using the provided delegate if not found.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to retrieve or fetch.</typeparam>
+        /// <param name="key">The key associated with the cached value.</param>
+        /// <param name="getDataAsyncFunc">A function to get the data if it is not found in the cache.</param>
+        /// <param name="expirationTime">The duration for which the data should be stored in the cache.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
+        /// <returns>
+        /// The cached or fetched value. Returns <see langword="null"/> if the value could not be retrieved or fetched; 
+        /// in this case, the value will not be cached.
+        /// </returns>
+        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getDataAsyncFunc, TimeSpan expirationTime, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Removes a value from the cache by its key.
         /// </summary>
         /// <param name="key">The key associated with the cached value to be removed.</param>

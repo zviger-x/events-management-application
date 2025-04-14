@@ -41,7 +41,7 @@
         /// The cached or fetched value. Returns <see langword="null"/> if the value could not be retrieved or fetched; 
         /// in this case, the value will not be cached.
         /// </returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getDataAsyncFunc, CancellationToken cancellationToken = default);
+        Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> getDataAsyncFunc, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves a value from the cache by its key, or fetches and stores it using the provided delegate if not found.
@@ -55,7 +55,7 @@
         /// The cached or fetched value. Returns <see langword="null"/> if the value could not be retrieved or fetched; 
         /// in this case, the value will not be cached.
         /// </returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getDataAsyncFunc, TimeSpan expirationTime, CancellationToken cancellationToken = default);
+        Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> getDataAsyncFunc, TimeSpan expirationTime, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes a value from the cache by its key.

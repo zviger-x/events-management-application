@@ -49,18 +49,18 @@ namespace Shared.Caching
             _logger.LogInformation($"Cache set for key: {key} with expiration: {expirationTime.TotalSeconds} seconds");
         }
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getDataAsyncFunc, CancellationToken cancellationToken = default)
+        public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> getDataAsyncFunc, CancellationToken cancellationToken = default)
         {
             return await GetOrSetAsync(key, getDataAsyncFunc, _defaultExpirationTime, cancellationToken);
         }
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getDataAsyncFunc, TimeSpan expirationTime, CancellationToken cancellationToken = default)
+        public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> getDataAsyncFunc, TimeSpan expirationTime, CancellationToken cancellationToken = default)
         {
             var cachedData = await GetAsync<T>(key, cancellationToken);
             if (cachedData != null)
                 return cachedData;
 
-            var fetchedData = await getDataAsyncFunc();
+            var fetchedData = await getDataAsyncFunc(cancellationToken);
             if (fetchedData != null)
                 await SetAsync(key, fetchedData, expirationTime, cancellationToken);
 

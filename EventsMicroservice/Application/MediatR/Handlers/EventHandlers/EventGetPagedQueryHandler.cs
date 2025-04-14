@@ -7,7 +7,6 @@ using FluentValidation;
 using MediatR;
 using Shared.Caching.Interfaces;
 using Shared.Common;
-using Shared.Exceptions.ServerExceptions;
 using Shared.Validation.Interfaces;
 
 namespace Application.MediatR.Handlers.EventHandlers
@@ -23,23 +22,14 @@ namespace Application.MediatR.Handlers.EventHandlers
         {
             await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
-            var cachedPage = await _cacheService.GetAsync<PagedCollection<Event>>(
-                CacheKeys.PagedEvents(request.PageParameters.PageNumber, request.PageParameters.PageSize),
-                cancellationToken);
-            if (cachedPage != null)
-                return cachedPage;
+            var pageNumber = request.PageParameters.PageNumber;
+            var pageSize = request.PageParameters.PageSize;
+            var cacheKey = CacheKeys.PagedEvents(pageNumber, pageSize);
 
-            var page = await _unitOfWork.EventRepository.GetPagedAsync(
-                request.PageParameters.PageNumber,
-                request.PageParameters.PageSize,
-                cancellationToken);
+            var getPageAsyncFunc = () => 
+                _unitOfWork.EventRepository.GetPagedAsync(pageNumber, pageSize, cancellationToken);
 
-            await _cacheService.SetAsync(
-                CacheKeys.PagedEvents(request.PageParameters.PageNumber, request.PageParameters.PageSize),
-                page,
-                cancellationToken);
-
-            return page;
+            return await _cacheService.GetOrSetAsync(cacheKey, getPageAsyncFunc, cancellationToken);
         }
     }
 }

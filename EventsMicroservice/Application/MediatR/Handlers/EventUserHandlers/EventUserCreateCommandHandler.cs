@@ -1,23 +1,96 @@
-﻿using Application.MediatR.Commands.EventUserCommands;
+﻿using Application.Caching.Constants;
+using Application.MediatR.Commands.EventUserCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
+using System.Threading;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
     public class EventUserCreateCommandHandler : BaseHandler<EventUser>, IRequestHandler<EventUserCreateCommand, Guid>
     {
-        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IEventUserValidator validator)
+        private const int LockTtlInMinutes = 5;
+        private const int LockTtlUpdateDelayInMinutes = 4;
+
+        private readonly ILogger<EventUserCreateCommandHandler> _logger;
+
+        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ICacheService cacheService,
+            IEventUserValidator validator,
+            ILogger<EventUserCreateCommandHandler> logger)
             : base(unitOfWork, mapper, cacheService, validator)
         {
+            _logger = logger;
         }
 
         public async Task<Guid> Handle(EventUserCreateCommand request, CancellationToken cancellationToken)
+        {
+            // Создаю объект-блокировщий, чтобы не было одновременного доступа к месту
+            var lockKey = CacheKeys.SeatLockKey(request.SeatId);
+            var lockValue = request.SeatId.ToString();
+            var lockTtl = TimeSpan.FromMinutes(LockTtlInMinutes);
+            var lockTtlUpdateDelay = TimeSpan.FromMinutes(LockTtlUpdateDelayInMinutes);
+
+            var cachedLock = await _cacheService.GetAsync<string>(lockKey, cancellationToken);
+            if (cachedLock != null)
+                throw new ConflictException("This seat is currently being reserved by another user. Please try again later.");
+
+            await _cacheService.SetAsync(lockKey, lockValue, lockTtl, cancellationToken);
+
+            // Создаю отдельный связанный токен с оригинальным и запускаю задачу по обновлению объекта-блокировки
+            // Это нужно, чтобы доступ не был выдан раньше времени, если возникнет непредвиденная задержка и объект истечёт
+            using var extendCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var ttlExpender = RunTtlExpander(lockKey, lockValue, lockTtl, lockTtlUpdateDelay, extendCts);
+
+            try
+            {
+                // Основной запрос
+                return await HandleCreation(request, cancellationToken);
+            }
+            finally
+            {
+                // Останавливаю фоновую задачу и удаляю объект-блокировщик из кэша
+                extendCts.Cancel();
+                await ttlExpender;
+                await _cacheService.RemoveAsync(lockKey, cancellationToken);
+            }
+        }
+
+        private Task RunTtlExpander(string lockKey, string lockValue, TimeSpan lockTtl, TimeSpan delayBetweenUpdates, CancellationTokenSource extendCts)
+        {
+            // Фоновая задача, обновляющая TTL каждые 2 минуты, пока не завершится основная операция
+            return Task.Run(async () =>
+            {
+                while (!extendCts.Token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        // Ждём некоторое время перед следующим продлением
+                        await Task.Delay(delayBetweenUpdates, extendCts.Token);
+
+                        // Обновляем TTL блокировки, продлевая его время жизни
+                        await _cacheService.SetAsync(lockKey, lockValue, lockTtl, extendCts.Token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning($"Failed to update TTL for key {lockKey}: {ex.Message}");
+                    }
+                }
+            }, extendCts.Token);
+        }
+
+        private async Task<Guid> HandleCreation(EventUserCreateCommand request, CancellationToken cancellationToken)
         {
             var eventUser = new EventUser
             {
@@ -55,15 +128,28 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             if (isRegistered)
                 throw new ParameterException("User is already registered.");
 
-            // Помечаем сиденье купленным и создаём "ивент" пользователя
-            // Возвращаем из транзакции ID созданного EventUser
-            return await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
-            {
-                seat.IsBought = true;
-                await _unitOfWork.SeatRepository.UpdateAsync(seat);
+            // TODO: gRPC запрос в Payment Microservice для обработки покупки по токену
+            var paymentResult = true;
+            if (!paymentResult)
+                throw new PaymentException("Failed to complete payment. Please try again or use another card.");
 
-                return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, cancellationToken);
-            }, cancellationToken);
+            try
+            {
+                // Помечаем сиденье купленным и создаём "ивент" пользователя
+                // Возвращаем из транзакции ID созданного EventUser
+                return await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
+                {
+                    seat.IsBought = true;
+                    await _unitOfWork.SeatRepository.UpdateAsync(seat);
+
+                    return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, cancellationToken);
+                }, cancellationToken);
+            }
+            catch
+            {
+                // TODO: Сделать что-то в случаи успешной оплаты и не успешной покупки. Например "вернуть" деньги.
+                throw;
+            }
         }
     }
 }

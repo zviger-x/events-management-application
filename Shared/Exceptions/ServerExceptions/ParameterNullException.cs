@@ -5,18 +5,28 @@
     /// </summary>
     public class ParameterNullException : ParameterException
     {
+        public ParameterNullException(string propertyName, Exception innerException)
+            : base("Argument cannot be null.", propertyName, innerException)
+        {
+        }
+
         public ParameterNullException(string propertyName)
-            : base("Argument cannot be null.", propertyName)
+            : this(propertyName, null)
         {
         }
 
-        public ParameterNullException(string errorMessage, string propertyName = null)
-            : base(errorMessage, propertyName)
+        public ParameterNullException(string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorMessage, propertyName, innerException)
         {
         }
 
-        public ParameterNullException(string errorCode, string errorMessage, string propertyName = null)
-            : base(errorCode, errorMessage, propertyName)
+        public ParameterNullException(string errorCode, string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorCode, errorMessage, propertyName, innerException)
+        {
+        }
+
+        public ParameterNullException(ArgumentNullException argumentNullException)
+            : base(argumentNullException.Message, argumentNullException.ParamName, argumentNullException)
         {
         }
     }

@@ -48,8 +48,6 @@ namespace Infrastructure.Validation.Validators
                 .LessThan(e => e.StartDate)
                     .WithMessage(EventValidationMessages.PurchaseDeadlineInvalid)
                     .WithErrorCode(EventValidationErrorCodes.PurchaseDeadlineInvalid);
-            
-            // TODO: Добавить проверку наличия конфигурации мест
         }
     }
 }

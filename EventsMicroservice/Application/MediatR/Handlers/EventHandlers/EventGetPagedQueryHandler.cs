@@ -21,9 +21,6 @@ namespace Application.MediatR.Handlers.EventHandlers
 
         public async Task<PagedCollection<Event>> Handle(EventGetPagedQuery request, CancellationToken cancellationToken)
         {
-            if (request.PageParameters == null)
-                throw new ParameterNullException(nameof(request.PageParameters));
-
             await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
             var cachedPage = await _cacheService.GetAsync<PagedCollection<Event>>(

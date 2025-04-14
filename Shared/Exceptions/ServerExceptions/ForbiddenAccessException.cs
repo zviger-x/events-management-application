@@ -5,13 +5,13 @@
     /// </summary>
     public class ForbiddenAccessException : ServerException
     {
-        public ForbiddenAccessException(string errorMessage, string propertyName = null)
-            : base(errorMessage, propertyName)
+        public ForbiddenAccessException(string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorMessage, propertyName, innerException)
         {
         }
 
-        public ForbiddenAccessException(string errorCode, string errorMessage, string propertyName = null)
-            : base(errorCode, errorMessage, propertyName)
+        public ForbiddenAccessException(string errorCode, string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorCode, errorMessage, propertyName, innerException)
         {
         }
     }

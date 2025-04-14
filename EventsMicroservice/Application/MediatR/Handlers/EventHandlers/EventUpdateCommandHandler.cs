@@ -21,13 +21,10 @@ namespace Application.MediatR.Handlers.EventHandlers
 
         public async Task Handle(EventUpdateCommand request, CancellationToken cancellationToken)
         {
-            if (request.Event == null)
-                throw new ParameterNullException(nameof(request.Event));
-
+            await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
+            
             if (request.RouteEventId != request.Event.Id)
                 throw new ParameterException("You are not allowed to modify this event.");
-
-            await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
 
             var @event = _mapper.Map<Event>(request.Event);
             await _unitOfWork.EventRepository.UpdateAsync(@event, cancellationToken);

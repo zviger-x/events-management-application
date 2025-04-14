@@ -19,13 +19,10 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
         public async Task Handle(SeatConfigurationUpdateCommand request, CancellationToken cancellationToken)
         {
-            if (request.SeatConfiguration == null)
-                throw new ParameterNullException(nameof(request.SeatConfiguration));
+            await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 
             if (request.RouteSeatId != request.SeatConfiguration.Id)
                 throw new ParameterException("You are not allowed to modify this configuration.");
-
-            await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 
             await _unitOfWork.SeatConfigurationRepository.UpdateAsync(request.SeatConfiguration, cancellationToken);
         }

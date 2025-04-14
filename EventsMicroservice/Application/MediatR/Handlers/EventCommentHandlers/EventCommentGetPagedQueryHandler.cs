@@ -20,16 +20,12 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task<PagedCollection<EventComment>> Handle(EventCommentGetPagedQuery request, CancellationToken cancellationToken)
         {
-            if (request.PageParameters == null)
-                throw new ParameterNullException(nameof(request.PageParameters));
-
             await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
             return await _unitOfWork.EventCommentRepository.GetPagedAsync(
                 request.PageParameters.PageNumber,
                 request.PageParameters.PageSize,
-                cancellationToken)
-                ;
+                cancellationToken);
         }
     }
 }

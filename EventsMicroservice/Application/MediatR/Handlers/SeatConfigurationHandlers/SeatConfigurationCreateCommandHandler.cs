@@ -19,9 +19,6 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
         public async Task<Guid> Handle(SeatConfigurationCreateCommand request, CancellationToken cancellationToken)
         {
-            if (request.SeatConfiguration == null)
-                throw new ParameterNullException(nameof(request.SeatConfiguration));
-
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 
             return await _unitOfWork.SeatConfigurationRepository.CreateAsync(request.SeatConfiguration, cancellationToken);

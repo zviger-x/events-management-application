@@ -7,15 +7,15 @@ namespace Shared.Exceptions.ServerExceptions
         public string ErrorCode { get; }
         public string PropertyName { get; }
 
-        public ServerException(string errorCode, string errorMessage, string propertyName = null)
-            : base(errorMessage)
+        public ServerException(string errorCode, string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorMessage, innerException)
         {
             ErrorCode = errorCode ?? GenerateErrorCode();
             PropertyName = propertyName;
         }
 
-        public ServerException(string errorMessage, string propertyName = null)
-            : this(null, errorMessage, propertyName)
+        public ServerException(string errorMessage, string propertyName = null, Exception innerException = null)
+            : this(null, errorMessage, propertyName, innerException)
         {
         }
 

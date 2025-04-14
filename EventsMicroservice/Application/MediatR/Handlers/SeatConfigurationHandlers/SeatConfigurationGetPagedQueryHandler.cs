@@ -20,16 +20,12 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 
         public async Task<PagedCollection<SeatConfiguration>> Handle(SeatConfigurationGetPagedQuery request, CancellationToken cancellationToken)
         {
-            if (request.PageParameters == null)
-                throw new ParameterNullException(nameof(request.PageParameters));
-
             await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
 
             return await _unitOfWork.SeatConfigurationRepository.GetPagedAsync(
                 request.PageParameters.PageNumber,
                 request.PageParameters.PageSize,
-                cancellationToken)
-                ;
+                cancellationToken);
         }
     }
 }

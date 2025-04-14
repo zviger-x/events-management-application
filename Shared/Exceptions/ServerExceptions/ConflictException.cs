@@ -5,13 +5,13 @@
     /// </summary>
     public class ConflictException : ServerException
     {
-        public ConflictException(string errorMessage, string propertyName = null)
-            : base(errorMessage, propertyName)
+        public ConflictException(string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorMessage, propertyName, innerException)
         {
         }
 
-        public ConflictException(string errorCode, string errorMessage, string propertyName = null)
-            : base(errorCode, errorMessage, propertyName)
+        public ConflictException(string errorCode, string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorCode, errorMessage, propertyName, innerException)
         {
         }
     }

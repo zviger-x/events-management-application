@@ -5,13 +5,13 @@
     /// </summary>
     public class NotFoundException : ServerException
     {
-        public NotFoundException(string errorMessage, string propertyName = null)
-            : base(errorMessage, propertyName)
+        public NotFoundException(string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorMessage, propertyName, innerException)
         {
         }
 
-        public NotFoundException(string errorCode, string errorMessage, string propertyName = null)
-            : base(errorCode, errorMessage, propertyName)
+        public NotFoundException(string errorCode, string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorCode, errorMessage, propertyName, innerException)
         {
         }
     }

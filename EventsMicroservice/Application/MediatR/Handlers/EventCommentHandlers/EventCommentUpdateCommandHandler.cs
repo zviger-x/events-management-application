@@ -19,9 +19,8 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task Handle(EventCommentUpdateCommand request, CancellationToken cancellationToken)
         {
-            if (request.EventComment == null)
-                throw new ParameterNullException(nameof(request.EventComment));
-
+            await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
+         
             // TODO: Добавить проверку, что пользователь является создателем отзыва.
 
             if (request.RouteEventId != request.EventComment.EventId)
@@ -29,8 +28,6 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
             if (request.RouteCommentId != request.EventComment.Id)
                 throw new ParameterException("You are not allowed to modify this comment.");
-
-            await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
             await _unitOfWork.EventCommentRepository.UpdateAsync(request.EventComment, cancellationToken);
         }

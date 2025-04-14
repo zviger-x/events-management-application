@@ -20,9 +20,6 @@ namespace Application.MediatR.Handlers.EventHandlers
 
         public async Task<Guid> Handle(EventCreateCommand request, CancellationToken cancellationToken)
         {
-            if (request.Event == null)
-                throw new ParameterNullException(nameof(request.Event));
-
             await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
 
             var seatConfiguration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Event.SeatConfigurationId, cancellationToken);

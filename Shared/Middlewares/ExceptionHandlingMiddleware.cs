@@ -24,19 +24,10 @@ namespace Shared.Middlewares
             }
             catch (Exception ex)
             {
+                TryConvertToServerException(ref ex);
+
                 var responseStatus = GetResponseStatusCode(ex);
-                var response = ex switch
-                {
-                    // Ошибки в валидаторах
-                    FluentValidationException fluentValidationEx =>
-                        GetErrorResponse(ValidationException.GetValidationExceptions(fluentValidationEx)),
-
-                    // Ошибки в бизнес логике
-                    ServerException serverEx => GetErrorResponse(serverEx),
-
-                    // Любые другие ошибки
-                    _ => GetErrorResponse("unexpectedError", "An unexpected error occurred")
-                };
+                var response = GetErrorResponse(ex);
 
                 LogError(ex, responseStatus);
 
@@ -79,6 +70,34 @@ namespace Shared.Middlewares
             }
         }
 
+        private object GetErrorResponse(Exception ex)
+        {
+            return ex switch
+            {
+                // Ошибки в валидаторах
+                FluentValidationException fluentValidationEx =>
+                    GetErrorObject(ValidationException.GetValidationExceptions(fluentValidationEx)),
+
+                // Ошибки в бизнес логике
+                ServerException serverEx => GetErrorObject(serverEx),
+
+                // Любые другие ошибки
+                _ => GetErrorObject("unexpectedError", "An unexpected error occurred")
+            };
+        }
+
+        private bool TryConvertToServerException(ref Exception ex)
+        {
+            ex = ex switch
+            {
+                ArgumentNullException argNullEx => new ParameterNullException(argNullEx),
+                ArgumentException argEx => new ParameterException(argEx),
+                _ => ex
+            };
+
+            return ex is ServerException;
+        }
+
         private void LogError(Exception ex, int statusCode)
         {
             if (statusCode < StatusCodes.Status500InternalServerError)
@@ -100,9 +119,9 @@ namespace Shared.Middlewares
         /// }
         /// </code>
         /// </summary>
-        private object GetErrorResponse(string code, string message, string propertyName = null)
+        private object GetErrorObject(string code, string message, string propertyName = null)
         {
-            return GetErrorResponse(new ServerException(code, message, propertyName));
+            return GetErrorObject(new ServerException(code, message, propertyName));
         }
 
         /// <summary>
@@ -118,9 +137,9 @@ namespace Shared.Middlewares
         /// }
         /// </code>
         /// </summary>
-        private object GetErrorResponse(ServerException ex)
+        private object GetErrorObject(ServerException ex)
         {
-            return GetErrorResponse([ex]);
+            return GetErrorObject([ex]);
         }
 
         /// <summary>
@@ -136,7 +155,7 @@ namespace Shared.Middlewares
         /// }
         /// </code>
         /// </summary>
-        private object GetErrorResponse(IEnumerable<ServerException> exceptions)
+        private object GetErrorObject(IEnumerable<ServerException> exceptions)
         {
             var errorDictionary = exceptions.ToDictionary(
                 ex => ex.ErrorCode,

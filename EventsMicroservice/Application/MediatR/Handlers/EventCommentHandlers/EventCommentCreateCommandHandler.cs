@@ -19,13 +19,10 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task<Guid> Handle(EventCommentCreateCommand request, CancellationToken cancellationToken)
         {
-            if (request.EventComment == null)
-                throw new ParameterNullException(nameof(request.EventComment));
-
+            await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
+         
             if (request.RouteEventId != request.EventComment.EventId)
                 throw new ParameterException("You are not allowed to create a comment for this event.");
-
-            await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
             return await _unitOfWork.EventCommentRepository.CreateAsync(request.EventComment, cancellationToken);
         }

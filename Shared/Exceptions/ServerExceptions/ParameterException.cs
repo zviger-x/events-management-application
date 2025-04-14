@@ -5,13 +5,18 @@
     /// </summary>
     public class ParameterException : ServerException
     {
-        public ParameterException(string errorMessage, string propertyName = null)
-            : base(errorMessage, propertyName)
+        public ParameterException(string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorMessage, propertyName, innerException)
         {
         }
 
-        public ParameterException(string errorCode, string errorMessage, string propertyName = null)
-            : base(errorCode, errorMessage, propertyName)
+        public ParameterException(string errorCode, string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorCode, errorMessage, propertyName, innerException)
+        {
+        }
+
+        public ParameterException(ArgumentException argumentException)
+            : base(argumentException.Message, argumentException.ParamName, argumentException)
         {
         }
     }

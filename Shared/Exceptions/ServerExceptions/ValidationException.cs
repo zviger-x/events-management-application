@@ -5,13 +5,13 @@
     /// </summary>
     public class ValidationException : ServerException
     {
-        public ValidationException(string errorMessage, string propertyName = null)
-            : base(errorMessage, propertyName)
+        public ValidationException(string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorMessage, propertyName, innerException)
         {
         }
 
-        public ValidationException(string errorCode, string errorMessage, string propertyName = null)
-            : base(errorCode, errorMessage, propertyName)
+        public ValidationException(string errorCode, string errorMessage, string propertyName = null, Exception innerException = null)
+            : base(errorCode, errorMessage, propertyName, innerException)
         {
         }
 

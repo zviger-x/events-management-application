@@ -28,8 +28,6 @@ namespace Application.MediatR.Handlers.EventHandlers
 
             var @event = _mapper.Map<Event>(request.Event);
             await _unitOfWork.EventRepository.UpdateAsync(@event, cancellationToken);
-
-            await _cacheService.RemoveAsync(CacheKeys.EventById(@event.Id), cancellationToken);
         }
     }
 }

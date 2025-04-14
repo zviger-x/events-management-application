@@ -20,8 +20,6 @@ namespace Application.MediatR.Handlers.EventHandlers
             if (@event == null)
                 return;
 
-            await _cacheService.RemoveAsync(CacheKeys.EventById(@event.Id), cancellationToken);
-
             await _unitOfWork.EventRepository.DeleteAsync(@event, cancellationToken);
         }
     }

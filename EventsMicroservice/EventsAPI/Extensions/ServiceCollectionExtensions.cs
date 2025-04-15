@@ -85,6 +85,7 @@ namespace EventsAPI.Extensions
             services.AddScoped<IUpdateEventDtoValidator, UpdateEventDtoValidator>();
 
             services.AddScoped<IEventUserValidator, EventUserValidator>();
+            services.AddScoped<ICreateEventUserDtoValidator, CreateEventUserDtoValidator>();
 
             services.AddScoped<IEventCommentValidator, EventCommentValidator>();
             services.AddScoped<ICreateEventCommentDtoValidator, CreateEventCommentDtoValidator>();

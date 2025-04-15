@@ -1,4 +1,5 @@
 ﻿using Application.Caching.Constants;
+using Application.Contracts;
 using Application.MediatR.Commands.EventUserCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
@@ -12,7 +13,7 @@ using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
-    public class EventUserCreateCommandHandler : BaseHandler<EventUser>, IRequestHandler<EventUserCreateCommand, Guid>
+    public class EventUserCreateCommandHandler : BaseHandler<CreateEventUserDto>, IRequestHandler<EventUserCreateCommand, Guid>
     {
         private const int LockTtlInMinutes = 5;
         private const int LockTtlUpdateDelayInMinutes = 4;
@@ -23,7 +24,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
         public EventUserCreateCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
             IRedisCacheService redisCacheService,
-            IEventUserValidator validator,
+            ICreateEventUserDtoValidator validator,
             ILogger<EventUserCreateCommandHandler> logger)
             : base(unitOfWork, mapper, redisCacheService, validator)
         {
@@ -34,8 +35,8 @@ namespace Application.MediatR.Handlers.EventUserHandlers
         public async Task<Guid> Handle(EventUserCreateCommand request, CancellationToken cancellationToken)
         {
             // Создаю объект-блокировщий, чтобы не было одновременного доступа к месту
-            var lockKey = CacheKeys.SeatLockKey(request.SeatId);
-            var lockValue = request.SeatId.ToString();
+            var lockKey = CacheKeys.SeatLockKey(request.EventUser.SeatId);
+            var lockValue = request.EventUser.SeatId.ToString();
             var lockTtl = TimeSpan.FromMinutes(LockTtlInMinutes);
             var lockTtlUpdateDelay = TimeSpan.FromMinutes(LockTtlUpdateDelayInMinutes);
 
@@ -104,15 +105,9 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
         private async Task<Guid> HandleCreation(EventUserCreateCommand request, CancellationToken cancellationToken)
         {
-            var eventUser = new EventUser
-            {
-                EventId = request.EventId,
-                UserId = request.UserId,
-                SeatId = request.SeatId,
-                RegisteredAt = DateTime.UtcNow
-            };
+            await _validator.ValidateAndThrowAsync(request.EventUser, cancellationToken);
 
-            await _validator.ValidateAndThrowAsync(eventUser, cancellationToken);
+            var eventUser = _mapper.Map<EventUser>(request.EventUser);
 
             // Проверка на существование ивента с таким ID
             var @event = await _unitOfWork.EventRepository.GetByIdAsync(eventUser.EventId, cancellationToken);
@@ -136,7 +131,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
             // Проверка подписан ли пользователь на этот ивент.
             // TODO: Что-то сделать здесь или забить. Ведь нужна ли в действительности проверка на то, что пользователь подписан на ивент?
-            var isRegistered = (await _unitOfWork.EventUserRepository.GetAllAsync(cancellationToken)).Any(e => e.UserId == request.UserId);
+            var isRegistered = (await _unitOfWork.EventUserRepository.GetAllAsync(cancellationToken)).Any(e => e.UserId == eventUser.UserId);
             if (isRegistered)
                 throw new ParameterException("User is already registered.");
 
@@ -145,8 +140,6 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             if (!paymentResult)
                 throw new PaymentException("Failed to complete payment. Please try again or use another card.");
 
-            await Task.Delay(TimeSpan.FromMinutes(3));
-
             try
             {
                 // Помечаем сиденье купленным и создаём "ивент" пользователя
@@ -154,9 +147,9 @@ namespace Application.MediatR.Handlers.EventUserHandlers
                 return await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
                 {
                     seat.IsBought = true;
-                    await _unitOfWork.SeatRepository.UpdateAsync(seat);
+                    await _unitOfWork.SeatRepository.UpdateAsync(seat, token);
 
-                    return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, cancellationToken);
+                    return await _unitOfWork.EventUserRepository.CreateAsync(eventUser, token);
                 }, cancellationToken);
             }
             catch

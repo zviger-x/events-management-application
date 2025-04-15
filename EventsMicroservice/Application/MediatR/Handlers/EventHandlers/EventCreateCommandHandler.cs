@@ -42,17 +42,17 @@ namespace Application.MediatR.Handlers.EventHandlers
             var seats = new List<Seat>();
 
             var numberOfRows = seatConfiguration.Rows.Count;
-            for (int rI = 0; rI < numberOfRows; rI++)
+            for (int rowNumber = 1; rowNumber <= numberOfRows; rowNumber++)
             {
-                var numberOfSeats = seatConfiguration.Rows[rI];
+                var numberOfSeats = seatConfiguration.Rows[rowNumber];
 
-                for (int i = 0; i < numberOfSeats; i++)
+                for (int seatNumber = 1; seatNumber <= numberOfSeats; seatNumber++)
                 {
                     seats.Add(new Seat
                     {
                         EventId = eventId,
-                        Number = i + 1,
-                        Row = rI + 1,
+                        Number = seatNumber,
+                        Row = rowNumber,
                         Price = seatConfiguration.DefaultPrice
                     });
                 }

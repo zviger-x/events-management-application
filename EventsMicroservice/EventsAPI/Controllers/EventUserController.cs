@@ -28,7 +28,15 @@ namespace EventsAPI.Controllers
         public async Task<IActionResult> RegisterUser([FromRoute] Guid eventId, [FromRoute] Guid seatId, CancellationToken cancellationToken)
         {
             var userId = User.GetUserIdOrThrow();
-            var command = new EventUserCreateCommand { EventId = eventId, UserId = userId, SeatId = seatId };
+            var command = new EventUserCreateCommand
+            {
+                EventUser = new()
+                {
+                    EventId = eventId,
+                    UserId = userId,
+                    SeatId = seatId
+                }
+            };
 
             var registeredUserId = await _mediator.Send(command, cancellationToken);
 

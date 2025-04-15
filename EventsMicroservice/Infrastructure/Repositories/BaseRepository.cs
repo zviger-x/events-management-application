@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
-#warning TODO: Убрать обнуление ID из репозитория, это не его ответственность.
     public abstract class BaseRepository<T> : IRepository<T>
         where T : class, IEntity
     {
@@ -21,7 +20,6 @@ namespace Infrastructure.Repositories
 
         public virtual async Task<Guid> CreateAsync(T entity, CancellationToken token = default)
         {
-            entity.Id = Guid.NewGuid();
             await _context.Collection<T>().InsertOneAsync(entity, cancellationToken: token);
 
             return entity.Id;
@@ -29,9 +27,6 @@ namespace Infrastructure.Repositories
 
         public virtual async Task CreateManyAsync(IEnumerable<T> entities, CancellationToken token = default)
         {
-            foreach (var entity in entities)
-                entity.Id = Guid.NewGuid();
-
             await _context.Collection<T>().InsertManyAsync(entities, cancellationToken: token);
         }
 

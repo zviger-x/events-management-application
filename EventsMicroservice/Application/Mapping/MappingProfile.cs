@@ -14,6 +14,9 @@ namespace Application.Mapping
             CreateMap<Event, UpdateEventDto>();
             CreateMap<UpdateEventDto, Event>();
 
+            CreateMap<EventUser, CreateEventUserDto>();
+            CreateMap<CreateEventUserDto, EventUser>();
+
             CreateMap<EventComment, CreateEventCommentDto>();
             CreateMap<EventComment, UpdateEventCommentDto>();
             CreateMap<CreateEventCommentDto, EventComment>();

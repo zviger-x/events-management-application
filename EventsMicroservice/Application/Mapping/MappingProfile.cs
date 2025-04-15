@@ -13,6 +13,16 @@ namespace Application.Mapping
 
             CreateMap<Event, UpdateEventDto>();
             CreateMap<UpdateEventDto, Event>();
+
+            CreateMap<EventComment, CreateEventCommentDto>();
+            CreateMap<EventComment, UpdateEventCommentDto>();
+            CreateMap<CreateEventCommentDto, EventComment>();
+            CreateMap<UpdateEventCommentDto, EventComment>();
+
+            CreateMap<SeatConfiguration, CreateSeatConfigurationDto>();
+            CreateMap<SeatConfiguration, UpdateSeatConfigurationDto>();
+            CreateMap<CreateSeatConfigurationDto, SeatConfiguration>();
+            CreateMap<UpdateSeatConfigurationDto, SeatConfiguration>();
         }
     }
 }

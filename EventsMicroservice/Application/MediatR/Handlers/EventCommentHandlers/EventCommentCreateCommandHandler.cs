@@ -1,4 +1,5 @@
-﻿using Application.MediatR.Commands.EventCommentCommands;
+﻿using Application.Contracts;
+using Application.MediatR.Commands.EventCommentCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
@@ -10,9 +11,12 @@ using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
-    public class EventCommentCreateCommandHandler : BaseHandler<EventComment>, IRequestHandler<EventCommentCreateCommand, Guid>
+    public class EventCommentCreateCommandHandler : BaseHandler<CreateEventCommentDto>, IRequestHandler<EventCommentCreateCommand, Guid>
     {
-        public EventCommentCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IEventCommentValidator validator)
+        public EventCommentCreateCommandHandler(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ICacheService cacheService,
+            ICreateEventCommentDtoValidator validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }
@@ -23,8 +27,10 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
          
             if (request.RouteEventId != request.EventComment.EventId)
                 throw new ParameterException("You are not allowed to create a comment for this event.");
+            
+            var eventComment = _mapper.Map<EventComment>(request.EventComment);
 
-            return await _unitOfWork.EventCommentRepository.CreateAsync(request.EventComment, cancellationToken);
+            return await _unitOfWork.EventCommentRepository.CreateAsync(eventComment, cancellationToken);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.MediatR.Commands.EventCommentCommands;
+﻿using Application.Contracts;
+using Application.MediatR.Commands.EventCommentCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
@@ -10,9 +11,12 @@ using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
-    public class EventCommentUpdateCommandHandler : BaseHandler<EventComment>, IRequestHandler<EventCommentUpdateCommand>
+    public class EventCommentUpdateCommandHandler : BaseHandler<UpdateEventCommentDto>, IRequestHandler<EventCommentUpdateCommand>
     {
-        public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IEventCommentValidator validator)
+        public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ICacheService cacheService,
+            IUpdateEventCommentDtoValidator validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }
@@ -29,7 +33,9 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (request.RouteCommentId != request.EventComment.Id)
                 throw new ParameterException("You are not allowed to modify this comment.");
 
-            await _unitOfWork.EventCommentRepository.UpdateAsync(request.EventComment, cancellationToken);
+            var eventComment = _mapper.Map<EventComment>(request.EventComment);
+
+            await _unitOfWork.EventCommentRepository.UpdateAsync(eventComment, cancellationToken);
         }
     }
 }

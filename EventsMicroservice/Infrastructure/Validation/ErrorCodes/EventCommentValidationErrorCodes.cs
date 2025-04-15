@@ -11,7 +11,5 @@
         public const string TextIsNull = "textIsNull";
         public const string TextIsEmpty = "textIsEmpty";
         public const string TextIsTooLong = "textIsTooLong";
-
-        public const string CreationTimeIsInvalid = "creationTimeIsInvalid";
     }
 }

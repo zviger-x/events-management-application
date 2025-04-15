@@ -1,4 +1,5 @@
-﻿using Application.MediatR.Commands.SeatConfigurationCommands;
+﻿using Application.Contracts;
+using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
@@ -6,13 +7,15 @@ using Domain.Entities;
 using FluentValidation;
 using MediatR;
 using Shared.Caching.Interfaces;
-using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
-    public class SeatConfigurationCreateCommandHandler : BaseHandler<SeatConfiguration>, IRequestHandler<SeatConfigurationCreateCommand, Guid>
+    public class SeatConfigurationCreateCommandHandler : BaseHandler<CreateSeatConfigurationDto>, IRequestHandler<SeatConfigurationCreateCommand, Guid>
     {
-        public SeatConfigurationCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, ISeatConfigurationValidator validator)
+        public SeatConfigurationCreateCommandHandler(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ICacheService cacheService,
+            ICreateSeatConfigurationDtoValidator validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }
@@ -21,7 +24,9 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         {
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 
-            return await _unitOfWork.SeatConfigurationRepository.CreateAsync(request.SeatConfiguration, cancellationToken);
+            var seatConfiguration = _mapper.Map<SeatConfiguration>(request.SeatConfiguration);
+
+            return await _unitOfWork.SeatConfigurationRepository.CreateAsync(seatConfiguration, cancellationToken);
         }
     }
 }

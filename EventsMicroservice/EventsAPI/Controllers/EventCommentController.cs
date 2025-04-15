@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
 using Application.MediatR.Commands.EventCommentCommands;
 using Application.MediatR.Queries.EventCommentQueries;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Application.Contracts;
 
 namespace EventsAPI.Controllers
 {
@@ -23,7 +23,7 @@ namespace EventsAPI.Controllers
 
         [Authorize]
         [HttpPost("/api/events/{eventId}/comments")]
-        public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid eventId, [FromBody] EventComment commentToCreate, CancellationToken token)
+        public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid eventId, [FromBody] CreateEventCommentDto commentToCreate, CancellationToken token)
         {
             var command = new EventCommentCreateCommand { RouteEventId = eventId, EventComment = commentToCreate };
             var createdCommentId = await _mediator.Send(command, token);
@@ -32,8 +32,8 @@ namespace EventsAPI.Controllers
         }
 
         [Authorize]
-        [HttpPut("/api/events/{eventId}/comments/{commentId}")]
-        public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] EventComment commentToUpdate, CancellationToken token)
+        [HttpPatch("/api/events/{eventId}/comments/{commentId}")]
+        public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] UpdateEventCommentDto commentToUpdate, CancellationToken token)
         {
             var command = new EventCommentUpdateCommand { RouteEventId = eventId, RouteCommentId = commentId, EventComment = commentToUpdate };
             await _mediator.Send(command, token);

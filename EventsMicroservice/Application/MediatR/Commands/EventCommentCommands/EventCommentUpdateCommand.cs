@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Application.Contracts;
 using MediatR;
 
 namespace Application.MediatR.Commands.EventCommentCommands
@@ -7,6 +7,6 @@ namespace Application.MediatR.Commands.EventCommentCommands
     {
         public required Guid RouteEventId { get; set; }
         public required Guid RouteCommentId { get; set; }
-        public required EventComment EventComment { get; set; }
+        public required UpdateEventCommentDto EventComment { get; set; }
     }
 }

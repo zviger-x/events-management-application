@@ -81,13 +81,20 @@ namespace EventsAPI.Extensions
         public static void AddValidators(this IServiceCollection services)
         {
             services.AddScoped<IEventValidator, EventValidator>();
-            services.AddScoped<IEventUserValidator, EventUserValidator>();
-            services.AddScoped<IEventCommentValidator, EventCommentValidator>();
-            services.AddScoped<ISeatValidator, SeatValidator>();
-            services.AddScoped<ISeatConfigurationValidator, SeatConfigurationValidator>();
-
             services.AddScoped<ICreateEventDtoValidator, CreateEventDtoValidator>();
             services.AddScoped<IUpdateEventDtoValidator, UpdateEventDtoValidator>();
+
+            services.AddScoped<IEventUserValidator, EventUserValidator>();
+
+            services.AddScoped<IEventCommentValidator, EventCommentValidator>();
+            services.AddScoped<ICreateEventCommentDtoValidator, CreateEventCommentDtoValidator>();
+            services.AddScoped<IUpdateEventCommentDtoValidator, UpdateEventCommentDtoValidator>();
+
+            services.AddScoped<ISeatValidator, SeatValidator>();
+
+            services.AddScoped<ISeatConfigurationValidator, SeatConfigurationValidator>();
+            services.AddScoped<ICreateSeatConfigurationDtoValidator, CreateSeatConfigurationDtoValidator>();
+            services.AddScoped<IUpdateSeatConfigurationDtoValidator, UpdateSeatConfigurationDtoValidator>();
 
             // From shared
             services.AddScoped<IPageParametersValidator, PageParametersValidator>();

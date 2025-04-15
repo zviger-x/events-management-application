@@ -1,18 +1,15 @@
-﻿using Application.Validation.Validators.Interfaces;
-using Domain.Entities;
+﻿using Application.Contracts;
+using Application.Validation.Validators.Interfaces;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class EventCommentValidator : AbstractValidator<EventComment>, IEventCommentValidator
+    public class UpdateEventCommentDtoValidator : AbstractValidator<UpdateEventCommentDto>, IUpdateEventCommentDtoValidator
     {
-        public EventCommentValidator()
+        public UpdateEventCommentDtoValidator()
         {
-            // TODO: Добавить проверку на наличие ивента
-            // TODO: Добавить проверку на наличие пользователя (gRPC)
-
             RuleFor(r => r.EventId)
                 .NotNull()
                     .WithMessage(EventCommentValidationMessages.EventIdIsNull)

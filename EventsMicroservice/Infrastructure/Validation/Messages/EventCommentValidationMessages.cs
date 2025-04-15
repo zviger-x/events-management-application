@@ -11,7 +11,5 @@
         public const string TextIsNull = "Text cannot be null.";
         public const string TextIsEmpty = "Text cannot be empty.";
         public const string TextIsTooLong = "Text cannot be longer than 1000 characters.";
-
-        public const string CreationTimeIsInvalid = "Creation time must be a valid date.";
     }
 }

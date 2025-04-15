@@ -1,6 +1,6 @@
-﻿using Application.MediatR.Commands.SeatConfigurationCommands;
+﻿using Application.Contracts;
+using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.MediatR.Queries.SeatConfigurationQueries;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Attributes;
@@ -24,7 +24,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] SeatConfiguration seatConfigurationToCreate, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateSeatConfigurationDto seatConfigurationToCreate, CancellationToken cancellationToken)
         {
             var command = new SeatConfigurationCreateCommand { SeatConfiguration = seatConfigurationToCreate };
             var createdConfigurationId = await _mediator.Send(command, cancellationToken);
@@ -33,7 +33,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpPut("{seatId}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid seatId, [FromBody] SeatConfiguration seatConfigurationToUpdate, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAsync([FromRoute] Guid seatId, [FromBody] UpdateSeatConfigurationDto seatConfigurationToUpdate, CancellationToken cancellationToken)
         {
             var command = new SeatConfigurationUpdateCommand { RouteSeatId = seatId, SeatConfiguration = seatConfigurationToUpdate };
             await _mediator.Send(command, cancellationToken);

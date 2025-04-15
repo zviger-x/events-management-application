@@ -1,4 +1,5 @@
-﻿using Application.MediatR.Commands.SeatConfigurationCommands;
+﻿using Application.Contracts;
+using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
@@ -10,9 +11,12 @@ using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
-    public class SeatConfigurationUpdateCommandHandler : BaseHandler<SeatConfiguration>, IRequestHandler<SeatConfigurationUpdateCommand>
+    public class SeatConfigurationUpdateCommandHandler : BaseHandler<UpdateSeatConfigurationDto>, IRequestHandler<SeatConfigurationUpdateCommand>
     {
-        public SeatConfigurationUpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, ISeatConfigurationValidator validator)
+        public SeatConfigurationUpdateCommandHandler(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ICacheService cacheService,
+            IUpdateSeatConfigurationDtoValidator validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }
@@ -24,7 +28,9 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
             if (request.RouteSeatId != request.SeatConfiguration.Id)
                 throw new ParameterException("You are not allowed to modify this configuration.");
 
-            await _unitOfWork.SeatConfigurationRepository.UpdateAsync(request.SeatConfiguration, cancellationToken);
+            var seatConfiguration = _mapper.Map<SeatConfiguration>(request.SeatConfiguration);
+
+            await _unitOfWork.SeatConfigurationRepository.UpdateAsync(seatConfiguration, cancellationToken);
         }
     }
 }

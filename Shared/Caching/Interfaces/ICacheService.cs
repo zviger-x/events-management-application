@@ -66,13 +66,4 @@ namespace Shared.Caching.Interfaces
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
         Task RemoveAsync(string key, CancellationToken cancellationToken = default);
     }
-
-    public interface IRedisCacheService : ICacheService
-    {
-        Task<bool> AcquireLockAsync(string lockKey, string lockValue, TimeSpan lockTtl, CancellationToken cancellationToken = default);
-
-        Task ReleaseLockAsync(string lockKey, CancellationToken cancellationToken = default);
-
-        Task<bool> RefreshKeyTtlAsync(string key, TimeSpan ttl, CancellationToken cancellationToken = default);
-    }
 }

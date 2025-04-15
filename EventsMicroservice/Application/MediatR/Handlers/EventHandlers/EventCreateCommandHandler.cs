@@ -44,7 +44,7 @@ namespace Application.MediatR.Handlers.EventHandlers
             var numberOfRows = seatConfiguration.Rows.Count;
             for (int rowNumber = 1; rowNumber <= numberOfRows; rowNumber++)
             {
-                var numberOfSeats = seatConfiguration.Rows[rowNumber];
+                var numberOfSeats = seatConfiguration.Rows[rowNumber - 1];
 
                 for (int seatNumber = 1; seatNumber <= numberOfSeats; seatNumber++)
                 {

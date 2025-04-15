@@ -57,7 +57,7 @@ namespace Infrastructure.UnitOfWork
             if (_transactionContext.Session == null)
                 throw new InvalidOperationException("Transaction has not been started.");
 
-            await _transactionContext.Session.AbortTransactionAsync();
+            await _transactionContext.Session.AbortTransactionAsync(token);
             _transactionContext.Session.Dispose();
             _transactionContext.Session = null;
         }

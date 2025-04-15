@@ -87,7 +87,7 @@ namespace Infrastructure.Repositories
                     ec => ec.EventId,
                     e => e.Comments);
 
-            return await query.FirstOrDefaultAsync();
+            return await query.FirstOrDefaultAsync(token);
         }
     }
 }

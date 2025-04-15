@@ -7,11 +7,11 @@ namespace Infrastructure.UnitOfWork
 {
     public class UnitOfWork : BaseUnitOfWork, IUnitOfWork
     {
-        private Lazy<IEventRepository> _eventRepository;
-        private Lazy<IEventUserRepository> _eventUserRepository;
-        private Lazy<IEventCommentRepository> _eventCommentRepository;
-        private Lazy<ISeatRepository> _seatRepository;
-        private Lazy<ISeatConfigurationRepository> _seatConfigurationRepository;
+        private readonly Lazy<IEventRepository> _eventRepository;
+        private readonly Lazy<IEventUserRepository> _eventUserRepository;
+        private readonly Lazy<IEventCommentRepository> _eventCommentRepository;
+        private readonly Lazy<ISeatRepository> _seatRepository;
+        private readonly Lazy<ISeatConfigurationRepository> _seatConfigurationRepository;
 
         public UnitOfWork(EventDbContext context, TransactionContext transactionContext, IServiceProvider serviceProvider)
             : base(context, transactionContext, serviceProvider)

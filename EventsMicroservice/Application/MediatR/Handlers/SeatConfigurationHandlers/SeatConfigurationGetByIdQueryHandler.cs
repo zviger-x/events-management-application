@@ -18,10 +18,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         public async Task<SeatConfiguration> Handle(SeatConfigurationGetByIdQuery request, CancellationToken cancellationToken)
         {
             var configuration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (configuration == null)
-                throw new NotFoundException("Configuration not found.");
-
-            return configuration;
+            return configuration ?? throw new NotFoundException("Configuration not found.");
         }
     }
 }

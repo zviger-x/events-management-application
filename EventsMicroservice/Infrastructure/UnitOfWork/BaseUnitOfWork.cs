@@ -12,7 +12,7 @@ namespace Infrastructure.UnitOfWork
         protected readonly TransactionContext _transactionContext;
         protected readonly IServiceProvider _serviceProvider;
 
-        private Dictionary<Type, object> _repositories;
+        private readonly Dictionary<Type, object> _repositories;
 
         public BaseUnitOfWork(EventDbContext context, TransactionContext transactionContext, IServiceProvider serviceProvider)
         {

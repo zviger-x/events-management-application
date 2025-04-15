@@ -18,10 +18,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         public async Task<EventComment> Handle(EventCommentGetByIdQuery request, CancellationToken cancellationToken)
         {
             var comment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (comment == null)
-                throw new NotFoundException("Comment not found.");
-
-            return comment;
+            return comment ?? throw new NotFoundException("Comment not found.");
         }
     }
 }

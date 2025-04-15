@@ -13,7 +13,9 @@ namespace Shared.Swagger.Filters
                 .Union(context.MethodInfo.GetCustomAttributes(true))
                 .OfType<AuthorizeAttribute>();
 
-            if (authorizeAttributes == null || !authorizeAttributes.Any())
+            var allowAnonymous = context.MethodInfo.GetCustomAttributes(true).OfType<AllowAnonymousAttribute>().Any();
+
+            if (allowAnonymous || authorizeAttributes == null || !authorizeAttributes.Any())
                 return;
 
             var roles = authorizeAttributes

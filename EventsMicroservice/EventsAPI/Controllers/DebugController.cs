@@ -9,6 +9,7 @@ using Shared.Enums;
 
 namespace EventsAPI.Controllers
 {
+#warning TODO: Удалить контроллер
     [ApiController]
     [Route("api/debug")]
     public class DebugController : Controller

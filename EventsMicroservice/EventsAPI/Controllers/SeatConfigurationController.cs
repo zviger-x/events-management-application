@@ -32,28 +32,28 @@ namespace EventsAPI.Controllers
             return StatusCode(StatusCodes.Status201Created, new { Id = createdConfigurationId });
         }
 
-        [HttpPut("{seatId}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid seatId, [FromBody] UpdateSeatConfigurationDto seatConfigurationToUpdate, CancellationToken cancellationToken)
+        [HttpPut("{seatConfigurationId}")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] Guid seatConfigurationId, [FromBody] UpdateSeatConfigurationDto seatConfigurationToUpdate, CancellationToken cancellationToken)
         {
-            var command = new SeatConfigurationUpdateCommand { RouteSeatId = seatId, SeatConfiguration = seatConfigurationToUpdate };
+            var command = new SeatConfigurationUpdateCommand { RouteSeatId = seatConfigurationId, SeatConfiguration = seatConfigurationToUpdate };
             await _mediator.Send(command, cancellationToken);
 
             return Ok();
         }
 
-        [HttpDelete("{seatId}")]
-        public async Task<IActionResult> DeleteAsync(Guid seatId, CancellationToken cancellationToken)
+        [HttpDelete("{seatConfigurationId}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid seatConfigurationId, CancellationToken cancellationToken)
         {
-            var command = new SeatConfigurationDeleteCommand { Id = seatId };
+            var command = new SeatConfigurationDeleteCommand { Id = seatConfigurationId };
             await _mediator.Send(command, cancellationToken);
 
             return NoContent();
         }
 
-        [HttpGet("{seatId}")]
-        public async Task<IActionResult> GetByIdAsync(Guid seatId, CancellationToken cancellationToken)
+        [HttpGet("{seatConfigurationId}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] Guid seatConfigurationId, CancellationToken cancellationToken)
         {
-            var query = new SeatConfigurationGetByIdQuery { Id = seatId };
+            var query = new SeatConfigurationGetByIdQuery { Id = seatConfigurationId };
             var configuration = await _mediator.Send(query, cancellationToken);
 
             return Ok(configuration);

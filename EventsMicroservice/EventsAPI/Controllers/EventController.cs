@@ -43,7 +43,7 @@ namespace EventsAPI.Controllers
         }
 
         [HttpDelete("{eventId}")]
-        public async Task<IActionResult> DeleteAsync(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid eventId, CancellationToken cancellationToken)
         {
             var command = new EventDeleteCommand { Id = eventId };
             await _mediator.Send(command, cancellationToken);
@@ -53,7 +53,7 @@ namespace EventsAPI.Controllers
 
         [AllowAnonymous]
         [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetByIdAsync(Guid eventId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetByIdAsync([FromRoute] Guid eventId, CancellationToken cancellationToken)
         {
             var query = new EventGetByIdQuery { Id = eventId };
             var @event = await _mediator.Send(query, cancellationToken);

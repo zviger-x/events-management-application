@@ -2,16 +2,15 @@
 using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using EventsAPI.Configuration;
+using Infrastructure.Mongo;
 using Infrastructure.Repositories;
 using Infrastructure.Validation.Validators;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using Serilog;
 using Shared.Caching;
 using Shared.Caching.Interfaces;
-using Shared.Entities.Interfaces;
 using Shared.Repositories.Interfaces;
 using Shared.Validation.Interfaces;
 using Shared.Validation.Validators;
@@ -33,31 +32,11 @@ namespace EventsAPI.Extensions
                 return client.GetDatabase(config.DatabaseName);
             });
 
-            // Указываю, что мой Guid Id - действительный идентификатор
-            // и что нужно его использовать, а не стандартный ObjectId
-            // без изменения сущностей. Т.е. не придётся менять сущности
-            // и добавлять для каждой атрибут [BsonId]
-
-            // TODO: Вынести эту логику куда-нибудь в другое место
-            Log.Information($"Registering Guid for MongoDB...");
-
-            var entityTypes = AppDomain.CurrentDomain.GetAssemblies()
+            // Register Id for all entities as BsonId for mongo
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Union([Assembly.GetAssembly(typeof(Event))])
-                .SelectMany(a => a.GetTypes())
-                .Where(t => typeof(IEntity).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
-                .ToList();
-
-            var method = typeof(ServiceCollectionExtensions).GetMethod(nameof(RegisterGuid), BindingFlags.NonPublic | BindingFlags.Static);
-            var maxLength = entityTypes.Max(t => t.Name.Length);
-            foreach (var type in entityTypes)
-            {
-                Log.Information($"Register Guid as default mongo Id for {{{type.Name}}}{new(' ', maxLength - type.Name.Length)} from [{type.Assembly.GetName().Name}]");
-
-                var genericMethod = method.MakeGenericMethod(type);
-                genericMethod.Invoke(null, null);
-            }
-
-            Log.Information($"Registration completed");
+                .ToArray();
+            MongoGuidConventionRegistrar.Register(assemblies);
         }
 
         public static void AddRepositories(this IServiceCollection services)
@@ -116,16 +95,6 @@ namespace EventsAPI.Extensions
         {
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRedisCacheService, RedisCacheService>();
-        }
-
-        private static void RegisterGuid<T>()
-            where T : class, IEntity
-        {
-            BsonClassMap.RegisterClassMap<T>(cm =>
-            {
-                cm.AutoMap();
-                cm.MapIdMember(c => c.Id);
-            });
         }
     }
 }

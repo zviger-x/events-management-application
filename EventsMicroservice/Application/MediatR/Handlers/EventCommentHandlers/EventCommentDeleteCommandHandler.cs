@@ -16,13 +16,14 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task Handle(EventCommentDeleteCommand request, CancellationToken cancellationToken)
         {
-            // TODO: Добавить проверку, что пользователь является создателем отзыва.
-
             var comment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.Id, cancellationToken);
             if (comment == null)
                 return;
 
-            if (request.RouteEventId != comment.EventId)
+            var isNotAuthor = request.CurrentUserId != comment.UserId;
+            var isWrongEvent = request.RouteEventId != comment.EventId;
+
+            if (isNotAuthor || isWrongEvent)
                 throw new ParameterException("You are not allowed to delete this comment for the event.");
 
             await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken);

@@ -10,9 +10,6 @@ namespace Infrastructure.Validation.Validators
     {
         public EventCommentValidator()
         {
-            // TODO: Добавить проверку на наличие ивента
-            // TODO: Добавить проверку на наличие пользователя (gRPC)
-
             RuleFor(r => r.EventId)
                 .NotNull()
                     .WithMessage(EventCommentValidationMessages.EventIdIsNull)

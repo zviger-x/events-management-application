@@ -28,6 +28,8 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (request.RouteEventId != request.EventComment.EventId)
                 throw new ParameterException("You are not allowed to create a comment for this event.");
 
+            // TODO: Добавить проверку на наличие пользователя (gRPC)
+
             var eventComment = _mapper.Map<EventComment>(request.EventComment);
 
             return await _unitOfWork.EventCommentRepository.CreateAsync(eventComment, cancellationToken);

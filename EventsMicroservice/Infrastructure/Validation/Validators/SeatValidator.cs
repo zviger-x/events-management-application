@@ -10,9 +10,6 @@ namespace Infrastructure.Validation.Validators
     {
         public SeatValidator()
         {
-            // TODO: Добавить проверку на наличие ивента
-            // TODO: Добавить проверку на уникальность номера в конкретном ряду
-
             RuleFor(s => s.EventId)
                 .NotNull()
                     .WithMessage(SeatValidationMessages.EventIdIsNull)

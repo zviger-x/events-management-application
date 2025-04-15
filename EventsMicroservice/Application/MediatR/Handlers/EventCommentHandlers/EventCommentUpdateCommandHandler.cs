@@ -24,12 +24,14 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         {
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
-            // TODO: Добавить проверку, что пользователь является создателем отзыва.
+            var isNotAuthor = request.CurrentUserId != request.EventComment.UserId;
+            var isWrongEvent = request.RouteEventId != request.EventComment.EventId;
+            var isWrongRouteId = request.RouteCommentId != request.EventComment.Id;
 
-            if (request.RouteEventId != request.EventComment.EventId)
-                throw new ParameterException("You are not allowed to edit the comment for this event.");
+            if (isNotAuthor || isWrongEvent)
+                throw new ParameterException("You are not allowed to edit this comment for the event.");
 
-            if (request.RouteCommentId != request.EventComment.Id)
+            if (isWrongRouteId)
                 throw new ParameterException("You are not allowed to modify this comment.");
 
             var storedEventComment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.EventComment.Id, cancellationToken);

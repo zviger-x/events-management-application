@@ -3,7 +3,6 @@ using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
-using Domain.Entities;
 using FluentValidation;
 using MediatR;
 using Shared.Caching.Interfaces;
@@ -28,7 +27,11 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
             if (request.RouteSeatId != request.SeatConfiguration.Id)
                 throw new ParameterException("You are not allowed to modify this configuration.");
 
-            var seatConfiguration = _mapper.Map<SeatConfiguration>(request.SeatConfiguration);
+            var storedConfiguration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.SeatConfiguration.Id, cancellationToken);
+            if (storedConfiguration == null)
+                throw new NotFoundException("Seat configuration not found.");
+
+            var seatConfiguration = _mapper.Map(request.SeatConfiguration, storedConfiguration);
 
             await _unitOfWork.SeatConfigurationRepository.UpdateAsync(seatConfiguration, cancellationToken);
         }

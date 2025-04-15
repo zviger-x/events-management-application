@@ -1,5 +1,4 @@
-﻿using Application.Caching.Constants;
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
@@ -26,7 +25,12 @@ namespace Application.MediatR.Handlers.EventHandlers
             if (request.RouteEventId != request.Event.Id)
                 throw new ParameterException("You are not allowed to modify this event.");
 
-            var @event = _mapper.Map<Event>(request.Event);
+            var storedEvent = await _unitOfWork.EventRepository.GetByIdAsync(request.Event.Id, cancellationToken);
+            if (storedEvent == null)
+                throw new NotFoundException("Event not found.");
+
+            var @event = _mapper.Map(request.Event, storedEvent);
+
             await _unitOfWork.EventRepository.UpdateAsync(@event, cancellationToken);
         }
     }

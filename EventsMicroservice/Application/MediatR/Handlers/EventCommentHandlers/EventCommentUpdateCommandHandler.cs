@@ -3,7 +3,6 @@ using Application.MediatR.Commands.EventCommentCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
-using Domain.Entities;
 using FluentValidation;
 using MediatR;
 using Shared.Caching.Interfaces;
@@ -33,7 +32,11 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (request.RouteCommentId != request.EventComment.Id)
                 throw new ParameterException("You are not allowed to modify this comment.");
 
-            var eventComment = _mapper.Map<EventComment>(request.EventComment);
+            var storedEventComment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.EventComment.Id, cancellationToken);
+            if (storedEventComment == null)
+                throw new NotFoundException("Comment not found.");
+
+            var eventComment = _mapper.Map(request.EventComment, storedEventComment);
 
             await _unitOfWork.EventCommentRepository.UpdateAsync(eventComment, cancellationToken);
         }

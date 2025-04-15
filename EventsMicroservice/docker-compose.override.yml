@@ -16,8 +16,10 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
     depends_on:
-      - mongoserver
-      #- redis
+      mongoserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: always
     networks:
       - internal-docker-network
@@ -27,12 +29,13 @@ services:
     container_name: MongoServer
     environment:
       - MONGO_REPLICA_SET=rs0
-      - MONGO_HOSTNAME=MongoServer
+      - MONGO_HOST=MongoServer
       - MONGO_PORT=27017
-    #   - MONGO_INITDB_ROOT_USERNAME=root
-    #   - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_KEYFILE=mysupersecretkey123
     ports:
-      - "27017"
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
       - ./mongo-init-replica.sh:/mongo-init-replica.sh
@@ -40,6 +43,12 @@ services:
     networks:
       - internal-docker-network
     entrypoint: ["/bin/bash", "/mongo-init-replica.sh"]
+    healthcheck:
+      test: >
+        test "$(mongosh --quiet --eval "rs.isMaster().ismaster")" = "true"
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:latest
@@ -51,6 +60,11 @@ services:
     restart: always
     networks:
       - internal-docker-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 networks:
   internal-docker-network:

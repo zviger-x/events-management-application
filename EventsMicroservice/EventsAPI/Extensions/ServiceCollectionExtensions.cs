@@ -9,6 +9,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using Serilog;
 using Shared.Caching;
 using Shared.Caching.Interfaces;
 using Shared.Repositories.Interfaces;
@@ -25,11 +26,23 @@ namespace EventsAPI.Extensions
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
-            services.AddSingleton<IMongoClient>(new MongoClient(config.ConnectionString));
+            Log.Information("Trying to connected to MongoDB Server...");
+            var client = new MongoClient(config.ConnectionString);
+            try
+            {
+                _ = client.ListDatabases();
+                Log.Information("Successfully connected to MongoDB");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error while connecting to MongoDB: {ex.Message}", ex);
+            }
+
+            services.AddSingleton<IMongoClient>(client);
             services.AddScoped<IMongoDatabase>(provider =>
             {
-                var client = provider.GetRequiredService<IMongoClient>();
-                return client.GetDatabase(config.DatabaseName);
+                var mongoClient = provider.GetRequiredService<IMongoClient>();
+                return mongoClient.GetDatabase(config.DatabaseName);
             });
 
             // Register Id for all entities as BsonId for mongo

@@ -9,7 +9,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
-using System.Threading;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
@@ -18,15 +17,17 @@ namespace Application.MediatR.Handlers.EventUserHandlers
         private const int LockTtlInMinutes = 5;
         private const int LockTtlUpdateDelayInMinutes = 4;
 
+        private readonly IRedisCacheService _redisCacheService;
         private readonly ILogger<EventUserCreateCommandHandler> _logger;
 
         public EventUserCreateCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
-            ICacheService cacheService,
+            IRedisCacheService redisCacheService,
             IEventUserValidator validator,
             ILogger<EventUserCreateCommandHandler> logger)
-            : base(unitOfWork, mapper, cacheService, validator)
+            : base(unitOfWork, mapper, redisCacheService, validator)
         {
+            _redisCacheService = redisCacheService;
             _logger = logger;
         }
 
@@ -38,16 +39,14 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             var lockTtl = TimeSpan.FromMinutes(LockTtlInMinutes);
             var lockTtlUpdateDelay = TimeSpan.FromMinutes(LockTtlUpdateDelayInMinutes);
 
-            var cachedLock = await _cacheService.GetAsync<string>(lockKey, cancellationToken);
-            if (cachedLock != null)
+            var acquiredLock = await _redisCacheService.AcquireLockAsync(lockKey, lockValue, lockTtl, cancellationToken);
+            if (!acquiredLock)
                 throw new ConflictException("This seat is currently being reserved by another user. Please try again later.");
-
-            await _cacheService.SetAsync(lockKey, lockValue, lockTtl, cancellationToken);
 
             // Создаю отдельный связанный токен с оригинальным и запускаю задачу по обновлению объекта-блокировки
             // Это нужно, чтобы доступ не был выдан раньше времени, если возникнет непредвиденная задержка и объект истечёт
             using var extendCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            var ttlExpender = RunTtlExpander(lockKey, lockValue, lockTtl, lockTtlUpdateDelay, extendCts);
+            var ttlExpender = RunTtlExpander(lockKey, lockValue, lockTtl, lockTtlUpdateDelay, extendCts.Token);
 
             try
             {
@@ -59,27 +58,40 @@ namespace Application.MediatR.Handlers.EventUserHandlers
                 // Останавливаю фоновую задачу и удаляю объект-блокировщик из кэша
                 extendCts.Cancel();
                 await ttlExpender;
-                await _cacheService.RemoveAsync(lockKey, cancellationToken);
+                await _redisCacheService.ReleaseLockAsync(lockKey, cancellationToken);
             }
         }
 
-        private Task RunTtlExpander(string lockKey, string lockValue, TimeSpan lockTtl, TimeSpan delayBetweenUpdates, CancellationTokenSource extendCts)
+        private Task RunTtlExpander(string lockKey, string lockValue, TimeSpan lockTtl, TimeSpan delayBetweenUpdates, CancellationToken cancellationToken)
         {
-            // Фоновая задача, обновляющая TTL каждые 2 минуты, пока не завершится основная операция
+            if (delayBetweenUpdates >= lockTtl)
+            {
+                _logger.LogWarning(
+                    "The delay between TTL updates ({0} seconds) is equal to or greater than the lock TTL ({1} seconds). " +
+                    "This may result in the expired lock being re-created. Therefore, the TTL update task was not started.",
+                    delayBetweenUpdates.TotalSeconds,
+                    lockTtl.TotalSeconds);
+
+                return Task.CompletedTask;
+            }
+
             return Task.Run(async () =>
             {
-                while (!extendCts.Token.IsCancellationRequested)
+                _logger.LogInformation($"The task to extend the life of TTL for key {lockKey} has been launched.");
+
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     try
                     {
-                        // Ждём некоторое время перед следующим продлением
-                        await Task.Delay(delayBetweenUpdates, extendCts.Token);
+                        // Интервал между обновлениями
+                        await Task.Delay(delayBetweenUpdates, cancellationToken);
 
                         // Обновляем TTL блокировки, продлевая его время жизни
-                        await _cacheService.SetAsync(lockKey, lockValue, lockTtl, extendCts.Token);
+                        await _redisCacheService.RefreshKeyTtlAsync(lockKey, lockTtl, cancellationToken);
                     }
                     catch (TaskCanceledException)
                     {
+                        _logger.LogInformation($"The task to extend the life of TTL for key {lockKey} has been completed.");
                         break;
                     }
                     catch (Exception ex)
@@ -87,7 +99,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
                         _logger.LogWarning($"Failed to update TTL for key {lockKey}: {ex.Message}");
                     }
                 }
-            }, extendCts.Token);
+            }, cancellationToken);
         }
 
         private async Task<Guid> HandleCreation(EventUserCreateCommand request, CancellationToken cancellationToken)
@@ -123,7 +135,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             // TODO: Добавить проверку наличия пользователя (gRPC запрос)
 
             // Проверка подписан ли пользователь на этот ивент.
-            // TODO: А нужна ли проверка на то, что пользователь подписан на ивент? Может в будущем реализовать возможность покупки нескольких билетов?
+            // TODO: Что-то сделать здесь или забить. Ведь нужна ли в действительности проверка на то, что пользователь подписан на ивент?
             var isRegistered = (await _unitOfWork.EventUserRepository.GetAllAsync(cancellationToken)).Any(e => e.UserId == request.UserId);
             if (isRegistered)
                 throw new ParameterException("User is already registered.");
@@ -132,6 +144,8 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             var paymentResult = true;
             if (!paymentResult)
                 throw new PaymentException("Failed to complete payment. Please try again or use another card.");
+
+            await Task.Delay(TimeSpan.FromMinutes(3));
 
             try
             {

@@ -1,22 +1,24 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared.Caching.Interfaces;
 using Shared.Configuration;
+using StackExchange.Redis;
 using System.Text.Json;
 
 namespace Shared.Caching
 {
-    public class RedisCacheService : ICacheService
+    public class RedisCacheService : IRedisCacheService
     {
-        private readonly IDistributedCache _cache;
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
+        private readonly IDatabase _database;
         private readonly ILogger<RedisCacheService> _logger;
 
         private readonly TimeSpan _defaultExpirationTime;
 
-        public RedisCacheService(IDistributedCache cache, ILogger<RedisCacheService> logger, IOptions<CacheConfig> cacheConfig)
+        public RedisCacheService(IConnectionMultiplexer connectionMultiplexer, ILogger<RedisCacheService> logger, IOptions<CacheConfig> cacheConfig)
         {
-            _cache = cache;
+            _connectionMultiplexer = connectionMultiplexer;
+            _database = _connectionMultiplexer.GetDatabase();
             _logger = logger;
 
             var config = cacheConfig.Value;
@@ -26,15 +28,6 @@ namespace Shared.Caching
             _defaultExpirationTime = TimeSpan.FromSeconds(config.CacheExpirationSeconds);
         }
 
-        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
-        {
-            var cachedData = await _cache.GetStringAsync(key, cancellationToken);
-            if (string.IsNullOrEmpty(cachedData)) return default;
-
-            _logger.LogInformation($"Cache hit for key: {key}");
-            return JsonSerializer.Deserialize<T>(cachedData);
-        }
-
         public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default)
         {
             await SetAsync(key, value, _defaultExpirationTime, cancellationToken);
@@ -42,11 +35,21 @@ namespace Shared.Caching
 
         public async Task SetAsync<T>(string key, T value, TimeSpan expirationTime, CancellationToken cancellationToken = default)
         {
-            var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(expirationTime);
-            var serializedData = JsonSerializer.Serialize(value);
-            await _cache.SetStringAsync(key, serializedData, options, cancellationToken);
+            var json = JsonSerializer.Serialize(value);
+            await _database.StringSetAsync(key, json, expirationTime);
 
             _logger.LogInformation($"Cache set for key: {key} with expiration: {expirationTime.TotalSeconds} seconds");
+        }
+
+        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
+        {
+            var cachedData = await _database.StringGetAsync(key);
+            if (cachedData.IsNullOrEmpty)
+                return default;
+
+            _logger.LogInformation($"Cache hit for key: {key}");
+
+            return JsonSerializer.Deserialize<T>(cachedData);
         }
 
         public async Task<T> GetOrSetAsync<T>(string key, Func<CancellationToken, Task<T>> getDataAsyncFunc, CancellationToken cancellationToken = default)
@@ -69,8 +72,33 @@ namespace Shared.Caching
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            await _cache.RemoveAsync(key, cancellationToken);
+            await _database.KeyDeleteAsync(key);
+
             _logger.LogInformation($"Cache removed for key: {key}");
+        }
+
+        public async Task<bool> AcquireLockAsync(string lockKey, string lockValue, TimeSpan lockTtl, CancellationToken cancellationToken = default)
+        {
+            var acquired = await _database.StringSetAsync(lockKey, lockValue, lockTtl, when: When.NotExists);
+
+            if (acquired)
+                _logger.LogInformation($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
+            else
+                _logger.LogInformation($"Failed to acquire lock for key: {lockKey} (already exists)");
+
+            return acquired;
+        }
+
+        public async Task ReleaseLockAsync(string lockKey, CancellationToken cancellationToken = default)
+        {
+            await RemoveAsync(lockKey, cancellationToken);
+            _logger.LogInformation($"Lock released for key: {lockKey}");
+        }
+
+        public async Task<bool> RefreshKeyTtlAsync(string key, TimeSpan ttl, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation($"Update TTL for key {key}. New TTL: {ttl.TotalSeconds} seconds");
+            return await _database.KeyExpireAsync(key, ttl);
         }
     }
 }

@@ -39,8 +39,8 @@ namespace EventsAPI
             logging.AddSerilog();
 
             // Caching
-            services.AddCachingServices();
             services.AddRedisServer(redisServerConfig);
+            services.AddCachingServices();
 
             // Data access
             services.AddMongoServer(mongoServerConfig);

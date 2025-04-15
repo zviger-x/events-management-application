@@ -38,7 +38,7 @@ namespace EventsAPI.Extensions
             // без изменения сущностей. Т.е. не придётся менять сущности
             // и добавлять для каждой атрибут [BsonId]
 
-            // Вынести эту логику куда-нибудь в другое место
+            // TODO: Вынести эту логику куда-нибудь в другое место
             Log.Information($"Registering Guid for MongoDB...");
 
             var entityTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -93,11 +93,6 @@ namespace EventsAPI.Extensions
             services.AddScoped<IPageParametersValidator, PageParametersValidator>();
         }
 
-        public static void AddCachingServices(this IServiceCollection services)
-        {
-            services.AddScoped<ICacheService, RedisCacheService>();
-        }
-
         public static void AddRedisServer(this IServiceCollection services, RedisServerConfig config)
         {
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(config.ConnectionString));
@@ -107,6 +102,12 @@ namespace EventsAPI.Extensions
                 options.Configuration = config.ConnectionString;
                 options.InstanceName = config.CachePrefix;
             });
+        }
+
+        public static void AddCachingServices(this IServiceCollection services)
+        {
+            services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddScoped<IRedisCacheService, RedisCacheService>();
         }
 
         private static void RegisterGuid<T>()

@@ -2,11 +2,11 @@
 using Application.MediatR.Commands.EventCommands;
 using Application.MediatR.Queries.EventQueries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Attributes;
-using Shared.Enums;
 using Shared.Common;
-using Microsoft.AspNetCore.Authorization;
+using Shared.Enums;
 
 namespace EventsAPI.Controllers
 {

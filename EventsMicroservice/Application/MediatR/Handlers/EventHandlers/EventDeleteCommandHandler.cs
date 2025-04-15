@@ -1,5 +1,4 @@
-﻿using Application.Caching.Constants;
-using Application.MediatR.Commands.EventCommands;
+﻿using Application.MediatR.Commands.EventCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;

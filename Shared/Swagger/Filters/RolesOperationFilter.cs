@@ -28,7 +28,7 @@ namespace Shared.Swagger.Filters
             if (roles.Any())
                 description += $"<br/><br/>Required roles: <b>{string.Join(", ", roles)}</b>";
 
-            operation.Description = string.IsNullOrEmpty(operation.Description) 
+            operation.Description = string.IsNullOrEmpty(operation.Description)
                 ? description
                 : $"{operation.Description}<br/><br/>{description}";
         }

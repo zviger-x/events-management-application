@@ -9,14 +9,14 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Serilog;
-using Shared.Caching.Interfaces;
 using Shared.Caching;
+using Shared.Caching.Interfaces;
 using Shared.Entities.Interfaces;
 using Shared.Repositories.Interfaces;
-using System.Reflection;
-using StackExchange.Redis;
 using Shared.Validation.Interfaces;
 using Shared.Validation.Validators;
+using StackExchange.Redis;
+using System.Reflection;
 
 namespace EventsAPI.Extensions
 {

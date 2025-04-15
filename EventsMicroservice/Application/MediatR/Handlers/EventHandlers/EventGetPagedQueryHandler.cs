@@ -26,7 +26,7 @@ namespace Application.MediatR.Handlers.EventHandlers
             var pageSize = request.PageParameters.PageSize;
             var cacheKey = CacheKeys.PagedEvents(pageNumber, pageSize);
 
-            var getPageAsyncFunc = (CancellationToken token) => 
+            var getPageAsyncFunc = (CancellationToken token) =>
                 _unitOfWork.EventRepository.GetPagedAsync(pageNumber, pageSize, token);
 
             return await _cacheService.GetOrSetAsync(cacheKey, getPageAsyncFunc, cancellationToken);

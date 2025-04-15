@@ -6,7 +6,6 @@ using FluentValidation;
 using MediatR;
 using Shared.Caching.Interfaces;
 using Shared.Common;
-using Shared.Exceptions.ServerExceptions;
 using Shared.Validation.Interfaces;
 
 namespace Application.MediatR.Handlers.EventUserHandlers

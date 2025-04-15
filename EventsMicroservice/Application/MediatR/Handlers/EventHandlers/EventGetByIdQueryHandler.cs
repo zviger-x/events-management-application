@@ -1,5 +1,4 @@
-﻿using Application.Caching.Constants;
-using Application.MediatR.Queries.EventQueries;
+﻿using Application.MediatR.Queries.EventQueries;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;

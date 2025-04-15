@@ -3,7 +3,6 @@ using Application.MediatR.Commands.EventCommands;
 using Application.UnitOfWork.Interfaces;
 using Application.Validation.Validators.Interfaces;
 using AutoMapper;
-using Domain.Entities;
 using FluentValidation;
 using MediatR;
 using Shared.Caching.Interfaces;
@@ -21,7 +20,7 @@ namespace Application.MediatR.Handlers.EventHandlers
         public async Task Handle(EventUpdateCommand request, CancellationToken cancellationToken)
         {
             await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
-            
+
             if (request.RouteEventId != request.Event.Id)
                 throw new ParameterException("You are not allowed to modify this event.");
 

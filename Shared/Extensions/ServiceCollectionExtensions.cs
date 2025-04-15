@@ -18,7 +18,7 @@ namespace Shared.Extensions
         /// <param name="config">The JWT token configuration containing issuer, audience, and secret key.</param>
         public static void AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig config)
         {
-        
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

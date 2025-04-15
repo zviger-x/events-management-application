@@ -27,7 +27,7 @@ namespace Application.MediatR.Handlers.EventHandlers
                 throw new ParameterException("There is no seat configuration with this Id.");
 
             var @event = _mapper.Map<Event>(request.Event);
-            
+
             return await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
                 var eventId = await _unitOfWork.EventRepository.CreateAsync(@event, token);

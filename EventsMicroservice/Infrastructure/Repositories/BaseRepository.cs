@@ -1,9 +1,9 @@
-﻿using MongoDB.Driver;
-using Infrastructure.Contexts;
-using System.Linq.Expressions;
+﻿using Infrastructure.Contexts;
+using MongoDB.Driver;
 using Shared.Common;
-using Shared.Repositories.Interfaces;
 using Shared.Entities.Interfaces;
+using Shared.Repositories.Interfaces;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {

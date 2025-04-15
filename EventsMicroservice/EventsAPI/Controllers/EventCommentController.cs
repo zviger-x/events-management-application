@@ -1,10 +1,10 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
+﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommentCommands;
 using Application.MediatR.Queries.EventCommentQueries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Application.Contracts;
+using Microsoft.AspNetCore.Mvc;
+using Shared.Common;
 
 namespace EventsAPI.Controllers
 {

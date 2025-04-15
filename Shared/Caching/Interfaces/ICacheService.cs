@@ -1,6 +1,4 @@
-﻿using StackExchange.Redis;
-
-namespace Shared.Caching.Interfaces
+﻿namespace Shared.Caching.Interfaces
 {
     public interface ICacheService
     {

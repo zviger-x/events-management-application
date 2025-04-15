@@ -1,8 +1,8 @@
 ﻿using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using FluentValidation;
-using Infrastructure.Validation.Messages;
 using Infrastructure.Validation.ErrorCodes;
+using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {

@@ -23,7 +23,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         public async Task Handle(EventCommentUpdateCommand request, CancellationToken cancellationToken)
         {
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
-         
+
             // TODO: Добавить проверку, что пользователь является создателем отзыва.
 
             if (request.RouteEventId != request.EventComment.EventId)

@@ -1,8 +1,8 @@
-﻿using Infrastructure.Mongo.Interfaces;
-using Infrastructure.Mongo;
+﻿using Infrastructure.Mongo;
+using Infrastructure.Mongo.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Shared.Entities.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Contexts
 {

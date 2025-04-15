@@ -1,7 +1,5 @@
-﻿using MediatR;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Infrastructure.Extensions
 {
@@ -151,7 +149,7 @@ namespace Infrastructure.Extensions
                 ? collection.FindAsync(session, filter, options, cancellationToken)
                 : collection.FindAsync(filter, options, cancellationToken);
         }
-        
+
         // Aggregate
         public static IAggregateFluent<T> AggregateWithSession<T>(
             this IMongoCollection<T> collection,

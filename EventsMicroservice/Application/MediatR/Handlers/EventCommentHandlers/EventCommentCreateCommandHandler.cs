@@ -24,10 +24,10 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         public async Task<Guid> Handle(EventCommentCreateCommand request, CancellationToken cancellationToken)
         {
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
-         
+
             if (request.RouteEventId != request.EventComment.EventId)
                 throw new ParameterException("You are not allowed to create a comment for this event.");
-            
+
             var eventComment = _mapper.Map<EventComment>(request.EventComment);
 
             return await _unitOfWork.EventCommentRepository.CreateAsync(eventComment, cancellationToken);

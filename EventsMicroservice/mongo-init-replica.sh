@@ -32,32 +32,41 @@ mongod --replSet "$REPLICA_SET" \
 # Подождать немного, пока MongoDB полностью запустится
 sleep 5
 
-# Инициализация реплика-сета с настоящим именем хоста
-echo -e "${BLUE}LOG: Initiating replica set...${NC}"
-mongosh --host "localhost:$PORT" --eval "
-try {
-  rs.initiate({
-    _id: '$REPLICA_SET',
-    members: [{ _id: 0, host: '$HOST:$PORT' }]
+# Проверка инициализации реплика-сета с использованием числового кода ошибки
+echo -e "${BLUE}LOG: Checking if replica set is already initialized...${NC}"
+REPLICA_STATUS=$(mongosh --host "localhost:$PORT" --quiet --eval "try { rs.status(); print('ok'); } catch(e) { print(e.code); }")
+
+echo -e "${BLUE}LOG: REPLICA_STATUS message: ${REPLICA_STATUS}${NC}"
+if [ "$REPLICA_STATUS" == "ok" ] || [ "$REPLICA_STATUS" == "13" ]; then
+  echo -e "${BLUE}LOG: Replica set already initialized.${NC}"
+else
+  # Создаём реплику
+  echo -e "${BLUE}LOG: Replica set not initialized (REPLICA_STATUS: '$REPLICA_STATUS'). Proceeding with initialization...${NC}"
+  mongosh --host "localhost:$PORT" --eval "
+    try {
+      rs.initiate({
+        _id: '$REPLICA_SET',
+        members: [{ _id: 0, host: '$HOST:$PORT' }]
+      });
+    } catch (e) { print(e); }
+  "
+  
+  # Ждём, пока PRIMARY активен
+  echo -e "${GREEN}LOG: Waiting for PRIMARY...${NC}"
+  until mongosh --host "localhost:$PORT" --quiet --eval "rs.isMaster().ismaster" | grep true; do
+    sleep 1
+  done
+  
+  # Создание администратора
+  echo -e "${GREEN}LOG: Creating admin user...${NC}"
+  mongosh --host "localhost:$PORT" --eval "
+  db.getSiblingDB('admin').createUser({
+    user: '$ADMIN_USERNAME',
+    pwd: '$ADMIN_PASSWORD',
+    roles: [ { role: 'root', db: 'admin' } ]
   });
-} catch (e) { print(e); }
-"
-
-# Ждём, пока PRIMARY активен
-echo -e "${GREEN}LOG: Waiting for PRIMARY...${NC}"
-until mongosh --host "localhost:$PORT" --quiet --eval "rs.isMaster().ismaster" | grep true; do
-  sleep 1
-done
-
-# Создание администратора
-echo -e "${GREEN}LOG: Creating admin user...${NC}"
-mongosh --host "localhost:$PORT" --eval "
-db.getSiblingDB('admin').createUser({
-  user: '$ADMIN_USERNAME',
-  pwd: '$ADMIN_PASSWORD',
-  roles: [ { role: 'root', db: 'admin' } ]
-});
-"
+  "
+fi
 
 # Завершаем mongod вручную
 echo -e "${GREEN}LOG: Shutting down mongod after setup via PID...${NC}"

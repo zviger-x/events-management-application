@@ -30,12 +30,9 @@ services:
     environment:
       - MONGO_REPLICA_SET=rs0
       - MONGO_HOST=MongoServer
-      - MONGO_PORT=27017
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=rootpassword
       - MONGO_KEYFILE=mysupersecretkey123
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
       - ./mongo-init-replica.sh:/mongo-init-replica.sh
@@ -55,8 +52,6 @@ services:
     container_name: RedisServer
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
     restart: always
     networks:
       - internal-docker-network

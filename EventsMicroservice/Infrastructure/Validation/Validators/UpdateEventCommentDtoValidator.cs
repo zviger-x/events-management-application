@@ -10,22 +10,6 @@ namespace Infrastructure.Validation.Validators
     {
         public UpdateEventCommentDtoValidator()
         {
-            RuleFor(r => r.EventId)
-                .NotNull()
-                    .WithMessage(EventCommentValidationMessages.EventIdIsNull)
-                    .WithErrorCode(EventCommentValidationErrorCodes.EventIdIsNull)
-                .NotEmpty()
-                    .WithMessage(EventCommentValidationMessages.EventIdIsEmpty)
-                    .WithErrorCode(EventCommentValidationErrorCodes.EventIdIsEmpty);
-
-            RuleFor(r => r.UserId)
-                .NotNull()
-                    .WithMessage(EventCommentValidationMessages.UserIdIsNull)
-                    .WithErrorCode(EventCommentValidationErrorCodes.UserIdIsNull)
-                .NotEmpty()
-                    .WithMessage(EventCommentValidationMessages.UserIdIsEmpty)
-                    .WithErrorCode(EventCommentValidationErrorCodes.UserIdIsEmpty);
-
             RuleFor(r => r.Text)
                 .NotNull()
                     .WithMessage(EventCommentValidationMessages.TextIsNull)

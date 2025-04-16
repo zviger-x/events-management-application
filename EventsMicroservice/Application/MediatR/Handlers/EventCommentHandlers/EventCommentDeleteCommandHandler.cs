@@ -4,14 +4,18 @@ using AutoMapper;
 using MediatR;
 using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
+using Shared.Services.Interfaces;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentDeleteCommandHandler : BaseHandler, IRequestHandler<EventCommentDeleteCommand>
     {
-        public EventCommentDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+        private readonly ICurrentUserService _currentUserService;
+
+        public EventCommentDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, ICurrentUserService currentUserService)
             : base(unitOfWork, mapper, cacheService)
         {
+            _currentUserService = currentUserService;
         }
 
         public async Task Handle(EventCommentDeleteCommand request, CancellationToken cancellationToken)
@@ -20,10 +24,12 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (comment == null)
                 return;
 
-            var isNotAuthor = request.CurrentUserId != comment.UserId;
+            var currentUserId = _currentUserService.GetUserIdOrThrow();
+            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var isAuthor = currentUserId == comment.UserId;
             var isWrongEvent = request.RouteEventId != comment.EventId;
 
-            if (isNotAuthor || isWrongEvent)
+            if (isWrongEvent || (!isAuthor && !isAdmin))
                 throw new ParameterException("You are not allowed to delete this comment for the event.");
 
             await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken);

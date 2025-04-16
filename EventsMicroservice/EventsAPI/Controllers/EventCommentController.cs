@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
-using Shared.Extensions;
 
 namespace EventsAPI.Controllers
 {
@@ -36,8 +35,7 @@ namespace EventsAPI.Controllers
         [HttpPatch("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] UpdateEventCommentDto commentToUpdate, CancellationToken token)
         {
-            var userId = User.GetUserIdOrThrow();
-            var command = new EventCommentUpdateCommand { CurrentUserId = userId, RouteEventId = eventId, RouteCommentId = commentId, EventComment = commentToUpdate };
+            var command = new EventCommentUpdateCommand { RouteEventId = eventId, RouteCommentId = commentId, EventComment = commentToUpdate };
             await _mediator.Send(command, token);
 
             return Ok();
@@ -47,8 +45,7 @@ namespace EventsAPI.Controllers
         [HttpDelete("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, CancellationToken token)
         {
-            var userId = User.GetUserIdOrThrow();
-            var command = new EventCommentDeleteCommand { CurrentUserId = userId, RouteEventId = eventId, Id = commentId };
+            var command = new EventCommentDeleteCommand { RouteEventId = eventId, Id = commentId };
             await _mediator.Send(command, token);
 
             return NoContent();

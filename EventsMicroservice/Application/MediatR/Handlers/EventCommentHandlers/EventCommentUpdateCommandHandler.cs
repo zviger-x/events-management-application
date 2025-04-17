@@ -43,7 +43,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             var isWrongEvent = request.RouteEventId != storedEventComment.EventId;
 
             if (isWrongEvent || (!isAuthor && !isAdmin))
-                throw new ParameterException("You are not allowed to edit this comment for the event.");
+                throw new ForbiddenAccessException("You are not allowed to edit this comment for the event.");
 
             var eventComment = _mapper.Map(request.EventComment, storedEventComment);
 

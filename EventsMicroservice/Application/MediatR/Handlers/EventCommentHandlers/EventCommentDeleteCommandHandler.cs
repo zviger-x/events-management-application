@@ -30,7 +30,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             var isWrongEvent = request.RouteEventId != comment.EventId;
 
             if (isWrongEvent || (!isAuthor && !isAdmin))
-                throw new ParameterException("You are not allowed to delete this comment for the event.");
+                throw new ForbiddenAccessException("You are not allowed to delete this comment for the event.");
 
             await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken);
         }

@@ -11,12 +11,10 @@ namespace UsersAPI.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
-        private readonly ITokenService _jwtTokenService;
 
-        public AuthController(IAuthService authService, ITokenService jwtTokenService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _jwtTokenService = jwtTokenService;
         }
 
         [HttpPost("register")]

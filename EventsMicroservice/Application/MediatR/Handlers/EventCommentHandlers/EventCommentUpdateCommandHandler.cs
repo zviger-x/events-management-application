@@ -5,7 +5,6 @@ using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 using Shared.Services.Interfaces;
@@ -14,18 +13,15 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentUpdateCommandHandler : BaseHandler<UpdateEventCommentDto>, IRequestHandler<EventCommentUpdateCommand>
     {
-        private readonly ILogger<EventCommentUpdateCommandHandler> _logger;
         private readonly ICurrentUserService _currentUserService;
 
         public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
             ICacheService cacheService,
             IUpdateEventCommentDtoValidator validator,
-            ILogger<EventCommentUpdateCommandHandler> logger,
             ICurrentUserService currentUserService)
             : base(unitOfWork, mapper, cacheService, validator)
         {
-            _logger = logger;
             _currentUserService = currentUserService;
         }
 

@@ -2,38 +2,36 @@
 using DataAccess.Entities;
 using DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using UsersAPI.Configuration;
 
-namespace UsersApi.Initialization
+namespace DataAccess.Initialization
 {
     // Этот класс исключительно для демонстрации работоспособности, чтобы данные заранее были внесены
     // TODO: Убрать инициализатор БД и добавить по дефолту создание admin пользователя внутри БД.
     public class DBInitializer
     {
         private readonly UserDbContext _context;
-        private readonly SqlServerConfig _config;
+        private readonly bool _recreateDatabase;
+        private readonly bool _seedDemoDate;
 
-        public DBInitializer(UserDbContext context, IOptions<SqlServerConfig> config)
+        public DBInitializer(UserDbContext context, bool recreateDatabase, bool seedDemoData)
         {
             _context = context;
-            _config = config.Value;
+            _recreateDatabase = recreateDatabase;
+            _seedDemoDate = seedDemoData;
 
-            if (_config == null)
-                throw new ArgumentNullException(nameof(config));
         }
 
         public void Initialize()
         {
+            if (!_recreateDatabase)
+                return;
+
             // Если нужно пересоздать БД для демонстрационной части
-            if (_config.RecreateDatabase)
-            {
-                _context.Database.EnsureDeleted();
-                _context.Database.Migrate();
-            }
+            _context.Database.EnsureDeleted();
+            _context.Database.Migrate();
 
             // Заполнение демонстрационными данными (используется с пересозданием БД)
-            if (_config.SeedDemoData && _config.RecreateDatabase)
+            if (_seedDemoDate)
                 SeedDemoDataAsync();
         }
 

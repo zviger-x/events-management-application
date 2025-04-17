@@ -1,13 +1,13 @@
 ﻿using BusinessLogic.Configuration;
 using BusinessLogic.Mapping;
 using DataAccess.Contexts;
+using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using UsersApi.Initialization;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
 using UsersAPI.Middlewares;
@@ -76,8 +76,11 @@ namespace UsersAPI
                 // Regenerate db and seed demo data
                 // TODO: Удалить, когда будет установлен дефолтный пользователь с правами админа
                 var sqlOptions = scope.ServiceProvider.GetRequiredService<IOptions<SqlServerConfig>>();
-                var dbInitializer = new DBInitializer(dbContext, sqlOptions);
-                dbInitializer.Initialize();
+                if (sqlOptions.Value != null)
+                {
+                    var dbInitializer = new DBInitializer(dbContext, sqlOptions.Value.RecreateDatabase, sqlOptions.Value.SeedDemoData);
+                    dbInitializer.Initialize();
+                }
             }
 
             if (app.Environment.IsDevelopment())

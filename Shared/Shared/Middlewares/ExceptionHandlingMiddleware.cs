@@ -40,6 +40,7 @@ namespace Shared.Middlewares
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
+            
             await context.Response.WriteAsJsonAsync(response);
         }
 

@@ -53,7 +53,7 @@ namespace BusinessLogic.Services
         public override async Task UpdateAsync(User entity, CancellationToken token = default)
         {
             _logger.LogWarning("The deprecated Update method was used. The User model was mapped to UpdateUserDTO and the UpdateUserProfileAsync method was called. Please use the UpdateUserProfileAsync method instead.");
-            
+
             var updateDTO = _mapper.Map<UpdateUserDTO>(entity);
 
             await UpdateUserProfileAsync(updateDTO, token);
@@ -108,7 +108,7 @@ namespace BusinessLogic.Services
 
             var user = await base.GetByIdAsync(id, token);
             if (user == null)
-                return null!;
+                return null;
 
             user.PasswordHash = string.Empty;
             await _cacheService.SetAsync(CacheKeys.UserById(id), user, token);

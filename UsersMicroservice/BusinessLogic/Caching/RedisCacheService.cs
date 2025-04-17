@@ -25,7 +25,7 @@ namespace BusinessLogic.Caching
             _defaultExpirationTime = TimeSpan.FromSeconds(cacheExpirationSeconds.Value);
         }
 
-        public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
+        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
             var cachedData = await _cache.GetStringAsync(key, cancellationToken);
             if (string.IsNullOrEmpty(cachedData)) return default;

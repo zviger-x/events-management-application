@@ -42,7 +42,7 @@ namespace UsersAPI.Middlewares
             catch (ArgumentException ex)
             {
                 _logger.LogError(ex, "Argument exception occurred");
-                var response = GetSingleErrorResponse("invalidArgument", ex.Message, ex.ParamName!);
+                var response = GetSingleErrorResponse("invalidArgument", ex.Message, ex.ParamName);
 
                 await SendErrorAsJsonAsync(context, response, StatusCodes.Status400BadRequest);
             }
@@ -62,7 +62,7 @@ namespace UsersAPI.Middlewares
             await context.Response.WriteAsJsonAsync(response);
         }
 
-        private object GetSingleErrorResponse(string code, string message, string propertyName = null!)
+        private object GetSingleErrorResponse(string code, string message, string propertyName = null)
         {
             // {
             //     "errors": {

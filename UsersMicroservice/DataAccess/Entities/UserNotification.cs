@@ -6,7 +6,7 @@ namespace DataAccess.Entities
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public string Message { get; set; } = default!;
+        public string Message { get; set; }
         public DateTime DateTime { get; set; }
         public NotificationStatuses Status { get; set; }
     }

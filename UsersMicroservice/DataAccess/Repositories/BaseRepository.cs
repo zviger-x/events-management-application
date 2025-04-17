@@ -43,7 +43,7 @@ namespace DataAccess.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id, token);
 
-            return entity!;
+            return entity;
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)

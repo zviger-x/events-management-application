@@ -18,16 +18,16 @@ namespace DataAccess.Repositories
 
         public async Task<RefreshToken> GetByRefreshTokenAsync(string refreshToken, CancellationToken token = default)
         {
-            return (await _context.RefreshTokens
+            return await _context.RefreshTokens
                 .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Token == refreshToken, token))!;
+                .FirstOrDefaultAsync(t => t.Token == refreshToken, token);
         }
 
         public async Task<RefreshToken> GetByUserIdAsync(Guid id, CancellationToken token = default)
         {
-            return (await _context.RefreshTokens
+            return await _context.RefreshTokens
                 .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.UserId == id, token))!;
+                .FirstOrDefaultAsync(t => t.UserId == id, token);
         }
 
         public async Task UpsertAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)

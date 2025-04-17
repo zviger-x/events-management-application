@@ -10,7 +10,7 @@ namespace DataAccess.UnitOfWork
     public abstract class BaseUnitOfWork : IBaseUnitOfWork
     {
         protected readonly UserDbContext _context;
-        protected IDbContextTransaction? _transaction;
+        protected IDbContextTransaction _transaction;
         protected readonly IServiceProvider _serviceProvider;
 
         private Dictionary<Type, object> _repositories;

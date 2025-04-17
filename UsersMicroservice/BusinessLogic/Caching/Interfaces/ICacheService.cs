@@ -9,7 +9,7 @@
         /// <param name="key">The key associated with the cached value.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
         /// <returns>The cached value, or null if the key doesn't exist.</returns>
-        Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default);
+        Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets a value in the cache with a specified key and expiration time.

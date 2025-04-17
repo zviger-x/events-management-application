@@ -61,7 +61,7 @@ namespace BusinessLogic.Services
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
             await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
 
-            return new (jwtToken, refreshToken.Token);
+            return new(jwtToken, refreshToken.Token);
         }
 
         public async Task<(string jwtToken, string refreshToken)> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default)
@@ -93,11 +93,11 @@ namespace BusinessLogic.Services
         {
             var result = await _jwtTokenService.ValidateRefreshTokenAsync(refreshToken, cancellationToken);
             if (!result.IsValid)
-                return null!;
+                return null;
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(result.UserId, cancellationToken);
             if (user == null)
-                return null!;
+                return null;
 
             var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
             return jwtToken;

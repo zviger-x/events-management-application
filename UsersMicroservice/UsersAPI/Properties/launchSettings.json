@@ -1,33 +1,5 @@
 {
   "profiles": {
-    // "http": {
-    //   "commandName": "Project",
-    //   "launchBrowser": true,
-    //   "launchUrl": "swagger",
-    //   "environmentVariables": {
-    //     "ASPNETCORE_ENVIRONMENT": "Development"
-    //   },
-    //   "dotnetRunMessages": true,
-    //   "applicationUrl": "http://localhost:5017"
-    // },
-    // "https": {
-    //   "commandName": "Project",
-    //   "launchBrowser": true,
-    //   "launchUrl": "swagger",
-    //   "environmentVariables": {
-    //     "ASPNETCORE_ENVIRONMENT": "Development"
-    //   },
-    //   "dotnetRunMessages": true,
-    //   "applicationUrl": "https://localhost:7219;http://localhost:5017"
-    // },
-    // "IIS Express": {
-    //   "commandName": "IISExpress",
-    //   "launchBrowser": true,
-    //   "launchUrl": "swagger",
-    //   "environmentVariables": {
-    //     "ASPNETCORE_ENVIRONMENT": "Development"
-    //   }
-    // },
     "Container (Dockerfile)": {
       "commandName": "Docker",
       "launchBrowser": true,

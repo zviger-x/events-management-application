@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson.Serialization;
-using Serilog;
 using Shared.Entities.Interfaces;
 using System.Reflection;
+using static Shared.Logging.Extensions.SerilogExtensions;
 
 namespace Infrastructure.Mongo
 {
@@ -18,7 +18,7 @@ namespace Infrastructure.Mongo
             // без изменения сущностей. Т.е. не придётся менять сущности
             // и добавлять для каждой атрибут [BsonId]
 
-            Log.Information($"Registering Guid for MongoDB...");
+            Log.Information("Registering Guid for MongoDB...");
 
             var entityTypes = assemblies
                 .SelectMany(a => a.GetTypes())
@@ -29,13 +29,16 @@ namespace Infrastructure.Mongo
             var maxLength = entityTypes.Max(t => t.Name.Length);
             foreach (var type in entityTypes)
             {
-                Log.Information($"Register Guid as default mongo Id for {{{type.Name}}}{new(' ', maxLength - type.Name.Length)} from [{type.Assembly.GetName().Name}]");
+                var typeName = type.Name;
+                var offset = new string(' ', maxLength - type.Name.Length);
+                var typeAssemblyName = type.Assembly.GetName().Name;
+                Log.InformationInterpolated($"Register Guid as default mongo Id for {{{typeName}}}{offset} from [{typeAssemblyName}]");
 
                 var genericMethod = method.MakeGenericMethod(type);
                 genericMethod.Invoke(null, null);
             }
 
-            Log.Information($"Registration completed");
+            Log.Information("Registration completed");
         }
 
         private static void RegisterGuid<T>()

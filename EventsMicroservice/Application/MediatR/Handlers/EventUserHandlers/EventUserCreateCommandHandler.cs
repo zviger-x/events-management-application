@@ -10,6 +10,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Caching.Interfaces;
 using Shared.Exceptions.ServerExceptions;
+using Shared.Logging.Extensions;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
@@ -78,7 +79,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
             return Task.Run(async () =>
             {
-                _logger.LogInformation($"The task to extend the life of TTL for key {lockKey} has been launched.");
+                _logger.LogInformationInterpolated($"The task to extend the life of TTL for key {lockKey} has been launched.");
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -92,12 +93,12 @@ namespace Application.MediatR.Handlers.EventUserHandlers
                     }
                     catch (TaskCanceledException)
                     {
-                        _logger.LogInformation($"The task to extend the life of TTL for key {lockKey} has been completed.");
+                        _logger.LogInformationInterpolated($"The task to extend the life of TTL for key {lockKey} has been completed.");
                         break;
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning($"Failed to update TTL for key {lockKey}: {ex.Message}");
+                        _logger.LogWarningInterpolated($"Failed to update TTL for key {lockKey}: {ex.Message}");
                     }
                 }
             }, cancellationToken);

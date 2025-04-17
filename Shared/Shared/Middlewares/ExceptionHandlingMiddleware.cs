@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions.ServerExceptions;
+using Shared.Logging.Extensions;
 using FluentValidationException = FluentValidation.ValidationException;
 
 namespace Shared.Middlewares
@@ -101,9 +102,9 @@ namespace Shared.Middlewares
         private void LogError(Exception ex, int statusCode)
         {
             if (statusCode < StatusCodes.Status500InternalServerError)
-                _logger.LogError($"An error occurred: {ex.Message}");
+                _logger.LogErrorInterpolated($"An error occurred: {ex.Message}");
             else
-                _logger.LogError(ex, "An unexpected error occurred");
+                _logger.LogErrorInterpolated(ex, $"An unexpected error occurred");
         }
 
         /// <summary>

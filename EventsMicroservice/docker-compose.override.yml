@@ -26,10 +26,10 @@ services:
       
   mongoserver:
     image: mongo:latest
-    container_name: MongoServer
+    container_name: EventsAPI_MongoServer
     environment:
       - MONGO_REPLICA_SET=rs0
-      - MONGO_HOST=MongoServer
+      - MONGO_HOST=EventsAPI_MongoServer
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=rootpassword
       - MONGO_KEYFILE=mysupersecretkey123

@@ -5,9 +5,9 @@ using EventsAPI.Extensions;
 using Infrastructure.Contexts;
 using Infrastructure.UnitOfWork;
 using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
 using Shared.Configuration;
 using Shared.Extensions;
+using Shared.Logging;
 using Shared.Middlewares;
 using Shared.Services;
 using Shared.Services.Interfaces;
@@ -28,13 +28,13 @@ namespace EventsAPI
 
             // Add configs
             var redisServerConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
-            var cacheConfig       = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
+            var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
             var mongoServerConfig = services.ConfigureAndReceive<MongoServerConfig>(configuration, "MongoServerConfig");
-            var jwtTokenConfig    = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
+            var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+                .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
                 .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
                 .CreateLogger();
             logging.ClearProviders();

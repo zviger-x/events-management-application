@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Shared.Caching.Interfaces;
 using Shared.Configuration;
+using Shared.Logging.Extensions;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -38,7 +39,7 @@ namespace Shared.Caching
             var json = JsonSerializer.Serialize(value);
             await _database.StringSetAsync(key, json, expirationTime);
 
-            _logger.LogInformation($"Cache set for key: {key} with expiration: {expirationTime.TotalSeconds} seconds");
+            _logger.LogInformationInterpolated($"Cache set for key: {key} with expiration: {expirationTime.TotalSeconds} seconds");
         }
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
@@ -47,7 +48,7 @@ namespace Shared.Caching
             if (cachedData.IsNullOrEmpty)
                 return default;
 
-            _logger.LogInformation($"Cache hit for key: {key}");
+            _logger.LogInformationInterpolated($"Cache hit for key: {key}");
 
             return JsonSerializer.Deserialize<T>(cachedData);
         }
@@ -74,7 +75,7 @@ namespace Shared.Caching
         {
             await _database.KeyDeleteAsync(key);
 
-            _logger.LogInformation($"Cache removed for key: {key}");
+            _logger.LogInformationInterpolated($"Cache removed for key: {key}");
         }
 
         public async Task<bool> AcquireLockAsync(string lockKey, string lockValue, TimeSpan lockTtl, CancellationToken cancellationToken = default)
@@ -82,9 +83,9 @@ namespace Shared.Caching
             var acquired = await _database.StringSetAsync(lockKey, lockValue, lockTtl, when: When.NotExists);
 
             if (acquired)
-                _logger.LogInformation($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
+                _logger.LogInformationInterpolated($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
             else
-                _logger.LogInformation($"Failed to acquire lock for key: {lockKey} (already exists)");
+                _logger.LogInformationInterpolated($"Failed to acquire lock for key: {lockKey} (already exists)");
 
             return acquired;
         }
@@ -92,12 +93,12 @@ namespace Shared.Caching
         public async Task ReleaseLockAsync(string lockKey, CancellationToken cancellationToken = default)
         {
             await RemoveAsync(lockKey, cancellationToken);
-            _logger.LogInformation($"Lock released for key: {lockKey}");
+            _logger.LogInformationInterpolated($"Lock released for key: {lockKey}");
         }
 
         public async Task<bool> RefreshKeyTtlAsync(string key, TimeSpan ttl, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation($"Update TTL for key {key}. New TTL: {ttl.TotalSeconds} seconds");
+            _logger.LogInformationInterpolated($"Update TTL for key {key}. New TTL: {ttl.TotalSeconds} seconds");
             return await _database.KeyExpireAsync(key, ttl);
         }
     }

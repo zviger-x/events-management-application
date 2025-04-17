@@ -9,7 +9,6 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using Serilog;
 using Shared.Caching;
 using Shared.Caching.Interfaces;
 using Shared.Repositories.Interfaces;
@@ -17,6 +16,7 @@ using Shared.Validation.Interfaces;
 using Shared.Validation.Validators;
 using StackExchange.Redis;
 using System.Reflection;
+using static Shared.Logging.Extensions.SerilogExtensions;
 
 namespace EventsAPI.Extensions
 {
@@ -35,7 +35,7 @@ namespace EventsAPI.Extensions
             }
             catch (Exception ex)
             {
-                Log.Error($"Error while connecting to MongoDB: {ex.Message}", ex);
+                Log.ErrorInterpolated(ex, $"Error while connecting to MongoDB: {ex.Message}");
             }
 
             services.AddSingleton<IMongoClient>(client);

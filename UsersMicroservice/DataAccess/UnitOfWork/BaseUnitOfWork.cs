@@ -10,10 +10,10 @@ namespace DataAccess.UnitOfWork
     public abstract class BaseUnitOfWork : IBaseUnitOfWork
     {
         protected readonly UserDbContext _context;
-        protected IDbContextTransaction _transaction;
         protected readonly IServiceProvider _serviceProvider;
-
         private readonly Dictionary<Type, object> _repositories;
+
+        protected IDbContextTransaction _transaction;
 
         public BaseUnitOfWork(UserDbContext context, IServiceProvider serviceProvider)
         {
@@ -47,6 +47,7 @@ namespace DataAccess.UnitOfWork
 
             await _context.SaveChangesAsync(token);
             await _transaction.CommitAsync(token);
+
             _transaction.Dispose();
             _transaction = null;
         }
@@ -57,6 +58,7 @@ namespace DataAccess.UnitOfWork
                 throw new InvalidOperationException("Transaction has not been started.");
 
             await _transaction.RollbackAsync(token);
+
             _transaction.Dispose();
             _transaction = null;
         }

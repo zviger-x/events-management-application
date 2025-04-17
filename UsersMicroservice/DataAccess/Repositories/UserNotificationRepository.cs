@@ -17,7 +17,7 @@ namespace DataAccess.Repositories
             return await _context.UserNotifications
                 .AsNoTracking()
                 .Where(n => n.UserId == id)
-                .ToListAsync();
+                .ToListAsync(token);
         }
     }
 }

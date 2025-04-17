@@ -176,7 +176,7 @@ namespace BusinessLogic.Services
 
         private async Task<bool> IsCurrentPassword(ChangePasswordDTO dto, CancellationToken token = default)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(dto.Id);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(dto.Id, token);
 
             if (user == null || !_passwordHashingService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
                 return false;

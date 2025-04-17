@@ -85,8 +85,8 @@ namespace BusinessLogic.Services
 
         public async Task LogoutAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(id);
-            await _unitOfWork.RefreshTokenRepository.DeleteAsync(refreshToken);
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(id, cancellationToken);
+            await _unitOfWork.RefreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
         }
 
         public async Task<string> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
@@ -105,7 +105,7 @@ namespace BusinessLogic.Services
 
         private async Task<bool> IsUniqueEmail(string email, CancellationToken token = default)
         {
-            return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
+            return !await _unitOfWork.UserRepository.ContainsEmailAsync(email, token);
         }
 
 

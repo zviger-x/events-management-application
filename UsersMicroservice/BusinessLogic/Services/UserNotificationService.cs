@@ -37,7 +37,7 @@ namespace BusinessLogic.Services
 
         private async Task<bool> IsUserExistsAsync(Guid guid, CancellationToken token = default)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid, token);
 
             return user != null;
         }

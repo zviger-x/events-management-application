@@ -48,7 +48,7 @@ namespace BusinessLogic.Services
 
         public virtual async Task DeleteAsync(Guid id, CancellationToken token = default)
         {
-            var entity = await _unitOfWork.Repository<T>().GetByIdAsync(id);
+            var entity = await _unitOfWork.Repository<T>().GetByIdAsync(id, token);
             if (entity != null)
                 await _unitOfWork.Repository<T>().DeleteAsync(entity, token);
         }

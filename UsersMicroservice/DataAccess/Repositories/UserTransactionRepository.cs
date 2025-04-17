@@ -17,7 +17,7 @@ namespace DataAccess.Repositories
             return await _context.UserTransactions
                 .AsNoTracking()
                 .Where(t => t.UserId == id)
-                .ToListAsync();
+                .ToListAsync(token);
         }
     }
 }

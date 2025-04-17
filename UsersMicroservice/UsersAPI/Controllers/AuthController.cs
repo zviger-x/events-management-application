@@ -48,7 +48,7 @@ namespace UsersAPI.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
-            var token = await _authService.RefreshTokenAsync(refreshToken);
+            var token = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
             if (token == null)
                 return Unauthorized("Refresh token expired or invalid");
 

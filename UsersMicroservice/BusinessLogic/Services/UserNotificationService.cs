@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -7,6 +6,7 @@ using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
+using ValidationException = BusinessLogic.Exceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -22,7 +22,7 @@ namespace BusinessLogic.Services
             await _validator.ValidateAndThrowAsync(notification, token);
 
             if (!await IsUserExistsAsync(notification.UserId, token))
-                throw new ServiceValidationException(
+                throw new ValidationException(
                     UserNotificationValidationErrorCodes.UserIdIsInvalid,
                     UserNotificationValidationMessages.UserIdIsInvalid,
                     nameof(notification.UserId));

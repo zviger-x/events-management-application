@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -9,6 +8,7 @@ using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
+using ValidationException = BusinessLogic.Exceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -43,7 +43,7 @@ namespace BusinessLogic.Services
             await _registerValidator.ValidateAndThrowAsync(userRegister, cancellationToken);
 
             if (!await IsUniqueEmail(userRegister.Email, cancellationToken))
-                throw new ServiceValidationException(
+                throw new ValidationException(
                     RegisterValidationErrorCodes.EmailIsNotUnique,
                     RegisterValidationMessages.EmailIsNotUnique,
                     nameof(userRegister.Email));
@@ -71,9 +71,9 @@ namespace BusinessLogic.Services
             var user = await _unitOfWork.UserRepository.GetByEmailAsync(userLogin.Email, cancellationToken);
 
             if (user == null || !_passwordHashingService.VerifyPassword(userLogin.Password, user.PasswordHash))
-                throw new ServiceValidationException(
-                    LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
-                    LoginValidationMessages.EmailOrPasswordIsInvalid);
+                throw new ValidationException(
+                    errorCode: LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
+                    errorMessage: LoginValidationMessages.EmailOrPasswordIsInvalid);
 
             var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 

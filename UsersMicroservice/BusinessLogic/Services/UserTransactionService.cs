@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -7,6 +6,7 @@ using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
+using ValidationException = BusinessLogic.Exceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -22,7 +22,7 @@ namespace BusinessLogic.Services
             await _validator.ValidateAndThrowAsync(transaction, token);
 
             if (!await IsUserExistsAsync(transaction.UserId, token))
-                throw new ServiceValidationException(
+                throw new ValidationException(
                     UserTransactionValidationErrorCodes.UserIdIsInvalid,
                     UserTransactionValidationMessages.UserIdIsInvalid,
                     nameof(transaction.UserId));
@@ -39,7 +39,7 @@ namespace BusinessLogic.Services
 
         private async Task<bool> IsUserExistsAsync(Guid guid, CancellationToken token = default)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid, token);
 
             return user != null;
         }

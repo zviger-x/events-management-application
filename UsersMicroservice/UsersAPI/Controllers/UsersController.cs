@@ -5,7 +5,6 @@ using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UsersAPI.Attributes;
-using UsersAPI.Filters;
 
 namespace UsersAPI.Controllers
 {
@@ -30,81 +29,64 @@ namespace UsersAPI.Controllers
         }
 
         [Authorize]
-        [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpPut("{id}/profile")]
-        public async Task<IActionResult> ChangeProfile([FromRoute] Guid id, [FromBody] UpdateUserDTO updateUserDTO, CancellationToken token)
+        [HttpPatch("{userId}/profile")]
+        public async Task<IActionResult> ChangeProfile([FromRoute] Guid userId, [FromBody] UpdateUserDTO updateUserDTO, CancellationToken token)
         {
-            if (id != updateUserDTO.Id)
-                throw new ArgumentException("You are not allowed to modify this profile.");
-
-            await _userService.UpdateUserProfileAsync(updateUserDTO, token);
+            await _userService.UpdateUserProfileAsync(userId, updateUserDTO, token);
 
             return Ok();
         }
 
         [Authorize]
-        [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpPut("{id}/password")]
-        public async Task<IActionResult> ChangePassword([FromRoute] Guid id, [FromBody] ChangePasswordDTO changePasswordDTO, CancellationToken token)
+        [HttpPatch("{userId}/password")]
+        public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordDTO changePasswordDTO, CancellationToken token)
         {
-            if (id != changePasswordDTO.Id)
-                throw new ArgumentException("You are not allowed to modify this profile.");
-
-            await _userService.ChangePasswordAsync(changePasswordDTO, token);
+            await _userService.ChangePasswordAsync(userId, changePasswordDTO, token);
 
             return Ok();
         }
 
         [AuthorizeRoles(UserRoles.Admin)]
-        [HttpPut("{id}/role")]
-        public async Task<IActionResult> ChangeRole([FromRoute] Guid id, [FromBody] ChangeUserRoleDTO changeUserRoleDTO, CancellationToken token)
+        [HttpPatch("{userId}/role")]
+        public async Task<IActionResult> ChangeRole([FromRoute] Guid userId, [FromBody] ChangeUserRoleDTO changeUserRoleDTO, CancellationToken token)
         {
-            if (id != changeUserRoleDTO.Id)
-                throw new ArgumentException("You are not allowed to modify this profile.");
-
-            await _userService.ChangeUserRoleAsync(changeUserRoleDTO, token);
+            await _userService.ChangeUserRoleAsync(userId, changeUserRoleDTO, token);
 
             return Ok();
         }
 
         [Authorize]
-        [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid userId, CancellationToken token)
         {
-            await _userService.DeleteAsync(id, token);
+            await _userService.DeleteAsync(userId, token);
 
-            return Ok();
+            return NoContent();
         }
 
         [Authorize]
-        [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken token)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid userId, CancellationToken token)
         {
-            var user = await _userService.GetByIdAsync(id, token);
-            if (user == null)
-                return NotFound();
+            var user = await _userService.GetByIdAsync(userId, token);
 
             return Ok(user);
         }
 
         [Authorize]
-        [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpGet("{id}/notifications")]
-        public async Task<IActionResult> GetUserNotifications([FromRoute] Guid id, CancellationToken token)
+        [HttpGet("{userId}/notifications")]
+        public async Task<IActionResult> GetUserNotifications([FromRoute] Guid userId, CancellationToken token)
         {
-            var notifications = await _userNotificationService.GetByUserIdAsync(id, token);
+            var notifications = await _userNotificationService.GetByUserIdAsync(userId, token);
 
             return Ok(notifications);
         }
 
         [Authorize]
-        [ForCurrentUserOrRoles(UserRoles.Admin)]
-        [HttpGet("{id}/transactions")]
-        public async Task<IActionResult> GetUserTransactions([FromRoute] Guid id, CancellationToken token)
+        [HttpGet("{userId}/transactions")]
+        public async Task<IActionResult> GetUserTransactions([FromRoute] Guid userId, CancellationToken token)
         {
-            var transactions = await _userTransactionService.GetByUserIdAsync(id, token);
+            var transactions = await _userTransactionService.GetByUserIdAsync(userId, token);
 
             return Ok(transactions);
         }

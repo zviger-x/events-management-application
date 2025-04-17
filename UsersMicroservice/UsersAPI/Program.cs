@@ -28,7 +28,8 @@ namespace UsersAPI
 
             // Add configs
             services.Configure<JwtTokenConfig>(configuration.GetSection("Jwt"));
-            services.Configure<RedisServerConfig>(configuration.GetSection("RedisServerConfig"));
+            services.Configure<CacheConfig>(configuration.GetSection("Caching:Cache"));
+            services.Configure<RedisServerConfig>(configuration.GetSection("Caching:RedisServerConfig"));
             services.Configure<SqlServerConfig>(configuration.GetSection("SqlServerConfig"));
 
             // Add logging

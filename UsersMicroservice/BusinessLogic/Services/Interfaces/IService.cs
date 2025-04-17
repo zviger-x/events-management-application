@@ -17,10 +17,11 @@ namespace BusinessLogic.Services.Interfaces
         /// <summary>
         /// Updates an entity.
         /// </summary>
+        /// <param name="routeEntityId">Entity id from route.</param>
         /// <param name="entity">Entity to update.</param>
         /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>A response containing validation errors, if any.</returns>
-        Task UpdateAsync(T entity, CancellationToken token = default);
+        Task UpdateAsync(Guid routeEntityId, T entity, CancellationToken token = default);
 
         /// <summary>
         /// Removes an entity.

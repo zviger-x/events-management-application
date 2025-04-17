@@ -2,7 +2,6 @@
 using BusinessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace UsersAPI.Controllers
 {
@@ -21,6 +20,7 @@ namespace UsersAPI.Controllers
         public async Task<IActionResult> Register(RegisterDTO registerDTO, CancellationToken cancellationToken)
         {
             var token = await _authService.RegisterAsync(registerDTO, cancellationToken);
+
             return Ok(new { AccessToken = token.jwtToken, RefreshToken = token.refreshToken });
         }
 
@@ -28,6 +28,7 @@ namespace UsersAPI.Controllers
         public async Task<IActionResult> Login(LoginDTO loginDTO, CancellationToken cancellationToken)
         {
             var token = await _authService.LoginAsync(loginDTO, cancellationToken);
+
             return Ok(new { AccessToken = token.jwtToken, RefreshToken = token.refreshToken });
         }
 
@@ -35,11 +36,8 @@ namespace UsersAPI.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                return Unauthorized();
+            await _authService.LogoutAsync(cancellationToken);
 
-            await _authService.LogoutAsync(userId, cancellationToken);
             return Ok();
         }
 
@@ -47,8 +45,6 @@ namespace UsersAPI.Controllers
         public async Task<IActionResult> RefreshToken(string refreshToken, CancellationToken cancellationToken)
         {
             var token = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
-            if (token == null)
-                return Unauthorized("Refresh token expired or invalid");
 
             return Ok(new { AccessToken = token });
         }

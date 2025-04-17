@@ -23,7 +23,7 @@ namespace UsersAPI.Extensions
     {
         public static void AddRedisServer(this IServiceCollection services, IConfiguration configuration)
         {
-            var redisConfig = configuration.GetSection("RedisServerConfig").Get<RedisServerConfig>();
+            var redisConfig = configuration.GetSection("Caching:RedisServerConfig").Get<RedisServerConfig>();
             if (redisConfig == null)
                 throw new ArgumentNullException(nameof(redisConfig));
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -18,24 +18,24 @@ namespace BusinessLogic.Services
         private readonly IRegisterDTOValidator _registerValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
-        private readonly ITokenService _jwtTokenService;
+        private readonly ITokenService _tokenService;
 
-        private readonly ICacheService _cacheService;
+        private readonly ICurrentUserService _currentUserService;
 
         public AuthService(IUnitOfWork unitOfWork,
             IMapper mapper,
             ILoginDTOValidator loginValidator,
             IRegisterDTOValidator registerValidator,
             IPasswordHashingService passwordHashingService,
-            ITokenService jwtTokenService,
-            ICacheService cacheService)
+            ITokenService tokenService,
+            ICurrentUserService currentUserService)
             : base(unitOfWork, mapper)
         {
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
             _passwordHashingService = passwordHashingService;
-            _jwtTokenService = jwtTokenService;
-            _cacheService = cacheService;
+            _tokenService = tokenService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default)
@@ -56,9 +56,9 @@ namespace BusinessLogic.Services
                 await _unitOfWork.UserRepository.CreateAsync(user, token);
             }, cancellationToken);
 
-            var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 
-            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
+            var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
             await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
@@ -75,31 +75,33 @@ namespace BusinessLogic.Services
                     errorCode: LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
                     errorMessage: LoginValidationMessages.EmailOrPasswordIsInvalid);
 
-            var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 
-            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
+            var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
             await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
         }
 
-        public async Task LogoutAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task LogoutAsync(CancellationToken cancellationToken = default)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(id, cancellationToken);
+            var userId = _currentUserService.GetUserIdOrThrow();
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(userId, cancellationToken);
+
             await _unitOfWork.RefreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
         }
 
         public async Task<string> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            var result = await _jwtTokenService.ValidateRefreshTokenAsync(refreshToken, cancellationToken);
+            var result = await _tokenService.ValidateRefreshTokenAsync(refreshToken, cancellationToken);
             if (!result.IsValid)
-                return null;
+                throw new UnauthorizedException("Refresh token expired or invalid");
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(result.UserId, cancellationToken);
             if (user == null)
-                return null;
+                throw new UnauthorizedException("Refresh token expired or invalid");
 
-            var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
+            var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
             return jwtToken;
         }
 

@@ -2,6 +2,7 @@
 using BusinessLogic.Caching.Constants;
 using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -22,6 +23,7 @@ namespace BusinessLogic.Services
         private readonly IChangeUserRoleDTOValidator _changeUserRoleValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly ICacheService _cacheService;
         private readonly ILogger<UserService> _logger;
 
@@ -32,6 +34,7 @@ namespace BusinessLogic.Services
             IChangePasswordDTOValidator changePasswordValidator,
             IChangeUserRoleDTOValidator changeUserRoleValidator,
             IPasswordHashingService passwordHashingService,
+            ICurrentUserService currentUserService,
             ICacheService cacheService,
             ILogger<UserService> logger)
             : base(unitOfWork, mapper, validator)
@@ -41,31 +44,24 @@ namespace BusinessLogic.Services
             _changeUserRoleValidator = changeUserRoleValidator;
 
             _passwordHashingService = passwordHashingService;
+            _currentUserService = currentUserService;
             _cacheService = cacheService;
             _logger = logger;
         }
 
-        public override Task CreateAsync(User entity, CancellationToken token = default)
+        public override async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            _logger.LogWarning("The deprecated Create method was used. This method is disabled because it does not have the ability to hash the password and generate tokens.");
-            throw new InvalidOperationException("Please use the Register method from AuthService instead. This method cannot hash the password and return Jwt token.");
-        }
+            var currentUserId = _currentUserService.GetUserIdOrThrow();
+            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var isCurrentUser = currentUserId == id;
 
-        public override async Task UpdateAsync(User entity, CancellationToken token = default)
-        {
-            _logger.LogWarning("The deprecated Update method was used. The User model was mapped to UpdateUserDTO and the UpdateUserProfileAsync method was called. Please use the UpdateUserProfileAsync method instead.");
+            if (!isCurrentUser && !isAdmin)
+                throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
-            var updateDTO = _mapper.Map<UpdateUserDTO>(entity);
-
-            await UpdateUserProfileAsync(updateDTO, token);
-        }
-
-        public override async Task DeleteAsync(Guid id, CancellationToken token = default)
-        {
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                await base.DeleteAsync(id, token);
-            }, token);
+                await base.DeleteAsync(id, cancellationToken);
+            }, cancellationToken);
         }
 
         public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
@@ -100,16 +96,20 @@ namespace BusinessLogic.Services
 
         public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
         {
+            var currentUserId = _currentUserService.GetUserIdOrThrow();
+            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var isCurrentUser = currentUserId == id;
+
+            if (!isCurrentUser && !isAdmin)
+                throw new ForbiddenAccessException("You do not have permission to perform this action.");
+
             var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(id), token);
             if (cachedUser != null)
-            {
-                cachedUser.PasswordHash = string.Empty;
                 return cachedUser;
-            }
 
             var user = await base.GetByIdAsync(id, token);
             if (user == null)
-                return null;
+                throw new NotFoundException("User not found.");
 
             user.PasswordHash = string.Empty;
             await _cacheService.SetAsync(CacheKeys.UserById(id), user, token);
@@ -117,13 +117,23 @@ namespace BusinessLogic.Services
             return user;
         }
 
-        public async Task UpdateUserProfileAsync(UpdateUserDTO userUpdate, CancellationToken cancellationToken)
+        public async Task UpdateUserProfileAsync(Guid userRouteId, UpdateUserDTO userUpdate, CancellationToken cancellationToken)
         {
             await _updateUserValidator.ValidateAndThrowAsync(userUpdate, cancellationToken);
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userUpdate.Id, cancellationToken);
+            if (userRouteId != userUpdate.UserId)
+                throw new ParameterException("You are not allowed to change this.");
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userUpdate.UserId, cancellationToken);
             if (user == null)
-                throw new ArgumentException("There is no user with this Id.");
+                throw new NotFoundException("User not found");
+
+            var currentUserId = _currentUserService.GetUserIdOrThrow();
+            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var isCurrentUser = currentUserId == user.Id;
+
+            if (!isCurrentUser && !isAdmin)
+                throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
             _mapper.Map(userUpdate, user);
 
@@ -135,19 +145,29 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        public async Task ChangePasswordAsync(ChangePasswordDTO changePasswordDto, CancellationToken cancellationToken)
+        public async Task ChangePasswordAsync(Guid userRouteId, ChangePasswordDTO changePasswordDto, CancellationToken cancellationToken)
         {
             await _changePasswordValidator.ValidateAndThrowAsync(changePasswordDto, cancellationToken);
 
-            if (!await IsCurrentPassword(changePasswordDto, cancellationToken))
+            if (userRouteId != changePasswordDto.UserId)
+                throw new ParameterException("You are not allowed to change this.");
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(changePasswordDto.UserId, cancellationToken);
+            if (user == null)
+                throw new NotFoundException("User not found");
+
+            var currentUserId = _currentUserService.GetUserIdOrThrow();
+            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var isCurrentUser = currentUserId == user.Id;
+
+            if (!isCurrentUser && !isAdmin)
+                throw new ForbiddenAccessException("You do not have permission to perform this action.");
+
+            if (!IsCurrentPassword(user, changePasswordDto, cancellationToken))
                 throw new ValidationException(
                     ChangePasswordValidationErrorCodes.CurrentPasswordIsInvalid,
                     ChangePasswordValidationMessages.CurrentPasswordIsInvalid,
                     nameof(changePasswordDto.CurrentPassword));
-
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(changePasswordDto.Id, cancellationToken);
-            if (user == null)
-                throw new ArgumentException("There is no user with this Id.");
 
             user.PasswordHash = _passwordHashingService.HashPassword(changePasswordDto.NewPassword);
 
@@ -157,11 +177,14 @@ namespace BusinessLogic.Services
             }, cancellationToken);
         }
 
-        public async Task ChangeUserRoleAsync(ChangeUserRoleDTO changeUserRole, CancellationToken cancellationToken = default)
+        public async Task ChangeUserRoleAsync(Guid userRouteId, ChangeUserRoleDTO changeUserRole, CancellationToken cancellationToken = default)
         {
             await _changeUserRoleValidator.ValidateAndThrowAsync(changeUserRole, cancellationToken);
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(changeUserRole.Id, cancellationToken);
+            if (userRouteId != changeUserRole.UserId)
+                throw new ParameterException("You are not allowed to change this.");
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(changeUserRole.UserId, cancellationToken);
             if (user == null)
                 throw new ArgumentException("There is no user with this Id.");
 
@@ -175,11 +198,9 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        private async Task<bool> IsCurrentPassword(ChangePasswordDTO dto, CancellationToken token = default)
+        private bool IsCurrentPassword(User storedUser, ChangePasswordDTO dto, CancellationToken token = default)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(dto.Id, token);
-
-            if (user == null || !_passwordHashingService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
+            if (storedUser == null || !_passwordHashingService.VerifyPassword(dto.CurrentPassword, storedUser.PasswordHash))
                 return false;
 
             return true;

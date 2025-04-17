@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -12,9 +13,12 @@ namespace BusinessLogic.Services
 {
     public class UserNotificationService : BaseService<UserNotification>, IUserNotificationService
     {
-        public UserNotificationService(IUnitOfWork unitOfWork, IMapper mapper, IUserNotificationValidator validator)
+        private readonly ICurrentUserService _currentUserService;
+
+        public UserNotificationService(IUnitOfWork unitOfWork, IMapper mapper, IUserNotificationValidator validator, ICurrentUserService currentUserService)
             : base(unitOfWork, mapper, validator)
         {
+            _currentUserService = currentUserService;
         }
 
         public override async Task CreateAsync(UserNotification notification, CancellationToken token = default)
@@ -32,6 +36,13 @@ namespace BusinessLogic.Services
 
         public async Task<IEnumerable<UserNotification>> GetByUserIdAsync(Guid id, CancellationToken token = default)
         {
+            var currentUserId = _currentUserService.GetUserIdOrThrow();
+            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var isCurrentUser = currentUserId == id;
+
+            if (!isCurrentUser && !isAdmin)
+                throw new ForbiddenAccessException("You do not have permission to perform this action.");
+
             return await _unitOfWork.UserNotificationRepository.GetByUserIdAsync(id, token);
         }
 

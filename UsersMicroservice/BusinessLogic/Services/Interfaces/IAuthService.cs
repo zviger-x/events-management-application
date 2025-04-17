@@ -23,9 +23,8 @@ namespace BusinessLogic.Services.Interfaces
         /// <summary>
         /// Logs out the user by his id.
         /// </summary>
-        /// <param name="id">Id of the user.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
-        Task LogoutAsync(Guid id, CancellationToken cancellationToken = default);
+        Task LogoutAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Checks the validity of the refresh token and returns a new Jwt token.

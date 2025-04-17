@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Common;
 using DataAccess.Entities.Interfaces;
@@ -39,9 +40,16 @@ namespace BusinessLogic.Services
             await _unitOfWork.Repository<T>().CreateAsync(entity, token);
         }
 
-        public virtual async Task UpdateAsync(T entity, CancellationToken token = default)
+        public virtual async Task UpdateAsync(Guid routeEntityId, T entity, CancellationToken token = default)
         {
             await _validator.ValidateAndThrowAsync(entity, token);
+
+            if (routeEntityId != entity.Id)
+                throw new ParameterException("You are not allowed to change this.");
+
+            var storedEntity = await _unitOfWork.Repository<T>().GetByIdAsync(entity.Id, token);
+            if (storedEntity == null)
+                throw new NotFoundException("Not found.");
 
             await _unitOfWork.Repository<T>().UpdateAsync(entity, token);
         }
@@ -49,8 +57,10 @@ namespace BusinessLogic.Services
         public virtual async Task DeleteAsync(Guid id, CancellationToken token = default)
         {
             var entity = await _unitOfWork.Repository<T>().GetByIdAsync(id, token);
-            if (entity != null)
-                await _unitOfWork.Repository<T>().DeleteAsync(entity, token);
+            if (entity == null)
+                return;
+
+            await _unitOfWork.Repository<T>().DeleteAsync(entity, token);
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken token = default)
@@ -61,17 +71,19 @@ namespace BusinessLogic.Services
         public virtual async Task<PagedCollection<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
         {
             if (pageNumber < 1)
-                throw new ArgumentOutOfRangeException(nameof(pageNumber));
+                throw new ParameterException(nameof(pageNumber));
 
             if (pageSize < 1)
-                throw new ArgumentOutOfRangeException(nameof(pageSize));
+                throw new ParameterException(nameof(pageSize));
 
             return await _unitOfWork.Repository<T>().GetPagedAsync(pageNumber, pageSize, token);
         }
 
         public virtual async Task<T> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            return await _unitOfWork.Repository<T>().GetByIdAsync(id, token);
+            var entity = await _unitOfWork.Repository<T>().GetByIdAsync(id, token);
+
+            return entity ?? throw new NotFoundException("Not found");
         }
     }
 }

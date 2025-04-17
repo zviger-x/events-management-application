@@ -31,33 +31,28 @@ namespace UsersAPI.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UserTransaction transaction, CancellationToken cancellationToken)
+        [HttpPut("{transactionId}")]
+        public async Task<IActionResult> Update([FromRoute] Guid transactionId, [FromBody] UserTransaction transaction, CancellationToken cancellationToken)
         {
-            if (id != transaction.Id)
-                throw new ArgumentException("You are not allowed to modify this transaction.");
-
-            await _userTransactionService.UpdateAsync(transaction, cancellationToken);
+            await _userTransactionService.UpdateAsync(transactionId, transaction, cancellationToken);
 
             return Ok();
         }
 
         [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+        [HttpDelete("{transactionId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid transactionId, CancellationToken cancellationToken)
         {
-            await _userTransactionService.DeleteAsync(id, cancellationToken);
+            await _userTransactionService.DeleteAsync(transactionId, cancellationToken);
 
-            return Ok();
+            return NoContent();
         }
 
         [Authorize]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
+        [HttpGet("{transactionId}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid transactionId, CancellationToken cancellationToken)
         {
-            var transaction = await _userTransactionService.GetByIdAsync(id, cancellationToken);
-            if (transaction == null)
-                return NotFound();
+            var transaction = await _userTransactionService.GetByIdAsync(transactionId, cancellationToken);
 
             return Ok(transaction);
         }

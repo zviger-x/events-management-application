@@ -31,33 +31,28 @@ namespace UsersAPI.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserNotification notification, CancellationToken cancellationToken)
+        [HttpPut("{notificationId}")]
+        public async Task<IActionResult> Update([FromRoute] Guid notificationId, [FromBody] UserNotification notification, CancellationToken cancellationToken)
         {
-            if (id != notification.Id)
-                throw new ArgumentException("You are not allowed to modify this transaction.");
-
-            await _userNotificationService.UpdateAsync(notification, cancellationToken);
+            await _userNotificationService.UpdateAsync(notificationId, notification, cancellationToken);
 
             return Ok();
         }
 
         [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+        [HttpDelete("{notificationId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid notificationId, CancellationToken cancellationToken)
         {
-            await _userNotificationService.DeleteAsync(id, cancellationToken);
+            await _userNotificationService.DeleteAsync(notificationId, cancellationToken);
 
-            return Ok();
+            return NoContent();
         }
 
         [Authorize]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
+        [HttpGet("{notificationId}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid notificationId, CancellationToken cancellationToken)
         {
-            var notification = await _userNotificationService.GetByIdAsync(id, cancellationToken);
-            if (notification == null)
-                return NotFound();
+            var notification = await _userNotificationService.GetByIdAsync(notificationId, cancellationToken);
 
             return Ok(notification);
         }

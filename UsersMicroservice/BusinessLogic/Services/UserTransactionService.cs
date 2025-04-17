@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -12,9 +13,12 @@ namespace BusinessLogic.Services
 {
     public class UserTransactionService : BaseService<UserTransaction>, IUserTransactionService
     {
-        public UserTransactionService(IUnitOfWork unitOfWork, IMapper mapper, IUserTransactionValidator validator)
+        private readonly ICurrentUserService _currentUserService;
+
+        public UserTransactionService(IUnitOfWork unitOfWork, IMapper mapper, IUserTransactionValidator validator, ICurrentUserService currentUserService)
             : base(unitOfWork, mapper, validator)
         {
+            _currentUserService = currentUserService;
         }
 
         public override async Task CreateAsync(UserTransaction transaction, CancellationToken token = default)
@@ -34,6 +38,13 @@ namespace BusinessLogic.Services
 
         public async Task<IEnumerable<UserTransaction>> GetByUserIdAsync(Guid id, CancellationToken token = default)
         {
+            var currentUserId = _currentUserService.GetUserIdOrThrow();
+            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var isCurrentUser = currentUserId == id;
+
+            if (!isCurrentUser && !isAdmin)
+                throw new ForbiddenAccessException("You do not have permission to perform this action.");
+
             return await _unitOfWork.UserTransactionRepository.GetByUserIdAsync(id, token);
         }
 

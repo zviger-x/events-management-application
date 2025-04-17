@@ -39,9 +39,9 @@ namespace DataAccess.Repositories
 
         public virtual async Task<T> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            var entity = await _context.Set<T>().FindAsync([id], cancellationToken: token);
-            if (entity != null)
-                _context.Entry(entity).State = EntityState.Detached;
+            var entity = await _context.Set<T>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == id, token);
 
             return entity!;
         }

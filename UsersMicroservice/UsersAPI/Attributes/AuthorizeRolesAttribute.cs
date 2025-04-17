@@ -1,4 +1,4 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 
 namespace UsersAPI.Attributes

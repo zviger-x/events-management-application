@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Configuration;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
+using DataAccess.Enums;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -89,9 +90,9 @@ namespace BusinessLogic.Services
         {
             var storedToken = await _unitOfWork.RefreshTokenRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
             if (storedToken == null || storedToken.Token != refreshToken || storedToken.Expires < DateTime.UtcNow)
-                return new (false, Guid.Empty);
+                return new(false, Guid.Empty);
 
-            return new (true, storedToken.UserId);
+            return new(true, storedToken.UserId);
         }
     }
 }

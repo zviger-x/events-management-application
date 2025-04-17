@@ -2,7 +2,6 @@
 using BusinessLogic.Caching.Constants;
 using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -12,6 +11,7 @@ using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using ValidationException = BusinessLogic.Exceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -140,7 +140,7 @@ namespace BusinessLogic.Services
             await _changePasswordValidator.ValidateAndThrowAsync(changePasswordDto, cancellationToken);
 
             if (!await IsCurrentPassword(changePasswordDto, cancellationToken))
-                throw new ServiceValidationException(
+                throw new ValidationException(
                     ChangePasswordValidationErrorCodes.CurrentPasswordIsInvalid,
                     ChangePasswordValidationMessages.CurrentPasswordIsInvalid,
                     nameof(changePasswordDto.CurrentPassword));

@@ -1,4 +1,4 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Enums;
 
 namespace BusinessLogic.Contracts
 {

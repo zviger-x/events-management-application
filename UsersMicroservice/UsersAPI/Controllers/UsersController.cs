@@ -1,7 +1,7 @@
 ﻿using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Entities;
+using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UsersAPI.Attributes;

@@ -29,21 +29,5 @@ namespace DataAccess.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.UserId == id, token);
         }
-
-        public async Task UpsertAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
-        {
-            var existingRefreshToken = await GetByUserIdAsync(refreshToken.UserId, cancellationToken);
-
-            if (existingRefreshToken != null)
-            {
-                refreshToken.Id = existingRefreshToken.Id;
-
-                await UpdateAsync(refreshToken, cancellationToken);
-            }
-            else
-            {
-                await CreateAsync(refreshToken, cancellationToken);
-            }
-        }
     }
 }

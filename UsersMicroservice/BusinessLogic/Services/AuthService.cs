@@ -59,7 +59,7 @@ namespace BusinessLogic.Services
             var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
-            await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
+            await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
         }
@@ -78,7 +78,7 @@ namespace BusinessLogic.Services
             var jwtToken = _jwtTokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 
             var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id);
-            await _unitOfWork.RefreshTokenRepository.UpsertAsync(refreshToken, cancellationToken);
+            await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
         }
@@ -106,6 +106,28 @@ namespace BusinessLogic.Services
         private async Task<bool> IsUniqueEmail(string email, CancellationToken token = default)
         {
             return !await _unitOfWork.UserRepository.ContainsEmailAsync(email);
+        }
+
+
+        /// <summary>
+        /// Updates an existing one, otherwise creates a new one
+        /// </summary>
+        /// <param name="refreshToken">Refresh token</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
+        private async Task UpsertRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
+        {
+            var existingRefreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(refreshToken.UserId, cancellationToken);
+
+            if (existingRefreshToken != null)
+            {
+                refreshToken.Id = existingRefreshToken.Id;
+
+                await _unitOfWork.RefreshTokenRepository.UpdateAsync(refreshToken, cancellationToken);
+            }
+            else
+            {
+                await _unitOfWork.RefreshTokenRepository.CreateAsync(refreshToken, cancellationToken);
+            }
         }
     }
 }

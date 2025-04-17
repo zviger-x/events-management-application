@@ -21,6 +21,7 @@ namespace DataAccess.Repositories
             entity.Id = default;
             await _context.AddAsync(entity, token);
             await _context.SaveChangesAsync(token);
+
             _context.Entry(entity).State = EntityState.Detached;
         }
 
@@ -28,6 +29,7 @@ namespace DataAccess.Repositories
         {
             _context.Update(entity);
             await _context.SaveChangesAsync(token);
+
             _context.Entry(entity).State = EntityState.Detached;
         }
 

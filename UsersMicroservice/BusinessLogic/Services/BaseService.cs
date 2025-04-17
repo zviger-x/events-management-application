@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Entities;
+using DataAccess.Common;
 using DataAccess.Entities.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;

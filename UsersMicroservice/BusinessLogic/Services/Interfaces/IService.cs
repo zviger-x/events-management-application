@@ -1,4 +1,4 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Common;
 using DataAccess.Entities.Interfaces;
 
 namespace BusinessLogic.Services.Interfaces

@@ -1,5 +1,5 @@
-﻿using DataAccess.Contexts;
-using DataAccess.Entities;
+﻿using DataAccess.Common;
+using DataAccess.Contexts;
 using DataAccess.Entities.Interfaces;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

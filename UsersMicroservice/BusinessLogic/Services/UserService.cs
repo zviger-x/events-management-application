@@ -7,6 +7,7 @@ using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
 using BusinessLogic.Validation.Validators.Interfaces;
+using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;

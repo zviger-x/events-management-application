@@ -72,7 +72,7 @@ namespace UsersAPI
                 // Auto migrations
                 if (dbContext.Database.GetPendingMigrations().Any())
                     dbContext.Database.Migrate();
-            
+
                 // Regenerate db and seed demo data
                 // TODO: Удалить, когда будет установлен дефолтный пользователь с правами админа
                 var sqlOptions = scope.ServiceProvider.GetRequiredService<IOptions<SqlServerConfig>>();

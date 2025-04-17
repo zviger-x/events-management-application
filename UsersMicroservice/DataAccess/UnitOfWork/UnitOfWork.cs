@@ -8,10 +8,10 @@ namespace DataAccess.UnitOfWork
 
     public class UnitOfWork : BaseUnitOfWork, IUnitOfWork
     {
-        private Lazy<IUserRepository> _userRepository;
-        private Lazy<IUserNotificationRepository> _userNotificationRepository;
-        private Lazy<IUserTransactionRepository> _userTransactionRepository;
-        private Lazy<IRefreshTokenRepository> _refreshTokenRepository;
+        private readonly Lazy<IUserRepository> _userRepository;
+        private readonly Lazy<IUserNotificationRepository> _userNotificationRepository;
+        private readonly Lazy<IUserTransactionRepository> _userTransactionRepository;
+        private readonly Lazy<IRefreshTokenRepository> _refreshTokenRepository;
 
         public UnitOfWork(UserDbContext context, IServiceProvider serviceProvider)
             : base(context, serviceProvider)

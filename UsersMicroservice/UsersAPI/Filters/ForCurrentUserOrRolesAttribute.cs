@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
-using DataAccess.Entities;
 
 namespace UsersAPI.Filters
 {

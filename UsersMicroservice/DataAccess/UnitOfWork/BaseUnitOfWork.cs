@@ -13,7 +13,7 @@ namespace DataAccess.UnitOfWork
         protected IDbContextTransaction _transaction;
         protected readonly IServiceProvider _serviceProvider;
 
-        private Dictionary<Type, object> _repositories;
+        private readonly Dictionary<Type, object> _repositories;
 
         public BaseUnitOfWork(UserDbContext context, IServiceProvider serviceProvider)
         {

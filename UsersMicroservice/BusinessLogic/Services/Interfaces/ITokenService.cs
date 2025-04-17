@@ -5,7 +5,7 @@ namespace BusinessLogic.Services.Interfaces
     public interface ITokenService
     {
         int TokenExpirationMinutes { get; }
-        
+
         int RefreshTokenExpirationMinutess { get; }
 
         /// <summary>

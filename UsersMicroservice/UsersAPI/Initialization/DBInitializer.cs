@@ -30,7 +30,7 @@ namespace UsersApi.Initialization
                 _context.Database.EnsureDeleted();
                 _context.Database.Migrate();
             }
-            
+
             // Заполнение демонстрационными данными (используется с пересозданием БД)
             if (_config.SeedDemoData && _config.RecreateDatabase)
                 SeedDemoDataAsync();
@@ -46,7 +46,7 @@ namespace UsersApi.Initialization
                 new User { Name = "User2", Surname = "User2", Email = "user2@gmail.com", PasswordHash = "AQAAAAIAAYagAAAAENaYllc3+Is9m13le6Ox32GtdbiNLtirlF2N96E5yoQ00tg7J1YdpLhAst28r8JcWA==", Role = UserRoles.User },
             };
             _context.AddRange(users);
-            
+
             var notifications = new UserNotification[]
             {
                 new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_0", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
@@ -57,7 +57,7 @@ namespace UsersApi.Initialization
                 new UserNotification { UserId = users[2].Id, Message = "Notification_User_2_0", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
             };
             _context.AddRange(notifications);
-            
+
             var transactions = new UserTransaction[]
             {
                 new UserTransaction { UserId = users[0].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.Now },

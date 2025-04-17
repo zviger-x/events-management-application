@@ -1,23 +1,21 @@
-﻿using DataAccess.Repositories.Interfaces;
-using DataAccess.Repositories;
-using DataAccess.Entities;
-using BusinessLogic.Validation.Validators.Interfaces;
-using BusinessLogic.Validation.Validators;
-using BusinessLogic.Services.Interfaces;
-using BusinessLogic.Services;
+﻿using BusinessLogic.Caching;
 using BusinessLogic.Caching.Interfaces;
-using BusinessLogic.Caching;
 using BusinessLogic.Configuration;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.OpenApi.Models;
+using BusinessLogic.Services;
+using BusinessLogic.Services.Interfaces;
+using BusinessLogic.Validation.Validators;
+using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Contexts;
+using DataAccess.Entities;
+using DataAccess.Repositories;
+using DataAccess.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using UsersAPI.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
-using Serilog.Sinks.SystemConsole.Themes;
-using Serilog;
+using System.Text;
+using UsersAPI.Configuration;
 
 namespace UsersAPI.Extensions
 {
@@ -88,7 +86,7 @@ namespace UsersAPI.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
         }
-        
+
         public static void AddCachingServices(this IServiceCollection services)
         {
             services.AddScoped<ICacheService, RedisCacheService>();

@@ -46,7 +46,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Entities.User", b =>
@@ -80,7 +80,7 @@ namespace DataAccess.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Entities.UserNotification", b =>
@@ -107,7 +107,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserNotifications");
+                    b.ToTable("UserNotifications", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Entities.UserTransaction", b =>
@@ -141,7 +141,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserTransactions");
+                    b.ToTable("UserTransactions", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Entities.UserNotification", b =>

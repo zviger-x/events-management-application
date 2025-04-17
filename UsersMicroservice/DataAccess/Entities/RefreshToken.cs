@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities.Interfaces;
+
 namespace DataAccess.Entities
 {
     public class RefreshToken : IEntity

@@ -2,7 +2,7 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
-using Shared.Caching.Interfaces;
+using Shared.Caching.Services.Interfaces;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {

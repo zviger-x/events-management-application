@@ -4,7 +4,7 @@ using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
-using Shared.Caching.Interfaces;
+using Shared.Caching.Services.Interfaces;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {

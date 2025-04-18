@@ -4,7 +4,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using Shared.Caching.Interfaces;
+using Shared.Caching.Services.Interfaces;
 using Shared.Common;
 using Shared.Validation.Interfaces;
 

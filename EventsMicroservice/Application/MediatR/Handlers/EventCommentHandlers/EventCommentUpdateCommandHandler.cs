@@ -5,7 +5,7 @@ using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Shared.Caching.Interfaces;
+using Shared.Caching.Services.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 using Shared.Services.Interfaces;
 

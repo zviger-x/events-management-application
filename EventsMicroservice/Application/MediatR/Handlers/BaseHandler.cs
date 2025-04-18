@@ -1,7 +1,7 @@
 ﻿using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using FluentValidation;
-using Shared.Caching.Interfaces;
+using Shared.Caching.Services.Interfaces;
 
 namespace Application.MediatR.Handlers
 {

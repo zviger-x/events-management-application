@@ -1,12 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shared.Caching.Interfaces;
+using Shared.Caching.Locks;
+using Shared.Caching.Locks.Interfaces;
+using Shared.Caching.Services.Interfaces;
 using Shared.Configuration;
 using Shared.Logging.Extensions;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace Shared.Caching
+namespace Shared.Caching.Services
 {
     public class RedisCacheService : IRedisCacheService
     {
@@ -36,6 +38,8 @@ namespace Shared.Caching
 
         public async Task SetAsync<T>(string key, T value, TimeSpan expirationTime, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var json = JsonSerializer.Serialize(value);
             await _database.StringSetAsync(key, json, expirationTime);
 
@@ -44,6 +48,8 @@ namespace Shared.Caching
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var cachedData = await _database.StringGetAsync(key);
             if (cachedData.IsNullOrEmpty)
                 return default;
@@ -73,33 +79,26 @@ namespace Shared.Caching
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             await _database.KeyDeleteAsync(key);
 
             _logger.LogInformationInterpolated($"Cache removed for key: {key}");
         }
 
-        public async Task<bool> AcquireLockAsync(string lockKey, string lockValue, TimeSpan lockTtl, CancellationToken cancellationToken = default)
+        public async Task<IRedisLock> AcquireLockAsync(string lockKey, string lockValue, TimeSpan lockTtl, CancellationToken cancellationToken = default)
         {
-            var acquired = await _database.StringSetAsync(lockKey, lockValue, lockTtl, when: When.NotExists);
+            cancellationToken.ThrowIfCancellationRequested();
 
-            if (acquired)
-                _logger.LogInformationInterpolated($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
-            else
+            var isAcquired = await _database.LockTakeAsync(lockKey, lockValue, lockTtl);
+            if (!isAcquired)
+            {
                 _logger.LogInformationInterpolated($"Failed to acquire lock for key: {lockKey} (already exists)");
+                return null;
+            }
 
-            return acquired;
-        }
-
-        public async Task ReleaseLockAsync(string lockKey, CancellationToken cancellationToken = default)
-        {
-            await RemoveAsync(lockKey, cancellationToken);
-            _logger.LogInformationInterpolated($"Lock released for key: {lockKey}");
-        }
-
-        public async Task<bool> RefreshKeyTtlAsync(string key, TimeSpan ttl, CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformationInterpolated($"Update TTL for key {key}. New TTL: {ttl.TotalSeconds} seconds");
-            return await _database.KeyExpireAsync(key, ttl);
+            _logger.LogInformationInterpolated($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
+            return new RedisLock(_database, lockKey, lockValue, lockTtl);
         }
     }
 }

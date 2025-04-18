@@ -1,5 +1,4 @@
 ﻿using Application.MediatR.Queries.SeatQueries;
-using Application.UnitOfWork.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +9,10 @@ namespace EventsAPI.Controllers
     public class SeatController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public SeatController(IMediator mediator, IUnitOfWork unitOfWork)
+        public SeatController(IMediator mediator)
         {
             _mediator = mediator;
-            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("/api/events/{eventId}/seats")]

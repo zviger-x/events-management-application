@@ -1,4 +1,4 @@
-﻿namespace Shared.Caching.Interfaces
+﻿namespace Shared.Caching.Services.Interfaces
 {
     public interface ICacheService
     {

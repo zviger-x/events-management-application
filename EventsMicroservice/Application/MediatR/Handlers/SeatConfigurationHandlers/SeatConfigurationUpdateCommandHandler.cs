@@ -24,10 +24,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         {
             await _validator.ValidateAndThrowAsync(request.SeatConfiguration, cancellationToken);
 
-            if (request.RouteSeatId != request.SeatConfiguration.Id)
-                throw new ParameterException("You are not allowed to modify this configuration.");
-
-            var storedConfiguration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.SeatConfiguration.Id, cancellationToken);
+            var storedConfiguration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.SeatConfigurationId, cancellationToken);
             if (storedConfiguration == null)
                 throw new NotFoundException("Seat configuration not found.");
 

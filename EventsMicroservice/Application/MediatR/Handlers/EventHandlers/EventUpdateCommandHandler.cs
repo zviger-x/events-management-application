@@ -21,10 +21,7 @@ namespace Application.MediatR.Handlers.EventHandlers
         {
             await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
 
-            if (request.RouteEventId != request.Event.Id)
-                throw new ParameterException("You are not allowed to modify this event.");
-
-            var storedEvent = await _unitOfWork.EventRepository.GetByIdAsync(request.Event.Id, cancellationToken);
+            var storedEvent = await _unitOfWork.EventRepository.GetByIdAsync(request.EventId, cancellationToken);
             if (storedEvent == null)
                 throw new NotFoundException("Event not found.");
 

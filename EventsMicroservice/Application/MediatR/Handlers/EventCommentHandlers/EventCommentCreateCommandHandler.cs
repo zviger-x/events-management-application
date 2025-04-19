@@ -7,7 +7,6 @@ using Domain.Entities;
 using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
-using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
@@ -25,12 +24,10 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         {
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
-            if (request.RouteEventId != request.EventComment.EventId)
-                throw new ParameterException("You are not allowed to create a comment for this event.");
-
             // TODO: Добавить проверку на наличие пользователя (gRPC)
 
             var eventComment = _mapper.Map<EventComment>(request.EventComment);
+            eventComment.EventId = request.EventId;
 
             return await _unitOfWork.EventCommentRepository.CreateAsync(eventComment, cancellationToken);
         }

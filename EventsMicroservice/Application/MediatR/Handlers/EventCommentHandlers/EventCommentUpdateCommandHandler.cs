@@ -29,18 +29,14 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         {
             await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
 
-            var isWrongRouteId = request.RouteCommentId != request.EventComment.Id;
-            if (isWrongRouteId)
-                throw new ParameterException("You are not allowed to modify this comment.");
-
-            var storedEventComment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.EventComment.Id, cancellationToken);
+            var storedEventComment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.CommentId, cancellationToken);
             if (storedEventComment == null)
                 throw new NotFoundException("Comment not found.");
 
             var currentUserId = _currentUserService.GetUserIdOrThrow();
             var isAdmin = _currentUserService.IsAdminOrThrow();
             var isAuthor = currentUserId == storedEventComment.UserId;
-            var isWrongEvent = request.RouteEventId != storedEventComment.EventId;
+            var isWrongEvent = request.EventId != storedEventComment.EventId;
 
             if (isWrongEvent || (!isAuthor && !isAdmin))
                 throw new ForbiddenAccessException("You are not allowed to edit this comment for the event.");

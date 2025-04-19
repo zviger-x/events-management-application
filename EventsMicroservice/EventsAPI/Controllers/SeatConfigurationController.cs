@@ -35,7 +35,7 @@ namespace EventsAPI.Controllers
         [HttpPut("{seatConfigurationId}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid seatConfigurationId, [FromBody] UpdateSeatConfigurationDto seatConfigurationToUpdate, CancellationToken cancellationToken)
         {
-            var command = new SeatConfigurationUpdateCommand { RouteSeatId = seatConfigurationId, SeatConfiguration = seatConfigurationToUpdate };
+            var command = new SeatConfigurationUpdateCommand { SeatConfigurationId = seatConfigurationId, SeatConfiguration = seatConfigurationToUpdate };
             await _mediator.Send(command, cancellationToken);
 
             return Ok();

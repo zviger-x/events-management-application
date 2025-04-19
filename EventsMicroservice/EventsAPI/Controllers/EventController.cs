@@ -36,7 +36,7 @@ namespace EventsAPI.Controllers
         [HttpPut("{eventId}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid eventId, [FromBody] UpdateEventDto eventToUpdate, CancellationToken cancellationToken)
         {
-            var command = new EventUpdateCommand { RouteEventId = eventId, Event = eventToUpdate };
+            var command = new EventUpdateCommand { EventId = eventId, Event = eventToUpdate };
             await _mediator.Send(command, cancellationToken);
 
             return Ok();

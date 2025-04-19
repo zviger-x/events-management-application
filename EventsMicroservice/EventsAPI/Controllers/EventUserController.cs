@@ -44,10 +44,10 @@ namespace EventsAPI.Controllers
         }
 
         [AuthorizeRoles(UserRoles.Admin)]
-        [HttpDelete("{eventUserId}")]
-        public async Task<IActionResult> UnregisterUser([FromRoute] Guid eventUserId, CancellationToken cancellationToken)
+        [HttpDelete("events/{eventId}/users/{userId}")]
+        public async Task<IActionResult> UnregisterUser([FromRoute] Guid eventId, [FromRoute] Guid userId, CancellationToken cancellationToken)
         {
-            var command = new EventUserDeleteCommand { Id = eventUserId };
+            var command = new EventUserDeleteCommand { EventId = eventId, UserId = userId };
 
             await _mediator.Send(command, cancellationToken);
 

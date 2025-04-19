@@ -20,14 +20,14 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 
         public async Task Handle(EventCommentDeleteCommand request, CancellationToken cancellationToken)
         {
-            var comment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.Id, cancellationToken);
+            var comment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.CommentId, cancellationToken);
             if (comment == null)
                 return;
 
             var currentUserId = _currentUserService.GetUserIdOrThrow();
             var isAdmin = _currentUserService.IsAdminOrThrow();
             var isAuthor = currentUserId == comment.UserId;
-            var isWrongEvent = request.RouteEventId != comment.EventId;
+            var isWrongEvent = request.EventId != comment.EventId;
 
             if (isWrongEvent || (!isAuthor && !isAdmin))
                 throw new ForbiddenAccessException("You are not allowed to delete this comment for the event.");

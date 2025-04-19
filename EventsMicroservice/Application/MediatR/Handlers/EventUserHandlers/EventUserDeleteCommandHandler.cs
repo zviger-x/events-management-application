@@ -17,7 +17,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
         public async Task Handle(EventUserDeleteCommand request, CancellationToken cancellationToken)
         {
-            var eventUser = await _unitOfWork.EventUserRepository.GetByIdAsync(request.Id, cancellationToken);
+            var eventUser = await _unitOfWork.EventUserRepository.GetByUserAndEventAsync(request.UserId, request.EventId, cancellationToken);
             if (eventUser == null)
                 return;
 

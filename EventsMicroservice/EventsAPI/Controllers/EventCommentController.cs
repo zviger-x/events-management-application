@@ -25,7 +25,7 @@ namespace EventsAPI.Controllers
         [HttpPost("/api/events/{eventId}/comments")]
         public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid eventId, [FromBody] CreateEventCommentDto commentToCreate, CancellationToken token)
         {
-            var command = new EventCommentCreateCommand { RouteEventId = eventId, EventComment = commentToCreate };
+            var command = new EventCommentCreateCommand { EventId = eventId, EventComment = commentToCreate };
             var createdCommentId = await _mediator.Send(command, token);
 
             return StatusCode(StatusCodes.Status201Created, new { Id = createdCommentId });
@@ -35,7 +35,7 @@ namespace EventsAPI.Controllers
         [HttpPatch("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] UpdateEventCommentDto commentToUpdate, CancellationToken token)
         {
-            var command = new EventCommentUpdateCommand { RouteEventId = eventId, RouteCommentId = commentId, EventComment = commentToUpdate };
+            var command = new EventCommentUpdateCommand { EventId = eventId, CommentId = commentId, EventComment = commentToUpdate };
             await _mediator.Send(command, token);
 
             return Ok();
@@ -45,7 +45,7 @@ namespace EventsAPI.Controllers
         [HttpDelete("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, CancellationToken token)
         {
-            var command = new EventCommentDeleteCommand { RouteEventId = eventId, Id = commentId };
+            var command = new EventCommentDeleteCommand { EventId = eventId, CommentId = commentId };
             await _mediator.Send(command, token);
 
             return NoContent();

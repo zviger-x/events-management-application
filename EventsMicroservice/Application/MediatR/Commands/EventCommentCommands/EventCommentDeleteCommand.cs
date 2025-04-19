@@ -4,7 +4,7 @@ namespace Application.MediatR.Commands.EventCommentCommands
 {
     public class EventCommentDeleteCommand : IRequest
     {
-        public required Guid RouteEventId { get; set; }
-        public required Guid Id { get; set; }
+        public required Guid EventId { get; set; }
+        public required Guid CommentId { get; set; }
     }
 }

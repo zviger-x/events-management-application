@@ -29,7 +29,9 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             var isAuthor = currentUserId == comment.UserId;
             var isWrongEvent = request.EventId != comment.EventId;
 
-            if (isWrongEvent || (!isAuthor && !isAdmin))
+            var isCommentMismatchOrUnauthorized = isWrongEvent || (!isAuthor && !isAdmin);
+
+            if (isCommentMismatchOrUnauthorized)
                 throw new ForbiddenAccessException("You are not allowed to delete this comment for the event.");
 
             await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken);

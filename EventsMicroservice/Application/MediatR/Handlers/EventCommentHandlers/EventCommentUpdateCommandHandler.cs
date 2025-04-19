@@ -38,7 +38,9 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             var isAuthor = currentUserId == storedEventComment.UserId;
             var isWrongEvent = request.EventId != storedEventComment.EventId;
 
-            if (isWrongEvent || (!isAuthor && !isAdmin))
+            var isCommentMismatchOrUnauthorized = isWrongEvent || (!isAuthor && !isAdmin);
+
+            if (isCommentMismatchOrUnauthorized)
                 throw new ForbiddenAccessException("You are not allowed to edit this comment for the event.");
 
             var eventComment = _mapper.Map(request.EventComment, storedEventComment);

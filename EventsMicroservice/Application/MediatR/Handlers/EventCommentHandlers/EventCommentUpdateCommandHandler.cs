@@ -7,22 +7,17 @@ using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Exceptions.ServerExceptions;
-using Shared.Services.Interfaces;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentUpdateCommandHandler : BaseHandler<UpdateEventCommentDto>, IRequestHandler<EventCommentUpdateCommand>
     {
-        private readonly ICurrentUserService _currentUserService;
-
         public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
             ICacheService cacheService,
-            IUpdateEventCommentDtoValidator validator,
-            ICurrentUserService currentUserService)
+            IUpdateEventCommentDtoValidator validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
-            _currentUserService = currentUserService;
         }
 
         public async Task Handle(EventCommentUpdateCommand request, CancellationToken cancellationToken)
@@ -33,14 +28,14 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (storedEventComment == null)
                 throw new NotFoundException("Comment not found.");
 
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var currentUserId = request.CurrentUserId;
+            var isAdmin = request.IsCurrentUserAdmin;
             var isAuthor = currentUserId == storedEventComment.UserId;
             var isWrongEvent = request.EventId != storedEventComment.EventId;
 
-            var isCommentMismatchOrUnauthorized = isWrongEvent || (!isAuthor && !isAdmin);
+            var isCommentMismatchOrForbidden = isWrongEvent || (!isAuthor && !isAdmin);
 
-            if (isCommentMismatchOrUnauthorized)
+            if (isCommentMismatchOrForbidden)
                 throw new ForbiddenAccessException("You are not allowed to edit this comment for the event.");
 
             var eventComment = _mapper.Map(request.EventComment, storedEventComment);

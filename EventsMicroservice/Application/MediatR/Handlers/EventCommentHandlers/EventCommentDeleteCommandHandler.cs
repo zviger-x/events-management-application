@@ -4,18 +4,14 @@ using AutoMapper;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Exceptions.ServerExceptions;
-using Shared.Services.Interfaces;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentDeleteCommandHandler : BaseHandler, IRequestHandler<EventCommentDeleteCommand>
     {
-        private readonly ICurrentUserService _currentUserService;
-
-        public EventCommentDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, ICurrentUserService currentUserService)
+        public EventCommentDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
             : base(unitOfWork, mapper, cacheService)
         {
-            _currentUserService = currentUserService;
         }
 
         public async Task Handle(EventCommentDeleteCommand request, CancellationToken cancellationToken)
@@ -24,14 +20,14 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
             if (comment == null)
                 return;
 
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
+            var currentUserId = request.CurrentUserId;
+            var isAdmin = request.IsCurrentUserAdmin;
             var isAuthor = currentUserId == comment.UserId;
             var isWrongEvent = request.EventId != comment.EventId;
 
-            var isCommentMismatchOrUnauthorized = isWrongEvent || (!isAuthor && !isAdmin);
+            var isCommentMismatchOrForbidden = isWrongEvent || (!isAuthor && !isAdmin);
 
-            if (isCommentMismatchOrUnauthorized)
+            if (isCommentMismatchOrForbidden)
                 throw new ForbiddenAccessException("You are not allowed to delete this comment for the event.");
 
             await _unitOfWork.EventCommentRepository.DeleteAsync(comment, cancellationToken);

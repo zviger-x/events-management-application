@@ -9,8 +9,6 @@ using Shared.Configuration;
 using Shared.Extensions;
 using Shared.Logging;
 using Shared.Middlewares;
-using Shared.Services;
-using Shared.Services.Interfaces;
 using System.Reflection;
 
 namespace EventsAPI
@@ -52,8 +50,6 @@ namespace EventsAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Business logic
-            services.AddHttpContextAccessor();
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));

@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
+using Shared.Extensions;
 
 namespace EventsAPI.Controllers
 {
@@ -35,7 +36,18 @@ namespace EventsAPI.Controllers
         [HttpPatch("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, [FromBody] UpdateEventCommentDto commentToUpdate, CancellationToken token)
         {
-            var command = new EventCommentUpdateCommand { EventId = eventId, CommentId = commentId, EventComment = commentToUpdate };
+            var userId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            var command = new EventCommentUpdateCommand
+            {
+                CurrentUserId = userId,
+                IsCurrentUserAdmin = isAdmin,
+                EventId = eventId,
+                CommentId = commentId,
+                EventComment = commentToUpdate
+            };
+
             await _mediator.Send(command, token);
 
             return Ok();
@@ -45,7 +57,17 @@ namespace EventsAPI.Controllers
         [HttpDelete("/api/events/{eventId}/comments/{commentId}")]
         public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid eventId, [FromRoute] Guid commentId, CancellationToken token)
         {
-            var command = new EventCommentDeleteCommand { EventId = eventId, CommentId = commentId };
+            var userId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            var command = new EventCommentDeleteCommand
+            {
+                CurrentUserId = userId,
+                IsCurrentUserAdmin = isAdmin,
+                EventId = eventId,
+                CommentId = commentId
+            };
+
             await _mediator.Send(command, token);
 
             return NoContent();

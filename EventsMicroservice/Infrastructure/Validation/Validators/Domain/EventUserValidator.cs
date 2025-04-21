@@ -1,13 +1,13 @@
-﻿using Application.Contracts;
+﻿using Domain.Entities;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
-namespace Infrastructure.Validation.Validators
+namespace Infrastructure.Validation.Validators.Domain
 {
-    public class CreateEventUserDtoValidator : AbstractValidator<CreateEventUserDto>
+    public class EventUserValidator : AbstractValidator<EventUser>
     {
-        public CreateEventUserDtoValidator()
+        public EventUserValidator()
         {
             RuleFor(eu => eu.EventId)
                 .NotNull()
@@ -32,6 +32,11 @@ namespace Infrastructure.Validation.Validators
                 .NotEmpty()
                     .WithMessage(EventUserValidationMessages.SeatIdIsEmpty)
                     .WithErrorCode(EventUserValidationErrorCodes.SeatIdIsEmpty);
+
+            RuleFor(eu => eu.RegisteredAt)
+                .LessThanOrEqualTo(_ => DateTime.UtcNow)
+                    .WithMessage(EventUserValidationMessages.RegistrationTimeIsInvalid)
+                    .WithErrorCode(EventUserValidationErrorCodes.RegistrationTimeIsInvalid);
         }
     }
 }

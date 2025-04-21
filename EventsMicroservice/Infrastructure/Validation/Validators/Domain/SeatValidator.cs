@@ -3,7 +3,7 @@ using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
-namespace Infrastructure.Validation.Validators
+namespace Infrastructure.Validation.Validators.Domain
 {
     public class SeatValidator : AbstractValidator<Seat>
     {

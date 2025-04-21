@@ -3,11 +3,11 @@ using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
-namespace Infrastructure.Validation.Validators
+namespace Infrastructure.Validation.Validators.Contracts
 {
-    public class UpdateEventDtoValidator : AbstractValidator<UpdateEventDto>
+    public class CreateEventDtoValidator : AbstractValidator<CreateEventDto>
     {
-        public UpdateEventDtoValidator()
+        public CreateEventDtoValidator()
         {
             RuleFor(e => e.Name)
                 .NotNull()

@@ -3,11 +3,11 @@ using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
-namespace Infrastructure.Validation.Validators
+namespace Infrastructure.Validation.Validators.Contracts
 {
-    public class UpdateSeatConfigurationDtoValidator : AbstractValidator<UpdateSeatConfigurationDto>
+    public class CreateSeatConfigurationDtoValidator : AbstractValidator<CreateSeatConfigurationDto>
     {
-        public UpdateSeatConfigurationDtoValidator()
+        public CreateSeatConfigurationDtoValidator()
         {
             RuleFor(sc => sc.Name)
                 .NotNull()

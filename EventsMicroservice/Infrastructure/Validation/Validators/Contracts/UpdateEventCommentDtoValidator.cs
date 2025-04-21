@@ -3,20 +3,12 @@ using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
-namespace Infrastructure.Validation.Validators
+namespace Infrastructure.Validation.Validators.Contracts
 {
-    public class CreateEventCommentDtoValidator : AbstractValidator<CreateEventCommentDto>
+    public class UpdateEventCommentDtoValidator : AbstractValidator<UpdateEventCommentDto>
     {
-        public CreateEventCommentDtoValidator()
+        public UpdateEventCommentDtoValidator()
         {
-            RuleFor(r => r.UserId)
-                .NotNull()
-                    .WithMessage(EventCommentValidationMessages.UserIdIsNull)
-                    .WithErrorCode(EventCommentValidationErrorCodes.UserIdIsNull)
-                .NotEmpty()
-                    .WithMessage(EventCommentValidationMessages.UserIdIsEmpty)
-                    .WithErrorCode(EventCommentValidationErrorCodes.UserIdIsEmpty);
-
             RuleFor(r => r.Text)
                 .NotNull()
                     .WithMessage(EventCommentValidationMessages.TextIsNull)

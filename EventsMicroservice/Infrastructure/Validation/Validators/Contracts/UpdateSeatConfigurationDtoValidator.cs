@@ -1,13 +1,13 @@
-﻿using Domain.Entities;
+﻿using Application.Contracts;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
-namespace Infrastructure.Validation.Validators
+namespace Infrastructure.Validation.Validators.Contracts
 {
-    public class SeatConfigurationValidator : AbstractValidator<SeatConfiguration>
+    public class UpdateSeatConfigurationDtoValidator : AbstractValidator<UpdateSeatConfigurationDto>
     {
-        public SeatConfigurationValidator()
+        public UpdateSeatConfigurationDtoValidator()
         {
             RuleFor(sc => sc.Name)
                 .NotNull()

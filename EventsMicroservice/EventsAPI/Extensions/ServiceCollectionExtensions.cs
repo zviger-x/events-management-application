@@ -1,9 +1,11 @@
-﻿using Application.Repositories.Interfaces;
+﻿using Application.MediatR.Behaviours;
+using Application.Repositories.Interfaces;
 using Domain.Entities;
 using EventsAPI.Configuration;
 using FluentValidation;
 using Infrastructure.Mongo;
 using Infrastructure.Repositories;
+using MediatR;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -71,6 +73,13 @@ namespace EventsAPI.Extensions
         {
             services.AddValidatorsFromAssembly(Assembly.Load("Infrastructure"));
             services.AddValidatorsFromAssembly(Assembly.Load("Shared"));
+        }
+
+        public static void AddMediatR(this IServiceCollection services)
+        {
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         }
 
         public static void AddRedisServer(this IServiceCollection services, RedisServerConfig config)

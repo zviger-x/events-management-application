@@ -1,28 +1,21 @@
-﻿using Application.Contracts;
-using Application.MediatR.Commands.EventCommentCommands;
+﻿using Application.MediatR.Commands.EventCommentCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
-using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
-    public class EventCommentUpdateCommandHandler : BaseHandler<UpdateEventCommentDto>, IRequestHandler<EventCommentUpdateCommand>
+    public class EventCommentUpdateCommandHandler : BaseHandler, IRequestHandler<EventCommentUpdateCommand>
     {
-        public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork,
-            IMapper mapper,
-            ICacheService cacheService,
-            IValidator<UpdateEventCommentDto> validator)
-            : base(unitOfWork, mapper, cacheService, validator)
+        public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 
         public async Task Handle(EventCommentUpdateCommand request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.EventComment, cancellationToken);
-
             var storedEventComment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.CommentId, cancellationToken);
             if (storedEventComment == null)
                 throw new NotFoundException("Comment not found.");

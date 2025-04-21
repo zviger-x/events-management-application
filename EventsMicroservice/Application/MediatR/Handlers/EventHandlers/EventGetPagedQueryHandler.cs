@@ -3,24 +3,21 @@ using Application.MediatR.Queries.EventQueries;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Common;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
-    public class EventGetPagedQueryHandler : BaseHandler<PageParameters>, IRequestHandler<EventGetPagedQuery, PagedCollection<Event>>
+    public class EventGetPagedQueryHandler : BaseHandler, IRequestHandler<EventGetPagedQuery, PagedCollection<Event>>
     {
-        public EventGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<PageParameters> validator)
-            : base(unitOfWork, mapper, cacheService, validator)
+        public EventGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 
         public async Task<PagedCollection<Event>> Handle(EventGetPagedQuery request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
-
             var pageNumber = request.PageParameters.PageNumber;
             var pageSize = request.PageParameters.PageSize;
             var cacheKey = CacheKeys.PagedEvents(pageNumber, pageSize);

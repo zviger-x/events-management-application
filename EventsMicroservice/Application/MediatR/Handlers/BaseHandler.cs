@@ -1,6 +1,5 @@
 ﻿using Application.UnitOfWork.Interfaces;
 using AutoMapper;
-using FluentValidation;
 using Shared.Caching.Services.Interfaces;
 
 namespace Application.MediatR.Handlers
@@ -19,17 +18,5 @@ namespace Application.MediatR.Handlers
         }
 
         public virtual void Dispose() => _unitOfWork.Dispose();
-    }
-
-    public abstract class BaseHandler<TValidatingObject> : BaseHandler
-        where TValidatingObject : class
-    {
-        protected readonly IValidator<TValidatingObject> _validator;
-
-        protected BaseHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<TValidatingObject> validator)
-            : base(unitOfWork, mapper, cacheService)
-        {
-            _validator = validator;
-        }
     }
 }

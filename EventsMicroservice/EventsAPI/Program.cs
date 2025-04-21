@@ -4,12 +4,12 @@ using EventsAPI.Configuration;
 using EventsAPI.Extensions;
 using Infrastructure.Contexts;
 using Infrastructure.UnitOfWork;
+using MediatR;
 using Serilog;
 using Shared.Configuration;
 using Shared.Extensions;
 using Shared.Logging;
 using Shared.Middlewares;
-using System.Reflection;
 
 namespace EventsAPI
 {
@@ -52,7 +52,7 @@ namespace EventsAPI
             // Business logic
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
+            services.AddMediatR();
 
             // JWT
             services.AddJwtAuthentication(jwtTokenConfig);

@@ -1,26 +1,22 @@
-﻿using Application.Contracts;
-using Application.MediatR.Commands.EventCommands;
+﻿using Application.MediatR.Commands.EventCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
-    public class EventCreateCommandHandler : BaseHandler<CreateEventDto>, IRequestHandler<EventCreateCommand, Guid>
+    public class EventCreateCommandHandler : BaseHandler, IRequestHandler<EventCreateCommand, Guid>
     {
-        public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<CreateEventDto> validator)
-            : base(unitOfWork, mapper, cacheService, validator)
+        public EventCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 
         public async Task<Guid> Handle(EventCreateCommand request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.Event, cancellationToken);
-
             var seatConfiguration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Event.SeatConfigurationId, cancellationToken);
             if (seatConfiguration == null)
                 throw new ParameterException("There is no seat configuration with this Id.");

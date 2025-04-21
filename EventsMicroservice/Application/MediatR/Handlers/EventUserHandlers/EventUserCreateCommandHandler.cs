@@ -1,28 +1,23 @@
 ﻿using Application.Caching.Constants;
-using Application.Contracts;
 using Application.MediatR.Commands.EventUserCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
-    public class EventUserCreateCommandHandler : BaseHandler<CreateEventUserDto>, IRequestHandler<EventUserCreateCommand, Guid>
+    public class EventUserCreateCommandHandler : BaseHandler, IRequestHandler<EventUserCreateCommand, Guid>
     {
         private readonly TimeSpan _lockTtl = TimeSpan.FromMinutes(5);
         private readonly IRedisCacheService _redisCacheService;
 
-        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IRedisCacheService redisCacheService,
-            IValidator<CreateEventUserDto> validator)
-            : base(unitOfWork, mapper, redisCacheService, validator)
+        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IRedisCacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
-            _redisCacheService = redisCacheService;
+            _redisCacheService = cacheService;
         }
 
         public async Task<Guid> Handle(EventUserCreateCommand request, CancellationToken cancellationToken)
@@ -43,8 +38,6 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
         private async Task<Guid> HandleCreation(EventUserCreateCommand request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.EventUser, cancellationToken);
-
             var eventUser = _mapper.Map<EventUser>(request.EventUser);
 
             // Проверка на существование ивента с таким ID

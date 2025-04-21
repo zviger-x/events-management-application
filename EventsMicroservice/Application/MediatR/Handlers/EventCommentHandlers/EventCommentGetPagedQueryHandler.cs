@@ -2,24 +2,21 @@
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
-using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Common;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
-    public class EventCommentGetPagedQueryHandler : BaseHandler<PageParameters>, IRequestHandler<EventCommentGetPagedQuery, PagedCollection<EventComment>>
+    public class EventCommentGetPagedQueryHandler : BaseHandler, IRequestHandler<EventCommentGetPagedQuery, PagedCollection<EventComment>>
     {
-        public EventCommentGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<PageParameters> validator)
-            : base(unitOfWork, mapper, cacheService, validator)
+        public EventCommentGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService)
+            : base(unitOfWork, mapper, cacheService)
         {
         }
 
         public async Task<PagedCollection<EventComment>> Handle(EventCommentGetPagedQuery request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request.PageParameters, cancellationToken);
-
             return await _unitOfWork.EventCommentRepository.GetPagedAsync(
                 request.PageParameters.PageNumber,
                 request.PageParameters.PageSize,

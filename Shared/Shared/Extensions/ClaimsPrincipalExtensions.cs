@@ -14,6 +14,7 @@ namespace Shared.Extensions
         public static Guid GetUserIdOrThrow(this ClaimsPrincipal user)
         {
             var userIdClaim = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			
             if (!Guid.TryParse(userIdClaim, out var userId))
                 throw new UnauthorizedAccessException("User is not authorized.");
 

@@ -1,8 +1,6 @@
 using Application.Contracts;
 using Application.MediatR.Commands.EventCommentCommands;
 using FluentValidation;
-using Infrastructure.Validation.ErrorCodes;
-using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators.Requests.Commands
 {

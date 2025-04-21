@@ -9,6 +9,9 @@ namespace Infrastructure.Validation.Validators.Domain
     {
         public EventValidator()
         {
+            RuleFor(eu => eu.Id)
+                .NotEmpty();
+
             RuleFor(e => e.Name)
                 .NotNull()
                     .WithMessage(EventValidationMessages.NameIsNull)

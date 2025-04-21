@@ -47,6 +47,11 @@ namespace Infrastructure.Validation.Validators.Contracts
                 .LessThan(e => e.StartDate)
                     .WithMessage(EventValidationMessages.PurchaseDeadlineInvalid)
                     .WithErrorCode(EventValidationErrorCodes.PurchaseDeadlineInvalid);
+
+            RuleFor(e => e.SeatConfigurationId)
+                .NotEmpty()
+                    .WithMessage(EventValidationMessages.SeatConfigurationIdIsEmpty)
+                    .WithErrorCode(EventValidationErrorCodes.SeatConfigurationIdIsEmpty);
         }
     }
 }

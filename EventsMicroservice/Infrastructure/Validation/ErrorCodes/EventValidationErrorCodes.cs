@@ -15,5 +15,7 @@
         public const string LocationIsEmpty = "locationIsEmpty";
 
         public const string PurchaseDeadlineInvalid = "purchaseDeadlineInvalid";
+
+        public const string SeatConfigurationIdIsEmpty = "eventIdIsEmpty";
     }
 }

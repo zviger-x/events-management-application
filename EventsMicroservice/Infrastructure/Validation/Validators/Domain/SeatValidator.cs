@@ -9,6 +9,9 @@ namespace Infrastructure.Validation.Validators.Domain
     {
         public SeatValidator()
         {
+            RuleFor(eu => eu.Id)
+                .NotEmpty();
+
             RuleFor(s => s.EventId)
                 .NotNull()
                     .WithMessage(SeatValidationMessages.EventIdIsNull)

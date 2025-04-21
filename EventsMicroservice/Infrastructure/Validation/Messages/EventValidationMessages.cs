@@ -15,5 +15,7 @@
         public const string LocationIsEmpty = "Event location cannot be empty.";
 
         public const string PurchaseDeadlineInvalid = "Purchase deadline must be before event start date.";
+
+        public const string SeatConfigurationIdIsEmpty = "Seat configuration ID cannot be empty.";
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands.SeatConfigurationCommands;
 using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -15,7 +14,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         public SeatConfigurationUpdateCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
             ICacheService cacheService,
-            IUpdateSeatConfigurationDtoValidator validator)
+            IValidator<UpdateSeatConfigurationDto> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

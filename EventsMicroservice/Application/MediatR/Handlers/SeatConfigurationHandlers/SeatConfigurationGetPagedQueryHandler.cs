@@ -6,13 +6,12 @@ using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Common;
-using Shared.Validation.Interfaces;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
     public class SeatConfigurationGetPagedQueryHandler : BaseHandler<PageParameters>, IRequestHandler<SeatConfigurationGetPagedQuery, PagedCollection<SeatConfiguration>>
     {
-        public SeatConfigurationGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IPageParametersValidator validator)
+        public SeatConfigurationGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<PageParameters> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

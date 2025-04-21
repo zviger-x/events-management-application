@@ -2,7 +2,6 @@
 using Application.Contracts;
 using Application.MediatR.Commands.EventUserCommands;
 using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
@@ -20,7 +19,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
         public EventUserCreateCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
             IRedisCacheService redisCacheService,
-            ICreateEventUserDtoValidator validator)
+            IValidator<CreateEventUserDto> validator)
             : base(unitOfWork, mapper, redisCacheService, validator)
         {
             _redisCacheService = redisCacheService;

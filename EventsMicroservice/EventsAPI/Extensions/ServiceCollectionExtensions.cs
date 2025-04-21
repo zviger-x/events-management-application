@@ -1,10 +1,9 @@
 ﻿using Application.Repositories.Interfaces;
-using Application.Validation.Validators.Interfaces;
 using Domain.Entities;
 using EventsAPI.Configuration;
+using FluentValidation;
 using Infrastructure.Mongo;
 using Infrastructure.Repositories;
-using Infrastructure.Validation.Validators;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -12,8 +11,6 @@ using MongoDB.Driver;
 using Shared.Caching.Services;
 using Shared.Caching.Services.Interfaces;
 using Shared.Repositories.Interfaces;
-using Shared.Validation.Interfaces;
-using Shared.Validation.Validators;
 using StackExchange.Redis;
 using System.Reflection;
 using static Shared.Logging.Extensions.SerilogExtensions;
@@ -72,25 +69,8 @@ namespace EventsAPI.Extensions
 
         public static void AddValidators(this IServiceCollection services)
         {
-            services.AddScoped<IEventValidator, EventValidator>();
-            services.AddScoped<ICreateEventDtoValidator, CreateEventDtoValidator>();
-            services.AddScoped<IUpdateEventDtoValidator, UpdateEventDtoValidator>();
-
-            services.AddScoped<IEventUserValidator, EventUserValidator>();
-            services.AddScoped<ICreateEventUserDtoValidator, CreateEventUserDtoValidator>();
-
-            services.AddScoped<IEventCommentValidator, EventCommentValidator>();
-            services.AddScoped<ICreateEventCommentDtoValidator, CreateEventCommentDtoValidator>();
-            services.AddScoped<IUpdateEventCommentDtoValidator, UpdateEventCommentDtoValidator>();
-
-            services.AddScoped<ISeatValidator, SeatValidator>();
-
-            services.AddScoped<ISeatConfigurationValidator, SeatConfigurationValidator>();
-            services.AddScoped<ICreateSeatConfigurationDtoValidator, CreateSeatConfigurationDtoValidator>();
-            services.AddScoped<IUpdateSeatConfigurationDtoValidator, UpdateSeatConfigurationDtoValidator>();
-
-            // From shared
-            services.AddScoped<IPageParametersValidator, PageParametersValidator>();
+            services.AddValidatorsFromAssembly(Assembly.Load("Infrastructure"));
+            services.AddValidatorsFromAssembly(Assembly.Load("Shared"));
         }
 
         public static void AddRedisServer(this IServiceCollection services, RedisServerConfig config)

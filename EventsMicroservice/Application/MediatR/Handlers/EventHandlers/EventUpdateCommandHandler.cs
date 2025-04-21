@@ -1,7 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommands;
 using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -12,7 +11,7 @@ namespace Application.MediatR.Handlers.EventHandlers
 {
     public class EventUpdateCommandHandler : BaseHandler<UpdateEventDto>, IRequestHandler<EventUpdateCommand>
     {
-        public EventUpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IUpdateEventDtoValidator validator)
+        public EventUpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<UpdateEventDto> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

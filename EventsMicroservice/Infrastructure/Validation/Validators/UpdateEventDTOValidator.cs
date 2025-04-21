@@ -1,12 +1,11 @@
 ﻿using Application.Contracts;
-using Application.Validation.Validators.Interfaces;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class UpdateEventDtoValidator : AbstractValidator<UpdateEventDto>, IUpdateEventDtoValidator
+    public class UpdateEventDtoValidator : AbstractValidator<UpdateEventDto>
     {
         public UpdateEventDtoValidator()
         {

@@ -1,12 +1,11 @@
 ﻿using Application.Contracts;
-using Application.Validation.Validators.Interfaces;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class CreateEventCommentDtoValidator : AbstractValidator<CreateEventCommentDto>, ICreateEventCommentDtoValidator
+    public class CreateEventCommentDtoValidator : AbstractValidator<CreateEventCommentDto>
     {
         public CreateEventCommentDtoValidator()
         {

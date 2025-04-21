@@ -1,7 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommentCommands;
 using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
@@ -12,10 +11,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentCreateCommandHandler : BaseHandler<CreateEventCommentDto>, IRequestHandler<EventCommentCreateCommand, Guid>
     {
-        public EventCommentCreateCommandHandler(IUnitOfWork unitOfWork,
-            IMapper mapper,
-            ICacheService cacheService,
-            ICreateEventCommentDtoValidator validator)
+        public EventCommentCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<CreateEventCommentDto> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

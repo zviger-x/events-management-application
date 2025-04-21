@@ -1,12 +1,11 @@
-﻿using Application.Validation.Validators.Interfaces;
-using Domain.Entities;
+﻿using Domain.Entities;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class SeatConfigurationValidator : AbstractValidator<SeatConfiguration>, ISeatConfigurationValidator
+    public class SeatConfigurationValidator : AbstractValidator<SeatConfiguration>
     {
         public SeatConfigurationValidator()
         {

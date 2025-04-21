@@ -6,13 +6,12 @@ using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Common;
-using Shared.Validation.Interfaces;
 
 namespace Application.MediatR.Handlers.EventCommentHandlers
 {
     public class EventCommentGetPagedQueryHandler : BaseHandler<PageParameters>, IRequestHandler<EventCommentGetPagedQuery, PagedCollection<EventComment>>
     {
-        public EventCommentGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IPageParametersValidator validator)
+        public EventCommentGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<PageParameters> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

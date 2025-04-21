@@ -1,12 +1,11 @@
 ﻿using FluentValidation;
 using Shared.Common;
 using Shared.Validation.ErrorCodes;
-using Shared.Validation.Interfaces;
 using Shared.Validation.Messages;
 
 namespace Shared.Validation.Validators
 {
-    public class PageParametersValidator : AbstractValidator<PageParameters>, IPageParametersValidator
+    public class PageParametersValidator : AbstractValidator<PageParameters>
     {
         private const int MaxPageSize = 100;
 

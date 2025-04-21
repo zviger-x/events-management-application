@@ -1,12 +1,11 @@
-﻿using Application.Validation.Validators.Interfaces;
-using Domain.Entities;
+﻿using Domain.Entities;
 using FluentValidation;
 using Infrastructure.Validation.ErrorCodes;
 using Infrastructure.Validation.Messages;
 
 namespace Infrastructure.Validation.Validators
 {
-    public class EventUserValidator : AbstractValidator<EventUser>, IEventUserValidator
+    public class EventUserValidator : AbstractValidator<EventUser>
     {
         public EventUserValidator()
         {

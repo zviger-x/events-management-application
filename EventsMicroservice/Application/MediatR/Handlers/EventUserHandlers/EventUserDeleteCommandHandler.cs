@@ -1,8 +1,8 @@
 ﻿using Application.MediatR.Commands.EventUserCommands;
 using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 
@@ -10,7 +10,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 {
     public class EventUserDeleteCommandHandler : BaseHandler<EventUser>, IRequestHandler<EventUserDeleteCommand>
     {
-        public EventUserDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IEventUserValidator validator)
+        public EventUserDeleteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<EventUser> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

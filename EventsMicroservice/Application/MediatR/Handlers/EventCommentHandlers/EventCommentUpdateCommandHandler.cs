@@ -1,7 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands.EventCommentCommands;
 using Application.UnitOfWork.Interfaces;
-using Application.Validation.Validators.Interfaces;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -15,7 +14,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         public EventCommentUpdateCommandHandler(IUnitOfWork unitOfWork,
             IMapper mapper,
             ICacheService cacheService,
-            IUpdateEventCommentDtoValidator validator)
+            IValidator<UpdateEventCommentDto> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

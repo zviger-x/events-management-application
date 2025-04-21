@@ -7,13 +7,12 @@ using FluentValidation;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
 using Shared.Common;
-using Shared.Validation.Interfaces;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
     public class EventGetPagedQueryHandler : BaseHandler<PageParameters>, IRequestHandler<EventGetPagedQuery, PagedCollection<Event>>
     {
-        public EventGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IPageParametersValidator validator)
+        public EventGetPagedQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICacheService cacheService, IValidator<PageParameters> validator)
             : base(unitOfWork, mapper, cacheService, validator)
         {
         }

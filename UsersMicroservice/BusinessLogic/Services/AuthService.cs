@@ -4,7 +4,6 @@ using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
@@ -14,8 +13,8 @@ namespace BusinessLogic.Services
 {
     public class AuthService : BaseService, IAuthService
     {
-        private readonly ILoginDTOValidator _loginValidator;
-        private readonly IRegisterDTOValidator _registerValidator;
+        private readonly IValidator<LoginDTO> _loginValidator;
+        private readonly IValidator<RegisterDTO> _registerValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly ITokenService _tokenService;
@@ -24,8 +23,8 @@ namespace BusinessLogic.Services
 
         public AuthService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILoginDTOValidator loginValidator,
-            IRegisterDTOValidator registerValidator,
+            IValidator<LoginDTO> loginValidator,
+            IValidator<RegisterDTO> registerValidator,
             IPasswordHashingService passwordHashingService,
             ITokenService tokenService,
             ICurrentUserService currentUserService)

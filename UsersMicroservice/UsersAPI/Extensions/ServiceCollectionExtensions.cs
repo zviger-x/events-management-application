@@ -3,17 +3,17 @@ using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Configuration;
 using BusinessLogic.Services;
 using BusinessLogic.Services.Interfaces;
-using BusinessLogic.Validation.Validators;
-using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Contexts;
 using DataAccess.Entities;
 using DataAccess.Repositories;
 using DataAccess.Repositories.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using System.Reflection;
 using System.Text;
 using UsersAPI.Configuration;
 
@@ -65,15 +65,7 @@ namespace UsersAPI.Extensions
 
         public static void AddValidators(this IServiceCollection services)
         {
-            services.AddScoped<IUserValidator, UserValidator>();
-            services.AddScoped<IUserNotificationValidator, UserNotificationValidator>();
-            services.AddScoped<IUserTransactionValidator, UserTransactionValidator>();
-
-            services.AddScoped<IUpdateUserDTOValidator, UpdateUserDTOValidator>();
-            services.AddScoped<IChangePasswordDTOValidator, ChangePasswordDTOValidator>();
-            services.AddScoped<IRegisterDTOValidator, RegisterDTOValidator>();
-            services.AddScoped<ILoginDTOValidator, LoginDTOValidator>();
-            services.AddScoped<IChangeUserRoleDTOValidator, ChangeUserRoleDTOValidator>();
+            services.AddValidatorsFromAssembly(Assembly.Load("BusinessLogic"));
         }
 
         public static void AddServices(this IServiceCollection services)

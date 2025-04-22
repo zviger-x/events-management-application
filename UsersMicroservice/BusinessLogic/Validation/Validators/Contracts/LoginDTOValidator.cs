@@ -1,12 +1,11 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using BusinessLogic.Validation.Validators.Interfaces;
 using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class LoginDTOValidator : AbstractValidator<LoginDTO>, ILoginDTOValidator
+    public class LoginDTOValidator : AbstractValidator<LoginDTO>
     {
         public LoginDTOValidator()
         {

@@ -6,7 +6,6 @@ using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -17,9 +16,9 @@ namespace BusinessLogic.Services
 {
     public class UserService : BaseService, IUserService
     {
-        private readonly IUpdateUserDTOValidator _updateUserValidator;
-        private readonly IChangePasswordDTOValidator _changePasswordValidator;
-        private readonly IChangeUserRoleDTOValidator _changeUserRoleValidator;
+        private readonly IValidator<UpdateUserDTO> _updateUserValidator;
+        private readonly IValidator<ChangePasswordDTO> _changePasswordValidator;
+        private readonly IValidator<ChangeUserRoleDTO> _changeUserRoleValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly ICurrentUserService _currentUserService;
@@ -27,9 +26,9 @@ namespace BusinessLogic.Services
 
         public UserService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IUpdateUserDTOValidator updateUserValidator,
-            IChangePasswordDTOValidator changePasswordValidator,
-            IChangeUserRoleDTOValidator changeUserRoleValidator,
+            IValidator<UpdateUserDTO> updateUserValidator,
+            IValidator<ChangePasswordDTO> changePasswordValidator,
+            IValidator<ChangeUserRoleDTO> changeUserRoleValidator,
             IPasswordHashingService passwordHashingService,
             ICurrentUserService currentUserService,
             ICacheService cacheService)

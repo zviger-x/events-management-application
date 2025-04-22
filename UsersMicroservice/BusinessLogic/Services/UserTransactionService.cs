@@ -3,7 +3,6 @@ using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
@@ -17,7 +16,7 @@ namespace BusinessLogic.Services
         private readonly IValidator<UserTransaction> _validator;
         private readonly ICurrentUserService _currentUserService;
 
-        public UserTransactionService(IUnitOfWork unitOfWork, IMapper mapper, IUserTransactionValidator validator, ICurrentUserService currentUserService)
+        public UserTransactionService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<UserTransaction> validator, ICurrentUserService currentUserService)
             : base(unitOfWork, mapper)
         {
             _validator = validator;

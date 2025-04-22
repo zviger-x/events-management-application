@@ -1,12 +1,11 @@
 ﻿using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using BusinessLogic.Validation.Validators.Interfaces;
 using DataAccess.Entities;
 using FluentValidation;
 
-namespace BusinessLogic.Validation.Validators
+namespace BusinessLogic.Validation.Validators.Common
 {
-    public class UserTransactionValidator : AbstractValidator<UserTransaction>, IUserTransactionValidator
+    public class UserTransactionValidator : AbstractValidator<UserTransaction>
     {
         public UserTransactionValidator()
         {

@@ -93,7 +93,7 @@ namespace BusinessLogic.Services
 
         public async Task<(string jwtToken, string refreshToken)> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            var result = await _tokenService.ValidateRefreshTokenAsync(refreshToken, cancellationToken);
+            var result = await ValidateRefreshTokenAsync(refreshToken, cancellationToken);
             if (!result.IsValid)
                 throw new UnauthorizedException("Refresh token expired or invalid");
 
@@ -105,6 +105,15 @@ namespace BusinessLogic.Services
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
 
             return new(jwtToken, newRefreshToken.Token);
+        }
+
+        public async Task<(bool IsValid, Guid UserId)> ValidateRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        {
+            var storedToken = await _unitOfWork.RefreshTokenRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+            if (storedToken == null || storedToken.Token != refreshToken || storedToken.Expires < DateTime.UtcNow)
+                return new(false, Guid.Empty);
+
+            return new(true, storedToken.UserId);
         }
 
         private async Task<bool> IsUniqueEmail(string email, CancellationToken token = default)

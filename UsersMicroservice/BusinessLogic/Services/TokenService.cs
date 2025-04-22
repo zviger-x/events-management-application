@@ -2,8 +2,7 @@
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Entities;
 using DataAccess.Enums;
-using DataAccess.UnitOfWork.Interfaces;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,8 +13,6 @@ namespace BusinessLogic.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IUnitOfWork _unitOfWork;
-
         private readonly string _secretKey;
         private readonly string _issuer;
         private readonly string _audience;
@@ -23,21 +20,16 @@ namespace BusinessLogic.Services
 
         private readonly int _refreshTokenExpirationMinutes;
 
-        public TokenService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        public TokenService(IOptions<JwtTokenConfig> config)
         {
-            _unitOfWork = unitOfWork;
+            var cfg = config.Value;
 
-            var config = configuration.GetSection("Jwt").Get<JwtTokenConfig>();
+            _secretKey = cfg.SecretKey;
+            _issuer = cfg.Issuer;
+            _audience = cfg.Audience;
+            _tokenExpirationMinutes = cfg.TokenExpirationMinutes;
 
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
-
-            _secretKey = config.SecretKey;
-            _issuer = config.Issuer;
-            _audience = config.Audience;
-            _tokenExpirationMinutes = config.TokenExpirationMinutes;
-
-            _refreshTokenExpirationMinutes = config.RefreshTokenExpirationMinutes;
+            _refreshTokenExpirationMinutes = cfg.RefreshTokenExpirationMinutes;
         }
 
         public int TokenExpirationMinutes => _tokenExpirationMinutes;
@@ -84,15 +76,6 @@ namespace BusinessLogic.Services
             };
 
             return refreshToken;
-        }
-
-        public async Task<(bool IsValid, Guid UserId)> ValidateRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
-        {
-            var storedToken = await _unitOfWork.RefreshTokenRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
-            if (storedToken == null || storedToken.Token != refreshToken || storedToken.Expires < DateTime.UtcNow)
-                return new(false, Guid.Empty);
-
-            return new(true, storedToken.UserId);
         }
     }
 }

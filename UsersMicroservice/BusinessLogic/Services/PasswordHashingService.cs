@@ -20,6 +20,7 @@ namespace BusinessLogic.Services
         public bool VerifyPassword(string password, string storedHashedPassword)
         {
             var result = _passwordHasher.VerifyHashedPassword(password, storedHashedPassword, password);
+
             return result == PasswordVerificationResult.Success;
         }
     }

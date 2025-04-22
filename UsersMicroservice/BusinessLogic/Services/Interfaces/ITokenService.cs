@@ -25,13 +25,5 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="userId">User id</param>
         /// <returns>Generated refresh token</returns>
         RefreshToken GenerateRefreshToken(Guid userId);
-
-        /// <summary>
-        /// Checks the validity of the token
-        /// </summary>
-        /// <param name="refreshToken">Refresh token to validate</param>
-        /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
-        /// <returns>Validation result including the user Id of this token</returns>
-        Task<(bool IsValid, Guid UserId)> ValidateRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     }
 }

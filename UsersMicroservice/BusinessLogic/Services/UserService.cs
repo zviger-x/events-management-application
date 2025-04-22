@@ -11,12 +11,11 @@ using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
-using Microsoft.Extensions.Logging;
 using ValidationException = BusinessLogic.Exceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
-    public class UserService : BaseService<User>, IUserService
+    public class UserService : BaseService, IUserService
     {
         private readonly IUpdateUserDTOValidator _updateUserValidator;
         private readonly IChangePasswordDTOValidator _changePasswordValidator;
@@ -25,19 +24,16 @@ namespace BusinessLogic.Services
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly ICurrentUserService _currentUserService;
         private readonly ICacheService _cacheService;
-        private readonly ILogger<UserService> _logger;
 
         public UserService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IUserValidator validator,
             IUpdateUserDTOValidator updateUserValidator,
             IChangePasswordDTOValidator changePasswordValidator,
             IChangeUserRoleDTOValidator changeUserRoleValidator,
             IPasswordHashingService passwordHashingService,
             ICurrentUserService currentUserService,
-            ICacheService cacheService,
-            ILogger<UserService> logger)
-            : base(unitOfWork, mapper, validator)
+            ICacheService cacheService)
+            : base(unitOfWork, mapper)
         {
             _updateUserValidator = updateUserValidator;
             _changePasswordValidator = changePasswordValidator;
@@ -46,10 +42,9 @@ namespace BusinessLogic.Services
             _passwordHashingService = passwordHashingService;
             _currentUserService = currentUserService;
             _cacheService = cacheService;
-            _logger = logger;
         }
 
-        public override async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserIdOrThrow();
             var isAdmin = _currentUserService.IsAdminOrThrow();
@@ -60,17 +55,21 @@ namespace BusinessLogic.Services
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                await base.DeleteAsync(id, cancellationToken);
+                var entity = await _unitOfWork.UserRepository.GetByIdAsync(id, token);
+                if (entity == null)
+                    return;
+
+                await _unitOfWork.UserRepository.DeleteAsync(entity, token);
             }, cancellationToken);
         }
 
-        public override async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
+        public async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
         {
             var cachedUsers = await _cacheService.GetAsync<List<User>>(CacheKeys.AllUsers, token);
             if (cachedUsers != null)
                 return cachedUsers;
 
-            var users = await base.GetAllAsync(token);
+            var users = await _unitOfWork.UserRepository.GetAllAsync(token);
             foreach (var user in users)
                 user.PasswordHash = string.Empty;
 
@@ -79,13 +78,13 @@ namespace BusinessLogic.Services
             return users;
         }
 
-        public override async Task<PagedCollection<User>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        public async Task<PagedCollection<User>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
         {
             var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, pageSize), token);
             if (cachedUsers != null)
                 return cachedUsers;
 
-            var users = await base.GetPagedAsync(pageNumber, pageSize, token);
+            var users = await _unitOfWork.UserRepository.GetPagedAsync(pageNumber, pageSize, token);
             foreach (var user in users.Items)
                 user.PasswordHash = string.Empty;
 
@@ -94,7 +93,7 @@ namespace BusinessLogic.Services
             return users;
         }
 
-        public override async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
+        public async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             var currentUserId = _currentUserService.GetUserIdOrThrow();
             var isAdmin = _currentUserService.IsAdminOrThrow();
@@ -107,7 +106,7 @@ namespace BusinessLogic.Services
             if (cachedUser != null)
                 return cachedUser;
 
-            var user = await base.GetByIdAsync(id, token);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id, token);
             if (user == null)
                 throw new NotFoundException("User not found.");
 
@@ -117,14 +116,11 @@ namespace BusinessLogic.Services
             return user;
         }
 
-        public async Task UpdateUserProfileAsync(Guid userRouteId, UpdateUserDTO userUpdate, CancellationToken cancellationToken)
+        public async Task UpdateUserProfileAsync(Guid userId, UpdateUserDTO userUpdate, CancellationToken cancellationToken)
         {
             await _updateUserValidator.ValidateAndThrowAsync(userUpdate, cancellationToken);
 
-            if (userRouteId != userUpdate.UserId)
-                throw new ParameterException("You are not allowed to change this.");
-
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userUpdate.UserId, cancellationToken);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
                 throw new NotFoundException("User not found");
 
@@ -145,14 +141,11 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        public async Task ChangePasswordAsync(Guid userRouteId, ChangePasswordDTO changePasswordDto, CancellationToken cancellationToken)
+        public async Task ChangePasswordAsync(Guid userId, ChangePasswordDTO changePasswordDto, CancellationToken cancellationToken)
         {
             await _changePasswordValidator.ValidateAndThrowAsync(changePasswordDto, cancellationToken);
 
-            if (userRouteId != changePasswordDto.UserId)
-                throw new ParameterException("You are not allowed to change this.");
-
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(changePasswordDto.UserId, cancellationToken);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
                 throw new NotFoundException("User not found");
 
@@ -177,18 +170,15 @@ namespace BusinessLogic.Services
             }, cancellationToken);
         }
 
-        public async Task ChangeUserRoleAsync(Guid userRouteId, ChangeUserRoleDTO changeUserRole, CancellationToken cancellationToken = default)
+        public async Task ChangeUserRoleAsync(Guid userId, ChangeUserRoleDTO changeUserRoleDto, CancellationToken cancellationToken = default)
         {
-            await _changeUserRoleValidator.ValidateAndThrowAsync(changeUserRole, cancellationToken);
+            await _changeUserRoleValidator.ValidateAndThrowAsync(changeUserRoleDto, cancellationToken);
 
-            if (userRouteId != changeUserRole.UserId)
-                throw new ParameterException("You are not allowed to change this.");
-
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(changeUserRole.UserId, cancellationToken);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
                 throw new ArgumentException("There is no user with this Id.");
 
-            user.Role = changeUserRole.Role;
+            user.Role = changeUserRoleDto.Role;
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
@@ -198,12 +188,14 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        private bool IsCurrentPassword(User storedUser, ChangePasswordDTO dto, CancellationToken token = default)
+        private bool IsCurrentPassword(User storedUser, ChangePasswordDTO changePasswordDto, CancellationToken token = default)
         {
-            if (storedUser == null || !_passwordHashingService.VerifyPassword(dto.CurrentPassword, storedUser.PasswordHash))
+            if (storedUser == null)
                 return false;
 
-            return true;
+            var isPasswordValid = _passwordHashingService.VerifyPassword(changePasswordDto.CurrentPassword, storedUser.PasswordHash);
+
+            return isPasswordValid;
         }
     }
 }

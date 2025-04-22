@@ -1,9 +1,6 @@
 ﻿using DataAccess.Contexts;
-using DataAccess.Entities.Interfaces;
-using DataAccess.Repositories.Interfaces;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.UnitOfWork
 {
@@ -11,7 +8,6 @@ namespace DataAccess.UnitOfWork
     {
         protected readonly UserDbContext _context;
         protected readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<Type, object> _repositories;
 
         protected IDbContextTransaction _transaction;
 
@@ -19,20 +15,6 @@ namespace DataAccess.UnitOfWork
         {
             _context = context;
             _serviceProvider = serviceProvider;
-            _repositories = new();
-        }
-
-        public IRepository<T> Repository<T>()
-            where T : class, IEntity
-        {
-            var type = typeof(T);
-            if (!_repositories.ContainsKey(type))
-            {
-                var repositoryInstance = _serviceProvider.GetRequiredService<IRepository<T>>();
-                _repositories[type] = repositoryInstance;
-            }
-
-            return (IRepository<T>)_repositories[type];
         }
 
         public virtual async Task BeginTransactionAsync(CancellationToken token = default)

@@ -1,9 +1,10 @@
 ﻿using BusinessLogic.Contracts;
+using BusinessLogic.Services.Interfaces.Common;
 using DataAccess.Entities;
 
 namespace BusinessLogic.Services.Interfaces
 {
-    public interface IUserService : IService<User>
+    public interface IUserService : IDeleteService, IReadService<User>
     {
         /// <summary>
         /// Updates the user's profile information.

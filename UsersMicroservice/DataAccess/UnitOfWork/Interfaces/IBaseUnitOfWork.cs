@@ -1,12 +1,7 @@
-﻿using DataAccess.Entities.Interfaces;
-using DataAccess.Repositories.Interfaces;
-
-namespace DataAccess.UnitOfWork.Interfaces
+﻿namespace DataAccess.UnitOfWork.Interfaces
 {
     public interface IBaseUnitOfWork : IDisposable
     {
-        IRepository<T> Repository<T>() where T : class, IEntity;
-
         /// <summary>
         /// Begins a new transaction.
         /// </summary>

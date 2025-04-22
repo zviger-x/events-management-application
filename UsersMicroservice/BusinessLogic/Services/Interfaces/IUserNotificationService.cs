@@ -1,8 +1,12 @@
-﻿using DataAccess.Entities;
+﻿using BusinessLogic.Services.Interfaces.Common;
+using DataAccess.Entities;
 
 namespace BusinessLogic.Services.Interfaces
 {
-    public interface IUserNotificationService : IService<UserNotification>
+    public interface IUserNotificationService : ICreateService<UserNotification>,
+        IUpdateService<UserNotification>,
+        IReadService<UserNotification>,
+        IDeleteService
     {
         /// <summary>
         /// Returns a collection of user notifications by the user's id.

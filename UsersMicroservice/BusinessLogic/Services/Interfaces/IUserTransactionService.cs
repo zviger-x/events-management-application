@@ -1,8 +1,12 @@
-﻿using DataAccess.Entities;
+﻿using BusinessLogic.Services.Interfaces.Common;
+using DataAccess.Entities;
 
 namespace BusinessLogic.Services.Interfaces
 {
-    public interface IUserTransactionService : IService<UserTransaction>
+    public interface IUserTransactionService : ICreateService<UserTransaction>,
+        IUpdateService<UserTransaction>,
+        IReadService<UserTransaction>,
+        IDeleteService
     {
         /// <summary>
         /// Returns a collection of user transactions by the user's id.

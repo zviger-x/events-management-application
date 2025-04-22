@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Interfaces\Commonm\**" />
+    <EmbeddedResource Remove="Services\Interfaces\Commonm\**" />
+    <None Remove="Services\Interfaces\Commonm\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
   </ItemGroup>
 

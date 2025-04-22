@@ -8,11 +8,11 @@ namespace DataAccess.Repositories.Interfaces
     {
         /// <summary>
         /// Creates an entity and automatically saves it to the database.
-        /// The pre-defined ID will not be taken into account.
         /// </summary>
         /// <param name="entity">Entity to create.</param>
         /// <param name="token">Cancellation token to cancel the operation if needed.</param>
-        Task CreateAsync(T entity, CancellationToken token = default);
+        /// <returns>The identifier of the created entity.</returns>
+        Task<Guid> CreateAsync(T entity, CancellationToken token = default);
 
         /// <summary>
         /// Updates an entity and automatically saves the changes to the database.

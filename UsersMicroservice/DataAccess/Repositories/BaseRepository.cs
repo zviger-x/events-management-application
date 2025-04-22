@@ -16,13 +16,14 @@ namespace DataAccess.Repositories
 
         protected UserDbContext _context { get; set; }
 
-        public virtual async Task CreateAsync(T entity, CancellationToken token = default)
+        public virtual async Task<Guid> CreateAsync(T entity, CancellationToken token = default)
         {
-            entity.Id = default;
             await _context.AddAsync(entity, token);
             await _context.SaveChangesAsync(token);
 
             _context.Entry(entity).State = EntityState.Detached;
+
+            return entity.Id;
         }
 
         public virtual async Task UpdateAsync(T entity, CancellationToken token = default)

@@ -63,10 +63,30 @@ namespace EventsAPI.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetPagedAsync([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPagedAsync(
+            [FromQuery] string name,
+            [FromQuery] string description,
+            [FromQuery] string location,
+            [FromQuery] DateTime? fromDate,
+            [FromQuery] DateTime? toDate,
+            [FromQuery] int pageNumber = 1,
+            CancellationToken cancellationToken = default)
         {
-            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = PageSize };
-            var query = new EventGetPagedQuery { PageParameters = pageParameters };
+            var pageParameters = new PageParameters
+            {
+                PageNumber = pageNumber,
+                PageSize = PageSize
+            };
+
+            var query = new EventGetPagedQuery
+            {
+                Name = name?.Trim(),
+                Description = description?.Trim(),
+                Location = location?.Trim(),
+                FromDate = fromDate,
+                ToDate = toDate,
+                PageParameters = pageParameters
+            };
 
             var page = await _mediator.Send(query, cancellationToken);
 

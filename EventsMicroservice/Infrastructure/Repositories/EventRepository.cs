@@ -3,6 +3,8 @@ using Domain.Entities;
 using Infrastructure.Contexts;
 using Infrastructure.Extensions;
 using MongoDB.Driver;
+using Shared.Common;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -88,6 +90,18 @@ namespace Infrastructure.Repositories
                     e => e.Comments);
 
             return await query.FirstOrDefaultAsync(token);
+        }
+
+        public async Task<PagedCollection<Event>> GetPagedByFilterAsync(string name, string description, string location, DateTime? fromDate, DateTime? toDate, int pageNumber, int pageSize, CancellationToken token = default)
+        {
+            Expression<Func<Event, bool>> filterExpression = e =>
+                (string.IsNullOrEmpty(name) || e.Name.Contains(name)) &&
+                (string.IsNullOrEmpty(description) || e.Description.Contains(description)) &&
+                (string.IsNullOrEmpty(location) || e.Location.Contains(location)) &&
+                (!fromDate.HasValue || e.StartDate >= fromDate.Value) &&
+                (!toDate.HasValue || e.EndDate <= toDate.Value);
+
+            return await GetPagedByFilterAsync(filterExpression, pageNumber, pageSize, token);
         }
     }
 }

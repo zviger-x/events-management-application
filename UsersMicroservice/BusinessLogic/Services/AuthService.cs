@@ -91,7 +91,7 @@ namespace BusinessLogic.Services
             await _unitOfWork.RefreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);
         }
 
-        public async Task<string> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<(string jwtToken, string refreshToken)> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             var result = await _tokenService.ValidateRefreshTokenAsync(refreshToken, cancellationToken);
             if (!result.IsValid)
@@ -101,15 +101,16 @@ namespace BusinessLogic.Services
             if (user == null)
                 throw new UnauthorizedException("Refresh token expired or invalid");
 
+            var newRefreshToken = await RegenerateRefreshTokenValueAsync(user.Id, cancellationToken);
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
-            return jwtToken;
+
+            return new(jwtToken, newRefreshToken.Token);
         }
 
         private async Task<bool> IsUniqueEmail(string email, CancellationToken token = default)
         {
             return !await _unitOfWork.UserRepository.ContainsEmailAsync(email, token);
         }
-
 
         /// <summary>
         /// Updates an existing one, otherwise creates a new one
@@ -130,6 +131,26 @@ namespace BusinessLogic.Services
             {
                 await _unitOfWork.RefreshTokenRepository.CreateAsync(refreshToken, cancellationToken);
             }
+        }
+
+        /// <summary>
+        /// Regenerates the value of the refresh token while preserving its original expiration time.
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>New <see cref="RefreshToken"/> with the same expiration time as the previous one. If the old refresh token does not exist, returns <see langword="null"/></returns>
+        private async Task<RefreshToken> RegenerateRefreshTokenValueAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var oldRefreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(id, cancellationToken);
+            if (oldRefreshToken == null)
+                return null;
+
+            var newRefreshToken = _tokenService.GenerateRefreshToken(id);
+            newRefreshToken.Id = oldRefreshToken.Id;
+            newRefreshToken.Expires = oldRefreshToken.Expires;
+
+            await UpsertRefreshTokenAsync(newRefreshToken, cancellationToken);
+
+            return newRefreshToken;
         }
     }
 }

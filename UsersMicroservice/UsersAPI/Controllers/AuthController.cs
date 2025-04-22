@@ -46,7 +46,7 @@ namespace UsersAPI.Controllers
         {
             var token = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
 
-            return Ok(new { AccessToken = token });
+            return Ok(new { AccessToken = token.jwtToken, RefreshToken = token.refreshToken });
         }
     }
 }

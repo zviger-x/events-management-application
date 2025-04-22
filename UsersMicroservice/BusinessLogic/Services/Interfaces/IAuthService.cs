@@ -32,6 +32,6 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="refreshToken">Refresh token to check.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
         /// <returns>Generated Jwt token.</returns>
-        Task<string> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
+        Task<(string jwtToken, string refreshToken)> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     }
 }

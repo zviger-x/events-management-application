@@ -1,5 +1,4 @@
-﻿using BusinessLogic.Caching.Interfaces;
-using BusinessLogic.Contracts;
+﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -15,17 +14,10 @@ namespace UsersAPI.Controllers
         private const int PageSize = 10;
 
         private readonly IUserService _userService;
-        private readonly IUserNotificationService _userNotificationService;
-        private readonly IUserTransactionService _userTransactionService;
 
-        public UsersController(ICacheService cacheService,
-            IUserService userService,
-            IUserNotificationService userNotificationService,
-            IUserTransactionService userTransactionService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
-            _userNotificationService = userNotificationService;
-            _userTransactionService = userTransactionService;
         }
 
         [Authorize]
@@ -71,24 +63,6 @@ namespace UsersAPI.Controllers
             var user = await _userService.GetByIdAsync(userId, token);
 
             return Ok(user);
-        }
-
-        [Authorize]
-        [HttpGet("{userId}/notifications")]
-        public async Task<IActionResult> GetUserNotifications([FromRoute] Guid userId, CancellationToken token)
-        {
-            var notifications = await _userNotificationService.GetByUserIdAsync(userId, token);
-
-            return Ok(notifications);
-        }
-
-        [Authorize]
-        [HttpGet("{userId}/transactions")]
-        public async Task<IActionResult> GetUserTransactions([FromRoute] Guid userId, CancellationToken token)
-        {
-            var transactions = await _userTransactionService.GetByUserIdAsync(userId, token);
-
-            return Ok(transactions);
         }
 
         [AuthorizeRoles(UserRoles.Admin)]

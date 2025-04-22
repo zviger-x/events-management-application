@@ -65,5 +65,15 @@ namespace UsersAPI.Controllers
 
             return Ok(transactions);
         }
+
+        [Authorize]
+        [HttpGet("/api/users/{userId}/transactions")]
+        public async Task<IActionResult> GetUserTransactions([FromRoute] Guid userId, CancellationToken token)
+        {
+            var transactions = await _userTransactionService.GetByUserIdAsync(userId, token);
+
+            return Ok(transactions);
+        }
+
     }
 }

@@ -65,5 +65,15 @@ namespace UsersAPI.Controllers
 
             return Ok(notifications);
         }
+
+        [Authorize]
+        [HttpGet("/api/users/{userId}/notifications")]
+        public async Task<IActionResult> GetUserNotifications([FromRoute] Guid userId, CancellationToken token)
+        {
+            var notifications = await _userNotificationService.GetByUserIdAsync(userId, token);
+
+            return Ok(notifications);
+        }
+
     }
 }

@@ -22,10 +22,9 @@ namespace BusinessLogic.Services.Interfaces.Common
         /// <summary>
         /// Gets a paged collection of entity DTOs.
         /// </summary>
-        /// <param name="pageNumber">Page number.</param>
-        /// <param name="pageSize">Number of items per page.</param>
+        /// <param name="pageParameters">Page number and size.</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Paged collection of DTOs.</returns>
-        Task<PagedCollection<TReadDto>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default);
+        Task<PagedCollection<TReadDto>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default);
     }
 }

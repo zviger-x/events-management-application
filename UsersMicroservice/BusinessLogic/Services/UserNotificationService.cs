@@ -13,19 +13,25 @@ namespace BusinessLogic.Services
 {
     public class UserNotificationService : BaseService, IUserNotificationService
     {
-        private readonly IValidator<UserNotification> _validator;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IValidator<UserNotification> _notificationValidator;
+        private readonly IValidator<PageParameters> _pageParametersValidator;
 
-        public UserNotificationService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<UserNotification> validator, ICurrentUserService currentUserService)
+        public UserNotificationService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IValidator<UserNotification> notificationValidatorvalidator,
+            IValidator<PageParameters> pageParametersValidator,
+            ICurrentUserService currentUserService)
             : base(unitOfWork, mapper)
         {
-            _validator = validator;
+            _notificationValidator = notificationValidatorvalidator;
+            _pageParametersValidator = pageParametersValidator;
             _currentUserService = currentUserService;
         }
 
         public async Task<Guid> CreateAsync(UserNotification notification, CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(notification, token);
+            await _notificationValidator.ValidateAndThrowAsync(notification, token);
 
             if (!await IsUserExistsAsync(notification.UserId, token))
                 throw new ValidationException(
@@ -39,7 +45,7 @@ namespace BusinessLogic.Services
 
         public async Task UpdateAsync(Guid id, UserNotification notification, CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(notification, token);
+            await _notificationValidator.ValidateAndThrowAsync(notification, token);
 
             var storedEntity = await _unitOfWork.UserNotificationRepository.GetByIdAsync(id, token);
             if (storedEntity == null)
@@ -71,17 +77,11 @@ namespace BusinessLogic.Services
             return entity ?? throw new NotFoundException("Not found");
         }
 
-        public async Task<PagedCollection<UserNotification>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        public async Task<PagedCollection<UserNotification>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default)
         {
-#warning TODO: Use PageParameters dto and validator!
+            await _pageParametersValidator.ValidateAndThrowAsync(pageParameters, token);
 
-            if (pageNumber < 1)
-                throw new ParameterException(nameof(pageNumber));
-
-            if (pageSize < 1)
-                throw new ParameterException(nameof(pageSize));
-
-            return await _unitOfWork.UserNotificationRepository.GetPagedAsync(pageNumber, pageSize, token);
+            return await _unitOfWork.UserNotificationRepository.GetPagedAsync(pageParameters.PageNumber, pageParameters.PageSize, token);
         }
 
         public async Task<IEnumerable<UserNotification>> GetByUserIdAsync(Guid id, CancellationToken token = default)

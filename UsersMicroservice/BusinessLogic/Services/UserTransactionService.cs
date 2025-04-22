@@ -13,19 +13,25 @@ namespace BusinessLogic.Services
 {
     public class UserTransactionService : BaseService, IUserTransactionService
     {
-        private readonly IValidator<UserTransaction> _validator;
+        private readonly IValidator<UserTransaction> _transactionValidator;
+        private readonly IValidator<PageParameters> _pageParametersValidator;
         private readonly ICurrentUserService _currentUserService;
 
-        public UserTransactionService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<UserTransaction> validator, ICurrentUserService currentUserService)
+        public UserTransactionService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IValidator<UserTransaction> transactionValidator,
+            IValidator<PageParameters> pageParametersValidator,
+            ICurrentUserService currentUserService)
             : base(unitOfWork, mapper)
         {
-            _validator = validator;
+            _transactionValidator = transactionValidator;
+            _pageParametersValidator = pageParametersValidator;
             _currentUserService = currentUserService;
         }
 
         public async Task<Guid> CreateAsync(UserTransaction transaction, CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(transaction, token);
+            await _transactionValidator.ValidateAndThrowAsync(transaction, token);
 
             if (!await IsUserExistsAsync(transaction.UserId, token))
                 throw new ValidationException(
@@ -41,7 +47,7 @@ namespace BusinessLogic.Services
 
         public async Task UpdateAsync(Guid id, UserTransaction transaction, CancellationToken token = default)
         {
-            await _validator.ValidateAndThrowAsync(transaction, token);
+            await _transactionValidator.ValidateAndThrowAsync(transaction, token);
 
             var storedEntity = await _unitOfWork.UserTransactionRepository.GetByIdAsync(id, token);
             if (storedEntity == null)
@@ -73,17 +79,11 @@ namespace BusinessLogic.Services
             return entity ?? throw new NotFoundException("Not found");
         }
 
-        public async Task<PagedCollection<UserTransaction>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        public async Task<PagedCollection<UserTransaction>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default)
         {
-#warning TODO: Use PageParameters dto and validator!
+            await _pageParametersValidator.ValidateAndThrowAsync(pageParameters, token);
 
-            if (pageNumber < 1)
-                throw new ParameterException(nameof(pageNumber));
-
-            if (pageSize < 1)
-                throw new ParameterException(nameof(pageSize));
-
-            return await _unitOfWork.UserTransactionRepository.GetPagedAsync(pageNumber, pageSize, token);
+            return await _unitOfWork.UserTransactionRepository.GetPagedAsync(pageParameters.PageNumber, pageParameters.PageSize, token);
         }
 
         public async Task<IEnumerable<UserTransaction>> GetByUserIdAsync(Guid id, CancellationToken token = default)

@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Services.Interfaces;
+using DataAccess.Common;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +62,9 @@ namespace UsersAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPaged([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var notifications = await _userNotificationService.GetPagedAsync(pageNumber, PageSize, cancellationToken);
+            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = PageSize };
+
+            var notifications = await _userNotificationService.GetPagedAsync(pageParameters, cancellationToken);
 
             return Ok(notifications);
         }

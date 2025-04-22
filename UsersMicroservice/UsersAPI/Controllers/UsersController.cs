@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
+using DataAccess.Common;
 using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -69,7 +70,9 @@ namespace UsersAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1, CancellationToken token = default)
         {
-            var users = await _userService.GetPagedAsync(pageNumber, PageSize, token);
+            var pageParameters = new PageParameters { PageNumber = pageNumber, PageSize = PageSize };
+
+            var users = await _userService.GetPagedAsync(pageParameters, token);
 
             return Ok(users);
         }

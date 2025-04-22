@@ -19,6 +19,7 @@ namespace BusinessLogic.Services
         private readonly IValidator<UpdateUserDTO> _updateUserValidator;
         private readonly IValidator<ChangePasswordDTO> _changePasswordValidator;
         private readonly IValidator<ChangeUserRoleDTO> _changeUserRoleValidator;
+        private readonly IValidator<PageParameters> _pageParametersValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly ICurrentUserService _currentUserService;
@@ -29,6 +30,7 @@ namespace BusinessLogic.Services
             IValidator<UpdateUserDTO> updateUserValidator,
             IValidator<ChangePasswordDTO> changePasswordValidator,
             IValidator<ChangeUserRoleDTO> changeUserRoleValidator,
+            IValidator<PageParameters> pageParametersValidator,
             IPasswordHashingService passwordHashingService,
             ICurrentUserService currentUserService,
             ICacheService cacheService)
@@ -37,6 +39,7 @@ namespace BusinessLogic.Services
             _updateUserValidator = updateUserValidator;
             _changePasswordValidator = changePasswordValidator;
             _changeUserRoleValidator = changeUserRoleValidator;
+            _pageParametersValidator = pageParametersValidator;
 
             _passwordHashingService = passwordHashingService;
             _currentUserService = currentUserService;
@@ -77,8 +80,13 @@ namespace BusinessLogic.Services
             return users;
         }
 
-        public async Task<PagedCollection<User>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken token = default)
+        public async Task<PagedCollection<User>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default)
         {
+            await _pageParametersValidator.ValidateAndThrowAsync(pageParameters, token);
+
+            var pageNumber = pageParameters.PageNumber;
+            var pageSize = pageParameters.PageSize;
+
             var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, pageSize), token);
             if (cachedUsers != null)
                 return cachedUsers;

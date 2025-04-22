@@ -5,9 +5,9 @@ using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class RegisterDTOValidator : AbstractValidator<RegisterDTO>
+    public class RegisterDtoValidator : AbstractValidator<RegisterDto>
     {
-        public RegisterDTOValidator()
+        public RegisterDtoValidator()
         {
             RuleFor(u => u.Name)
                 .NotNull()

@@ -17,17 +17,17 @@ namespace UsersAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto, CancellationToken cancellationToken)
         {
-            var token = await _authService.RegisterAsync(registerDTO, cancellationToken);
+            var token = await _authService.RegisterAsync(registerDto, cancellationToken);
 
             return Ok(new { AccessToken = token.jwtToken, RefreshToken = token.refreshToken });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto, CancellationToken cancellationToken)
         {
-            var token = await _authService.LoginAsync(loginDTO, cancellationToken);
+            var token = await _authService.LoginAsync(loginDto, cancellationToken);
 
             return Ok(new { AccessToken = token.jwtToken, RefreshToken = token.refreshToken });
         }

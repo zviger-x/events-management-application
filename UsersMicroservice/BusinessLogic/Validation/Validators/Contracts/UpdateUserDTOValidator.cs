@@ -5,9 +5,9 @@ using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class UpdateUserDTOValidator : AbstractValidator<UpdateUserDTO>
+    public class UpdateUserDtoValidator : AbstractValidator<UpdateUserDto>
     {
-        public UpdateUserDTOValidator()
+        public UpdateUserDtoValidator()
         {
             RuleFor(u => u.Name)
                 .NotNull()

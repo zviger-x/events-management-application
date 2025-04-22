@@ -5,9 +5,9 @@ using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class ChangePasswordDTOValidator : AbstractValidator<ChangePasswordDTO>
+    public class ChangePasswordDtoValidator : AbstractValidator<ChangePasswordDto>
     {
-        public ChangePasswordDTOValidator()
+        public ChangePasswordDtoValidator()
         {
             RuleFor(u => u.CurrentPassword)
                 .NotNull()

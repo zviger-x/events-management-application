@@ -8,11 +8,11 @@ namespace BusinessLogic.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<UpdateUserDTO, User>();
-            CreateMap<User, UpdateUserDTO>();
+            CreateMap<UpdateUserDto, User>();
+            CreateMap<User, UpdateUserDto>();
 
-            CreateMap<RegisterDTO, User>();
-            CreateMap<User, RegisterDTO>();
+            CreateMap<RegisterDto, User>();
+            CreateMap<User, RegisterDto>();
         }
     }
 }

@@ -16,9 +16,9 @@ namespace BusinessLogic.Services
 {
     public class UserService : BaseService, IUserService
     {
-        private readonly IValidator<UpdateUserDTO> _updateUserValidator;
-        private readonly IValidator<ChangePasswordDTO> _changePasswordValidator;
-        private readonly IValidator<ChangeUserRoleDTO> _changeUserRoleValidator;
+        private readonly IValidator<UpdateUserDto> _updateUserValidator;
+        private readonly IValidator<ChangePasswordDto> _changePasswordValidator;
+        private readonly IValidator<ChangeUserRoleDto> _changeUserRoleValidator;
         private readonly IValidator<PageParameters> _pageParametersValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
@@ -27,9 +27,9 @@ namespace BusinessLogic.Services
 
         public UserService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IValidator<UpdateUserDTO> updateUserValidator,
-            IValidator<ChangePasswordDTO> changePasswordValidator,
-            IValidator<ChangeUserRoleDTO> changeUserRoleValidator,
+            IValidator<UpdateUserDto> updateUserValidator,
+            IValidator<ChangePasswordDto> changePasswordValidator,
+            IValidator<ChangeUserRoleDto> changeUserRoleValidator,
             IValidator<PageParameters> pageParametersValidator,
             IPasswordHashingService passwordHashingService,
             ICurrentUserService currentUserService,
@@ -123,7 +123,7 @@ namespace BusinessLogic.Services
             return user;
         }
 
-        public async Task UpdateUserProfileAsync(Guid userId, UpdateUserDTO userUpdate, CancellationToken cancellationToken)
+        public async Task UpdateUserProfileAsync(Guid userId, UpdateUserDto userUpdate, CancellationToken cancellationToken)
         {
             await _updateUserValidator.ValidateAndThrowAsync(userUpdate, cancellationToken);
 
@@ -148,7 +148,7 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        public async Task ChangePasswordAsync(Guid userId, ChangePasswordDTO changePasswordDto, CancellationToken cancellationToken)
+        public async Task ChangePasswordAsync(Guid userId, ChangePasswordDto changePasswordDto, CancellationToken cancellationToken)
         {
             await _changePasswordValidator.ValidateAndThrowAsync(changePasswordDto, cancellationToken);
 
@@ -177,7 +177,7 @@ namespace BusinessLogic.Services
             }, cancellationToken);
         }
 
-        public async Task ChangeUserRoleAsync(Guid userId, ChangeUserRoleDTO changeUserRoleDto, CancellationToken cancellationToken = default)
+        public async Task ChangeUserRoleAsync(Guid userId, ChangeUserRoleDto changeUserRoleDto, CancellationToken cancellationToken = default)
         {
             await _changeUserRoleValidator.ValidateAndThrowAsync(changeUserRoleDto, cancellationToken);
 
@@ -195,7 +195,7 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        private bool IsCurrentPassword(User storedUser, ChangePasswordDTO changePasswordDto, CancellationToken token = default)
+        private bool IsCurrentPassword(User storedUser, ChangePasswordDto changePasswordDto, CancellationToken token = default)
         {
             if (storedUser == null)
                 return false;

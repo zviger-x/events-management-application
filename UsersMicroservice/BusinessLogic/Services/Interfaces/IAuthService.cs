@@ -10,7 +10,7 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="userRegister">The user registration data.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
         /// <returns>Generated Jwt token and refresh token.</returns>
-        Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default);
+        Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDto userRegister, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Authenticates a user.
@@ -18,7 +18,7 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="userLogin">The user login data.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
         /// <returns>Generated Jwt token and refresh token.</returns>
-        Task<(string jwtToken, string refreshToken)> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default);
+        Task<(string jwtToken, string refreshToken)> LoginAsync(LoginDto userLogin, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Logs out the user by his id.

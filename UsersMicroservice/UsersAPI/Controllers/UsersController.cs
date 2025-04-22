@@ -23,27 +23,27 @@ namespace UsersAPI.Controllers
 
         [Authorize]
         [HttpPut("{userId}/profile")]
-        public async Task<IActionResult> ChangeProfile([FromRoute] Guid userId, [FromBody] UpdateUserDTO updateUserDTO, CancellationToken token)
+        public async Task<IActionResult> ChangeProfile([FromRoute] Guid userId, [FromBody] UpdateUserDto updateUserDto, CancellationToken token)
         {
-            await _userService.UpdateUserProfileAsync(userId, updateUserDTO, token);
+            await _userService.UpdateUserProfileAsync(userId, updateUserDto, token);
 
             return Ok();
         }
 
         [Authorize]
         [HttpPatch("{userId}/password")]
-        public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordDTO changePasswordDTO, CancellationToken token)
+        public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordDto changePasswordDto, CancellationToken token)
         {
-            await _userService.ChangePasswordAsync(userId, changePasswordDTO, token);
+            await _userService.ChangePasswordAsync(userId, changePasswordDto, token);
 
             return Ok();
         }
 
         [AuthorizeRoles(UserRoles.Admin)]
         [HttpPatch("{userId}/role")]
-        public async Task<IActionResult> ChangeRole([FromRoute] Guid userId, [FromBody] ChangeUserRoleDTO changeUserRoleDTO, CancellationToken token)
+        public async Task<IActionResult> ChangeRole([FromRoute] Guid userId, [FromBody] ChangeUserRoleDto changeUserRoleDto, CancellationToken token)
         {
-            await _userService.ChangeUserRoleAsync(userId, changeUserRoleDTO, token);
+            await _userService.ChangeUserRoleAsync(userId, changeUserRoleDto, token);
 
             return Ok();
         }

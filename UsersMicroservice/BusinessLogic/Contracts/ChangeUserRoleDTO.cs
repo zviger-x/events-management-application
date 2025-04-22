@@ -2,7 +2,7 @@
 
 namespace BusinessLogic.Contracts
 {
-    public class ChangeUserRoleDTO
+    public class ChangeUserRoleDto
     {
         public UserRoles Role { get; set; }
     }

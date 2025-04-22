@@ -1,6 +1,6 @@
 ﻿namespace BusinessLogic.Contracts
 {
-    public class UpdateUserDTO
+    public class UpdateUserDto
     {
         public string Name { get; set; }
         public string Surname { get; set; }

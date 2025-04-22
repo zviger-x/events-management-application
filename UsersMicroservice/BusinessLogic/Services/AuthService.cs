@@ -13,8 +13,8 @@ namespace BusinessLogic.Services
 {
     public class AuthService : BaseService, IAuthService
     {
-        private readonly IValidator<LoginDTO> _loginValidator;
-        private readonly IValidator<RegisterDTO> _registerValidator;
+        private readonly IValidator<LoginDto> _loginValidator;
+        private readonly IValidator<RegisterDto> _registerValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly ITokenService _tokenService;
@@ -23,8 +23,8 @@ namespace BusinessLogic.Services
 
         public AuthService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IValidator<LoginDTO> loginValidator,
-            IValidator<RegisterDTO> registerValidator,
+            IValidator<LoginDto> loginValidator,
+            IValidator<RegisterDto> registerValidator,
             IPasswordHashingService passwordHashingService,
             ITokenService tokenService,
             ICurrentUserService currentUserService)
@@ -37,7 +37,7 @@ namespace BusinessLogic.Services
             _currentUserService = currentUserService;
         }
 
-        public async Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDTO userRegister, CancellationToken cancellationToken = default)
+        public async Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDto userRegister, CancellationToken cancellationToken = default)
         {
             await _registerValidator.ValidateAndThrowAsync(userRegister, cancellationToken);
 
@@ -63,7 +63,7 @@ namespace BusinessLogic.Services
             return new(jwtToken, refreshToken.Token);
         }
 
-        public async Task<(string jwtToken, string refreshToken)> LoginAsync(LoginDTO userLogin, CancellationToken cancellationToken = default)
+        public async Task<(string jwtToken, string refreshToken)> LoginAsync(LoginDto userLogin, CancellationToken cancellationToken = default)
         {
             await _loginValidator.ValidateAndThrowAsync(userLogin, cancellationToken);
 

@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace BusinessLogic.Validation.Validators
 {
-    public class ChangeUserRoleDTOValidator : AbstractValidator<ChangeUserRoleDTO>
+    public class ChangeUserRoleDtoValidator : AbstractValidator<ChangeUserRoleDto>
     {
-        public ChangeUserRoleDTOValidator()
+        public ChangeUserRoleDtoValidator()
         {
         }
     }

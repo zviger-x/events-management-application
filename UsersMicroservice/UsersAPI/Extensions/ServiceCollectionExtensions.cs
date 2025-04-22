@@ -87,7 +87,6 @@ namespace UsersAPI.Extensions
 
         public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-
             var jwtConfig = configuration.GetSection("Jwt").Get<JwtTokenConfig>();
             if (jwtConfig == null)
                 throw new ArgumentNullException(nameof(jwtConfig));

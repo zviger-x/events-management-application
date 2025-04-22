@@ -33,7 +33,7 @@ namespace BusinessLogic.Services
         {
             await _notificationValidator.ValidateAndThrowAsync(notification, token);
 
-            if (!await IsUserExistsAsync(notification.UserId, token))
+            if (!await _unitOfWork.UserRepository.IsExists(notification.UserId, token))
                 throw new ValidationException(
                     UserNotificationValidationErrorCodes.UserIdIsInvalid,
                     UserNotificationValidationMessages.UserIdIsInvalid,
@@ -94,13 +94,6 @@ namespace BusinessLogic.Services
                 throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
             return await _unitOfWork.UserNotificationRepository.GetByUserIdAsync(id, token);
-        }
-
-        private async Task<bool> IsUserExistsAsync(Guid guid, CancellationToken token = default)
-        {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(guid, token);
-
-            return user != null;
         }
     }
 }

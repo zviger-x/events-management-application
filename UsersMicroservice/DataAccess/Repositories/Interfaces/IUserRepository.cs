@@ -19,5 +19,13 @@ namespace DataAccess.Repositories.Interfaces
         /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>User.</returns>
         Task<User> GetByEmailAsync(string email, CancellationToken token = default);
+
+        /// <summary>
+        /// Checks if a user exists in the database by their unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <param name="token">Cancellation token to cancel the operation if needed.</param>
+        /// <returns>True if the user exists, otherwise false.</returns>
+        Task<bool> IsExists(Guid id, CancellationToken token = default);
     }
 }

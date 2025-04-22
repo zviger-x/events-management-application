@@ -17,7 +17,7 @@ namespace UsersAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDTO registerDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO, CancellationToken cancellationToken)
         {
             var token = await _authService.RegisterAsync(registerDTO, cancellationToken);
 
@@ -25,7 +25,7 @@ namespace UsersAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDTO loginDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO, CancellationToken cancellationToken)
         {
             var token = await _authService.LoginAsync(loginDTO, cancellationToken);
 
@@ -42,7 +42,7 @@ namespace UsersAPI.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken(string refreshToken, CancellationToken cancellationToken)
+        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken, CancellationToken cancellationToken)
         {
             var token = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
 

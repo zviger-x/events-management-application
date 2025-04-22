@@ -12,9 +12,9 @@ namespace UsersAPI.Controllers
     [Route("api/transactions")]
     public class TransactionsController : Controller
     {
-        private readonly IUserTransactionService _userTransactionService;
-
         private const int PageSize = 10;
+
+        private readonly IUserTransactionService _userTransactionService;
 
         public TransactionsController(IUserTransactionService userTransactionService)
         {

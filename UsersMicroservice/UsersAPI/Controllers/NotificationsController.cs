@@ -12,9 +12,9 @@ namespace UsersAPI.Controllers
     [Route("api/notifications")]
     public class NotificationsController : Controller
     {
-        private readonly IUserNotificationService _userNotificationService;
-
         private const int PageSize = 10;
+
+        private readonly IUserNotificationService _userNotificationService;
 
         public NotificationsController(IUserNotificationService userNotificationService)
         {

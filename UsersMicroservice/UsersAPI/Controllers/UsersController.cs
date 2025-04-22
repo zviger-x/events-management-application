@@ -12,11 +12,11 @@ namespace UsersAPI.Controllers
     [Route("api/users")]
     public class UsersController : Controller
     {
+        private const int PageSize = 10;
+
         private readonly IUserService _userService;
         private readonly IUserNotificationService _userNotificationService;
         private readonly IUserTransactionService _userTransactionService;
-
-        private const int PageSize = 10;
 
         public UsersController(ICacheService cacheService,
             IUserService userService,
@@ -29,7 +29,7 @@ namespace UsersAPI.Controllers
         }
 
         [Authorize]
-        [HttpPatch("{userId}/profile")]
+        [HttpPut("{userId}/profile")]
         public async Task<IActionResult> ChangeProfile([FromRoute] Guid userId, [FromBody] UpdateUserDTO updateUserDTO, CancellationToken token)
         {
             await _userService.UpdateUserProfileAsync(userId, updateUserDTO, token);

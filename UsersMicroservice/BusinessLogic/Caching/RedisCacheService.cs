@@ -36,6 +36,7 @@ namespace BusinessLogic.Caching
         public async Task SetAsync<T>(string key, T value, TimeSpan expirationTime, CancellationToken cancellationToken = default)
         {
             var json = JsonSerializer.Serialize(value);
+
             await _database.StringSetAsync(key, json, expirationTime);
 
             _logger.LogInformation($"Cache set for key: {key} with expiration: {expirationTime.TotalSeconds} seconds");

@@ -56,8 +56,8 @@ namespace BusinessLogic.Services
             }, cancellationToken);
 
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
-
             var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+
             await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
@@ -68,15 +68,16 @@ namespace BusinessLogic.Services
             await _loginValidator.ValidateAndThrowAsync(userLogin, cancellationToken);
 
             var user = await _unitOfWork.UserRepository.GetByEmailAsync(userLogin.Email, cancellationToken);
+            var isValidEmailOrPassword = user != null && _passwordHashingService.VerifyPassword(userLogin.Password, user.PasswordHash);
 
-            if (user == null || !_passwordHashingService.VerifyPassword(userLogin.Password, user.PasswordHash))
+            if (!isValidEmailOrPassword)
                 throw new ValidationException(
                     errorCode: LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
                     errorMessage: LoginValidationMessages.EmailOrPasswordIsInvalid);
 
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
-
             var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+
             await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);

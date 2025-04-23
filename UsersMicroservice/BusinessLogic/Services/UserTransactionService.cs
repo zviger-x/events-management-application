@@ -15,18 +15,15 @@ namespace BusinessLogic.Services
     {
         private readonly IValidator<UserTransaction> _transactionValidator;
         private readonly IValidator<PageParameters> _pageParametersValidator;
-        private readonly ICurrentUserService _currentUserService;
 
         public UserTransactionService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<UserTransaction> transactionValidator,
-            IValidator<PageParameters> pageParametersValidator,
-            ICurrentUserService currentUserService)
+            IValidator<PageParameters> pageParametersValidator)
             : base(unitOfWork, mapper)
         {
             _transactionValidator = transactionValidator;
             _pageParametersValidator = pageParametersValidator;
-            _currentUserService = currentUserService;
         }
 
         public async Task<Guid> CreateAsync(UserTransaction transaction, CancellationToken token = default)
@@ -86,16 +83,14 @@ namespace BusinessLogic.Services
             return await _unitOfWork.UserTransactionRepository.GetPagedAsync(pageParameters.PageNumber, pageParameters.PageSize, token);
         }
 
-        public async Task<IEnumerable<UserTransaction>> GetByUserIdAsync(Guid id, CancellationToken token = default)
+        public async Task<IEnumerable<UserTransaction>> GetByUserIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default)
         {
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
-            var isCurrentUser = currentUserId == id;
+            var isCurrentUser = currentUserId == targetUserId;
 
             if (!isCurrentUser && !isAdmin)
                 throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
-            return await _unitOfWork.UserTransactionRepository.GetByUserIdAsync(id, token);
+            return await _unitOfWork.UserTransactionRepository.GetByUserIdAsync(targetUserId, token);
         }
     }
 }

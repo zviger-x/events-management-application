@@ -2,6 +2,7 @@
 using BusinessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UsersAPI.Extensions;
 
 namespace UsersAPI.Controllers
 {
@@ -36,7 +37,9 @@ namespace UsersAPI.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
-            await _authService.LogoutAsync(cancellationToken);
+            var currentUserId = User.GetUserIdOrThrow();
+
+            await _authService.LogoutAsync(currentUserId, cancellationToken);
 
             return Ok();
         }

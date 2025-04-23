@@ -22,7 +22,6 @@ namespace BusinessLogic.Services
         private readonly IValidator<PageParameters> _pageParametersValidator;
 
         private readonly IPasswordHashingService _passwordHashingService;
-        private readonly ICurrentUserService _currentUserService;
         private readonly ICacheService _cacheService;
 
         public UserService(IUnitOfWork unitOfWork,
@@ -32,7 +31,6 @@ namespace BusinessLogic.Services
             IValidator<ChangeUserRoleDto> changeUserRoleValidator,
             IValidator<PageParameters> pageParametersValidator,
             IPasswordHashingService passwordHashingService,
-            ICurrentUserService currentUserService,
             ICacheService cacheService)
             : base(unitOfWork, mapper)
         {
@@ -42,22 +40,19 @@ namespace BusinessLogic.Services
             _pageParametersValidator = pageParametersValidator;
 
             _passwordHashingService = passwordHashingService;
-            _currentUserService = currentUserService;
             _cacheService = cacheService;
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task DeleteAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken cancellationToken = default)
         {
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
-            var isCurrentUser = currentUserId == id;
+            var isCurrentUser = currentUserId == targetUserId;
 
             if (!isCurrentUser && !isAdmin)
                 throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {
-                var entity = await _unitOfWork.UserRepository.GetByIdAsync(id, token);
+                var entity = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, token);
                 if (entity == null)
                     return;
 
@@ -100,39 +95,35 @@ namespace BusinessLogic.Services
             return users;
         }
 
-        public async Task<User> GetByIdAsync(Guid id, CancellationToken token = default)
+        public async Task<User> GetByIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default)
         {
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
-            var isCurrentUser = currentUserId == id;
+            var isCurrentUser = currentUserId == targetUserId;
 
             if (!isCurrentUser && !isAdmin)
                 throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
-            var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(id), token);
+            var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(targetUserId), token);
             if (cachedUser != null)
                 return cachedUser;
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(id, token);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, token);
             if (user == null)
                 throw new NotFoundException("User not found.");
 
             user.PasswordHash = string.Empty;
-            await _cacheService.SetAsync(CacheKeys.UserById(id), user, token);
+            await _cacheService.SetAsync(CacheKeys.UserById(targetUserId), user, token);
 
             return user;
         }
 
-        public async Task UpdateUserProfileAsync(Guid userId, UpdateUserDto userUpdate, CancellationToken cancellationToken)
+        public async Task UpdateUserProfileAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, UpdateUserDto userUpdate, CancellationToken cancellationToken)
         {
             await _updateUserValidator.ValidateAndThrowAsync(userUpdate, cancellationToken);
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId, cancellationToken);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, cancellationToken);
             if (user == null)
                 throw new NotFoundException("User not found");
 
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
             var isCurrentUser = currentUserId == user.Id;
 
             if (!isCurrentUser && !isAdmin)
@@ -148,16 +139,14 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
-        public async Task ChangePasswordAsync(Guid userId, ChangePasswordDto changePasswordDto, CancellationToken cancellationToken)
+        public async Task ChangePasswordAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, ChangePasswordDto changePasswordDto, CancellationToken cancellationToken)
         {
             await _changePasswordValidator.ValidateAndThrowAsync(changePasswordDto, cancellationToken);
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId, cancellationToken);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, cancellationToken);
             if (user == null)
                 throw new NotFoundException("User not found");
 
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
             var isCurrentUser = currentUserId == user.Id;
 
             if (!isCurrentUser && !isAdmin)

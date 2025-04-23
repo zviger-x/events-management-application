@@ -3,6 +3,7 @@ using DataAccess.Common;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UsersAPI.Extensions;
 
 namespace UsersAPI.Controllers
 {
@@ -73,7 +74,10 @@ namespace UsersAPI.Controllers
         [HttpGet("/api/users/{userId}/transactions")]
         public async Task<IActionResult> GetUserTransactions([FromRoute] Guid userId, CancellationToken token)
         {
-            var transactions = await _userTransactionService.GetByUserIdAsync(userId, token);
+            var currentUserId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            var transactions = await _userTransactionService.GetByUserIdAsync(userId, currentUserId, isAdmin, token);
 
             return Ok(transactions);
         }

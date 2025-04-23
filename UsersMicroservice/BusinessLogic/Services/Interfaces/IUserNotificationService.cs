@@ -9,11 +9,14 @@ namespace BusinessLogic.Services.Interfaces
         IDeleteService
     {
         /// <summary>
-        /// Returns a collection of user notifications by the user's id.
+        /// Returns a collection of user notifications by the specified user's ID.  
+        /// Access is granted only if the requesting user is the same as the target user, or if the requester has administrative privileges.
         /// </summary>
-        /// <param name="id">User's id.</param>
+        /// <param name="targetUserId">The ID of the user whose notifications are being requested.</param>
+        /// <param name="currentUserId">The ID of the currently authenticated user making the request.</param>
+        /// <param name="isAdmin">Specifies whether the current user has administrative privileges.</param>
         /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>A collection of user notifications.</returns>
-        Task<IEnumerable<UserNotification>> GetByUserIdAsync(Guid id, CancellationToken token = default);
+        Task<IEnumerable<UserNotification>> GetByUserIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default);
     }
 }

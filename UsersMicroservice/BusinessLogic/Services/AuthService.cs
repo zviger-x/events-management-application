@@ -19,22 +19,18 @@ namespace BusinessLogic.Services
         private readonly IPasswordHashingService _passwordHashingService;
         private readonly ITokenService _tokenService;
 
-        private readonly ICurrentUserService _currentUserService;
-
         public AuthService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<LoginDto> loginValidator,
             IValidator<RegisterDto> registerValidator,
             IPasswordHashingService passwordHashingService,
-            ITokenService tokenService,
-            ICurrentUserService currentUserService)
+            ITokenService tokenService)
             : base(unitOfWork, mapper)
         {
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
             _passwordHashingService = passwordHashingService;
             _tokenService = tokenService;
-            _currentUserService = currentUserService;
         }
 
         public async Task<(string jwtToken, string refreshToken)> RegisterAsync(RegisterDto userRegister, CancellationToken cancellationToken = default)
@@ -83,9 +79,8 @@ namespace BusinessLogic.Services
             return new(jwtToken, refreshToken.Token);
         }
 
-        public async Task LogoutAsync(CancellationToken cancellationToken = default)
+        public async Task LogoutAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var userId = _currentUserService.GetUserIdOrThrow();
             var refreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(userId, cancellationToken);
 
             await _unitOfWork.RefreshTokenRepository.DeleteAsync(refreshToken, cancellationToken);

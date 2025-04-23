@@ -1,7 +1,5 @@
 ﻿using BusinessLogic.Configuration;
 using BusinessLogic.Mapping;
-using BusinessLogic.Services;
-using BusinessLogic.Services.Interfaces;
 using DataAccess.Contexts;
 using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
@@ -49,8 +47,6 @@ namespace UsersAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // BLL
-            services.AddHttpContextAccessor();
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddValidators();
             services.AddServices();

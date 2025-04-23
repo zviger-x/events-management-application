@@ -13,20 +13,17 @@ namespace BusinessLogic.Services
 {
     public class UserNotificationService : BaseService, IUserNotificationService
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly IValidator<UserNotification> _notificationValidator;
         private readonly IValidator<PageParameters> _pageParametersValidator;
 
         public UserNotificationService(IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<UserNotification> notificationValidatorvalidator,
-            IValidator<PageParameters> pageParametersValidator,
-            ICurrentUserService currentUserService)
+            IValidator<PageParameters> pageParametersValidator)
             : base(unitOfWork, mapper)
         {
             _notificationValidator = notificationValidatorvalidator;
             _pageParametersValidator = pageParametersValidator;
-            _currentUserService = currentUserService;
         }
 
         public async Task<Guid> CreateAsync(UserNotification notification, CancellationToken token = default)
@@ -84,16 +81,14 @@ namespace BusinessLogic.Services
             return await _unitOfWork.UserNotificationRepository.GetPagedAsync(pageParameters.PageNumber, pageParameters.PageSize, token);
         }
 
-        public async Task<IEnumerable<UserNotification>> GetByUserIdAsync(Guid id, CancellationToken token = default)
+        public async Task<IEnumerable<UserNotification>> GetByUserIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default)
         {
-            var currentUserId = _currentUserService.GetUserIdOrThrow();
-            var isAdmin = _currentUserService.IsAdminOrThrow();
-            var isCurrentUser = currentUserId == id;
+            var isCurrentUser = currentUserId == targetUserId;
 
             if (!isCurrentUser && !isAdmin)
                 throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
-            return await _unitOfWork.UserNotificationRepository.GetByUserIdAsync(id, token);
+            return await _unitOfWork.UserNotificationRepository.GetByUserIdAsync(targetUserId, token);
         }
     }
 }

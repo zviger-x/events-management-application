@@ -5,6 +5,7 @@ using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UsersAPI.Attributes;
+using UsersAPI.Extensions;
 
 namespace UsersAPI.Controllers
 {
@@ -25,7 +26,10 @@ namespace UsersAPI.Controllers
         [HttpPut("{userId}/profile")]
         public async Task<IActionResult> ChangeProfile([FromRoute] Guid userId, [FromBody] UpdateUserDto updateUserDto, CancellationToken token)
         {
-            await _userService.UpdateUserProfileAsync(userId, updateUserDto, token);
+            var currentUserId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            await _userService.UpdateUserProfileAsync(userId, currentUserId, isAdmin, updateUserDto, token);
 
             return Ok();
         }
@@ -34,7 +38,10 @@ namespace UsersAPI.Controllers
         [HttpPatch("{userId}/password")]
         public async Task<IActionResult> ChangePassword([FromRoute] Guid userId, [FromBody] ChangePasswordDto changePasswordDto, CancellationToken token)
         {
-            await _userService.ChangePasswordAsync(userId, changePasswordDto, token);
+            var currentUserId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            await _userService.ChangePasswordAsync(userId, currentUserId, isAdmin, changePasswordDto, token);
 
             return Ok();
         }
@@ -52,7 +59,10 @@ namespace UsersAPI.Controllers
         [HttpDelete("{userId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid userId, CancellationToken token)
         {
-            await _userService.DeleteAsync(userId, token);
+            var currentUserId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            await _userService.DeleteAsync(userId, currentUserId, isAdmin, token);
 
             return NoContent();
         }
@@ -61,7 +71,10 @@ namespace UsersAPI.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetById([FromRoute] Guid userId, CancellationToken token)
         {
-            var user = await _userService.GetByIdAsync(userId, token);
+            var currentUserId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            var user = await _userService.GetByIdAsync(userId, currentUserId, isAdmin, token);
 
             return Ok(user);
         }

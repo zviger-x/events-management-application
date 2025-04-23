@@ -3,6 +3,7 @@ using DataAccess.Common;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UsersAPI.Extensions;
 
 namespace UsersAPI.Controllers
 {
@@ -73,7 +74,10 @@ namespace UsersAPI.Controllers
         [HttpGet("/api/users/{userId}/notifications")]
         public async Task<IActionResult> GetUserNotifications([FromRoute] Guid userId, CancellationToken token)
         {
-            var notifications = await _userNotificationService.GetByUserIdAsync(userId, token);
+            var currentUserId = User.GetUserIdOrThrow();
+            var isAdmin = User.IsAdminOrThrow();
+
+            var notifications = await _userNotificationService.GetByUserIdAsync(userId, currentUserId, isAdmin, token);
 
             return Ok(notifications);
         }

@@ -60,49 +60,49 @@ namespace BusinessLogic.Services
             }, cancellationToken);
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default)
+        public async Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken token = default)
         {
-            var cachedUsers = await _cacheService.GetAsync<List<User>>(CacheKeys.AllUsers, token);
+            var cachedUsers = await _cacheService.GetAsync<List<UserDto>>(CacheKeys.AllUsers, token);
             if (cachedUsers != null)
                 return cachedUsers;
 
             var users = await _unitOfWork.UserRepository.GetAllAsync(token);
-            foreach (var user in users)
-                user.PasswordHash = string.Empty;
 
-            await _cacheService.SetAsync(CacheKeys.AllUsers, users, token);
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
 
-            return users;
+            await _cacheService.SetAsync(CacheKeys.AllUsers, userDtos, token);
+
+            return userDtos;
         }
 
-        public async Task<PagedCollection<User>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default)
+        public async Task<PagedCollection<UserDto>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default)
         {
             await _pageParametersValidator.ValidateAndThrowAsync(pageParameters, token);
 
             var pageNumber = pageParameters.PageNumber;
             var pageSize = pageParameters.PageSize;
 
-            var cachedUsers = await _cacheService.GetAsync<PagedCollection<User>>(CacheKeys.PagedUsers(pageNumber, pageSize), token);
+            var cachedUsers = await _cacheService.GetAsync<PagedCollection<UserDto>>(CacheKeys.PagedUsers(pageNumber, pageSize), token);
             if (cachedUsers != null)
                 return cachedUsers;
 
-            var users = await _unitOfWork.UserRepository.GetPagedAsync(pageNumber, pageSize, token);
-            foreach (var user in users.Items)
-                user.PasswordHash = string.Empty;
+            var pagedUsers = await _unitOfWork.UserRepository.GetPagedAsync(pageNumber, pageSize, token);
 
-            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), users, token);
+            var pagedUserDtos = _mapper.Map<PagedCollection<UserDto>>(pagedUsers);
 
-            return users;
+            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), pagedUserDtos, token);
+
+            return pagedUserDtos;
         }
 
-        public async Task<User> GetByIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default)
+        public async Task<UserDto> GetByIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default)
         {
             var isCurrentUser = currentUserId == targetUserId;
 
             if (!isCurrentUser && !isAdmin)
                 throw new ForbiddenAccessException("You do not have permission to perform this action.");
 
-            var cachedUser = await _cacheService.GetAsync<User>(CacheKeys.UserById(targetUserId), token);
+            var cachedUser = await _cacheService.GetAsync<UserDto>(CacheKeys.UserById(targetUserId), token);
             if (cachedUser != null)
                 return cachedUser;
 
@@ -110,10 +110,11 @@ namespace BusinessLogic.Services
             if (user == null)
                 throw new NotFoundException("User not found.");
 
-            user.PasswordHash = string.Empty;
-            await _cacheService.SetAsync(CacheKeys.UserById(targetUserId), user, token);
+            var userDto = _mapper.Map<UserDto>(user);
 
-            return user;
+            await _cacheService.SetAsync(CacheKeys.UserById(targetUserId), userDto, token);
+
+            return userDto;
         }
 
         public async Task UpdateUserProfileAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, UpdateUserDto userUpdate, CancellationToken cancellationToken)

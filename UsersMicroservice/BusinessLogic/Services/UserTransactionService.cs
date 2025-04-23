@@ -38,6 +38,7 @@ namespace BusinessLogic.Services
 
             // TODO: Нужно добавить проверку на наличие ивента (gRPC запрос в микросервису ивентов)
 
+            // TODO: Сделать dto модели, не хранящие Id и маппить
             transaction.Id = default;
             return await _unitOfWork.UserTransactionRepository.CreateAsync(transaction, token);
         }
@@ -50,6 +51,7 @@ namespace BusinessLogic.Services
             if (storedEntity == null)
                 throw new NotFoundException("Not found.");
 
+            // TODO: Сделать dto модели, не хранящие Id и маппить
             transaction.Id = id;
 
             await _unitOfWork.UserTransactionRepository.UpdateAsync(transaction, token);

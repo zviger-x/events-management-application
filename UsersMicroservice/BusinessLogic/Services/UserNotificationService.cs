@@ -36,6 +36,7 @@ namespace BusinessLogic.Services
                     UserNotificationValidationMessages.UserIdIsInvalid,
                     nameof(notification.UserId));
 
+            // TODO: Сделать dto модели, не хранящие Id и маппить
             notification.Id = default;
             return await _unitOfWork.UserNotificationRepository.CreateAsync(notification, token);
         }
@@ -48,6 +49,7 @@ namespace BusinessLogic.Services
             if (storedEntity == null)
                 throw new NotFoundException("Not found.");
 
+            // TODO: Сделать dto модели, не хранящие Id и маппить
             notification.Id = id;
 
             await _unitOfWork.UserNotificationRepository.UpdateAsync(notification, token);

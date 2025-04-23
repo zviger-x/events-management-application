@@ -1,6 +1,5 @@
 ﻿using BusinessLogic.Contracts;
 using DataAccess.Common;
-using DataAccess.Entities;
 
 namespace BusinessLogic.Services.Interfaces
 {
@@ -24,14 +23,14 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="isAdmin">Indicates whether the current user has administrative privileges.</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>The DTO representing the entity.</returns>
-        Task<User> GetByIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default);
+        Task<UserDto> GetByIdAsync(Guid targetUserId, Guid currentUserId, bool isAdmin, CancellationToken token = default);
 
         /// <summary>
         /// Gets a list of all users.
         /// </summary>
         /// <param name="token">Cancellation token.</param>
         /// <returns>List of users.</returns>
-        Task<IEnumerable<User>> GetAllAsync(CancellationToken token = default);
+        Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken token = default);
 
         /// <summary>
         /// Gets a paged collection of users.
@@ -39,7 +38,7 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="pageParameters">Page number and size.</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Paged collection of users.</returns>
-        Task<PagedCollection<User>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default);
+        Task<PagedCollection<UserDto>> GetPagedAsync(PageParameters pageParameters, CancellationToken token = default);
 
         /// <summary>
         /// Updates the user's profile information.

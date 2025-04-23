@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogic.Contracts;
+using DataAccess.Common;
 using DataAccess.Entities;
 
 namespace BusinessLogic.Mapping
@@ -13,6 +14,13 @@ namespace BusinessLogic.Mapping
 
             CreateMap<RegisterDto, User>();
             CreateMap<User, RegisterDto>();
+
+            CreateMap<UserDto, User>();
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.Notifications, opt => opt.Condition(u => u.Notifications != null))
+                .ForMember(dest => dest.Transactions, opt => opt.Condition(u => u.Transactions != null));
+
+            CreateMap(typeof(PagedCollection<>), typeof(PagedCollection<>));
         }
     }
 }

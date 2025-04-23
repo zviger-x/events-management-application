@@ -48,21 +48,21 @@ namespace DataAccess.Initialization
 
             var notifications = new UserNotification[]
             {
-                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_0", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
-                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_1", DateTime = DateTime.Now, Status = NotificationStatuses.Pending},
-                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_0", DateTime = DateTime.Now, Status = NotificationStatuses.Pending},
-                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_1", DateTime = DateTime.Now, Status = NotificationStatuses.Pending},
-                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_2", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
-                new UserNotification { UserId = users[2].Id, Message = "Notification_User_2_0", DateTime = DateTime.Now, Status = NotificationStatuses.Read},
+                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_0", DateTime = DateTime.UtcNow, Status = NotificationStatuses.Read},
+                new UserNotification { UserId = users[0].Id, Message = "Notification_User_0_1", DateTime = DateTime.UtcNow, Status = NotificationStatuses.Pending},
+                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_0", DateTime = DateTime.UtcNow, Status = NotificationStatuses.Pending},
+                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_1", DateTime = DateTime.UtcNow, Status = NotificationStatuses.Pending},
+                new UserNotification { UserId = users[1].Id, Message = "Notification_User_1_2", DateTime = DateTime.UtcNow, Status = NotificationStatuses.Read},
+                new UserNotification { UserId = users[2].Id, Message = "Notification_User_2_0", DateTime = DateTime.UtcNow, Status = NotificationStatuses.Read},
             };
             _context.AddRange(notifications);
 
             var transactions = new UserTransaction[]
             {
-                new UserTransaction { UserId = users[0].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.Now },
-                new UserTransaction { UserId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.Now },
-                new UserTransaction { UserId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 5.99f, TransactionDate = DateTime.Now },
-                new UserTransaction { UserId = users[2].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 19.99f, TransactionDate = DateTime.Now },
+                new UserTransaction { UserId = users[0].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.UtcNow },
+                new UserTransaction { UserId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 1.99f, TransactionDate = DateTime.UtcNow },
+                new UserTransaction { UserId = users[1].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 5.99f, TransactionDate = DateTime.UtcNow },
+                new UserTransaction { UserId = users[2].Id, EventId = Guid.NewGuid(), SeatNumber = 0, SeatRow = 0, Amount = 19.99f, TransactionDate = DateTime.UtcNow },
             };
             _context.AddRange(transactions);
 

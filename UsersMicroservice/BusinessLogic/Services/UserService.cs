@@ -54,7 +54,7 @@ namespace BusinessLogic.Services
             {
                 var entity = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, token);
                 if (entity == null)
-                    return;
+                    return; // Идемпотентный запрос возврощает тот же результат
 
                 await _unitOfWork.UserRepository.DeleteAsync(entity, token);
             }, cancellationToken);

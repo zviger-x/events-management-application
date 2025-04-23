@@ -1,5 +1,4 @@
-﻿using DataAccess.Entities;
-using DataAccess.Enums;
+﻿using DataAccess.Enums;
 
 namespace BusinessLogic.Services.Interfaces
 {
@@ -7,7 +6,7 @@ namespace BusinessLogic.Services.Interfaces
     {
         int TokenExpirationMinutes { get; }
 
-        int RefreshTokenExpirationMinutess { get; }
+        int RefreshTokenExpirationMinutes { get; }
 
         /// <summary>
         /// Generates a JWT token for the given user.
@@ -24,6 +23,6 @@ namespace BusinessLogic.Services.Interfaces
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>Generated refresh token</returns>
-        RefreshToken GenerateRefreshToken(Guid userId);
+        (string Token, DateTime Expires) GenerateRefreshToken(Guid userId);
     }
 }

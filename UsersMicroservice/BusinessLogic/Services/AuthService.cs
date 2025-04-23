@@ -54,7 +54,14 @@ namespace BusinessLogic.Services
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
             var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
 
-            await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
+            var refreshTokenModel = new RefreshToken
+            {
+                UserId = user.Id,
+                Token = refreshToken.Token,
+                Expires = refreshToken.Expires,
+            };
+
+            await UpsertRefreshTokenAsync(refreshTokenModel, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
         }
@@ -74,7 +81,14 @@ namespace BusinessLogic.Services
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
             var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
 
-            await UpsertRefreshTokenAsync(refreshToken, cancellationToken);
+            var refreshTokenModel = new RefreshToken
+            {
+                UserId = user.Id,
+                Token = refreshToken.Token,
+                Expires = refreshToken.Expires,
+            };
+
+            await UpsertRefreshTokenAsync(refreshTokenModel, cancellationToken);
 
             return new(jwtToken, refreshToken.Token);
         }
@@ -149,12 +163,12 @@ namespace BusinessLogic.Services
                 return null;
 
             var newRefreshToken = _tokenService.GenerateRefreshToken(id);
-            newRefreshToken.Id = oldRefreshToken.Id;
-            newRefreshToken.Expires = oldRefreshToken.Expires;
 
-            await UpsertRefreshTokenAsync(newRefreshToken, cancellationToken);
+            oldRefreshToken.Token = newRefreshToken.Token;
 
-            return newRefreshToken;
+            await UpsertRefreshTokenAsync(oldRefreshToken, cancellationToken);
+
+            return oldRefreshToken;
         }
     }
 }

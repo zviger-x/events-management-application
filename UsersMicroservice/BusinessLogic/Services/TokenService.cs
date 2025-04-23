@@ -1,6 +1,5 @@
 ﻿using BusinessLogic.Configuration;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Entities;
 using DataAccess.Enums;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -34,7 +33,7 @@ namespace BusinessLogic.Services
 
         public int TokenExpirationMinutes => _tokenExpirationMinutes;
 
-        public int RefreshTokenExpirationMinutess => _refreshTokenExpirationMinutes;
+        public int RefreshTokenExpirationMinutes => _refreshTokenExpirationMinutes;
 
         public string GenerateJwtToken(Guid id, string name, string email, UserRoles role)
         {
@@ -53,14 +52,14 @@ namespace BusinessLogic.Services
                 issuer: _issuer,
                 audience: _audience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(_tokenExpirationMinutes),
+                expires: DateTime.UtcNow.AddMinutes(_tokenExpirationMinutes),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public RefreshToken GenerateRefreshToken(Guid userId)
+        public (string Token, DateTime Expires) GenerateRefreshToken(Guid userId)
         {
             using var rng = RandomNumberGenerator.Create();
 
@@ -68,14 +67,9 @@ namespace BusinessLogic.Services
             rng.GetBytes(randomBytes);
 
             var token = Convert.ToBase64String(randomBytes);
-            var refreshToken = new RefreshToken()
-            {
-                UserId = userId,
-                Token = token,
-                Expires = DateTime.Now.AddMinutes(_refreshTokenExpirationMinutes)
-            };
+            var expires = DateTime.UtcNow.AddMinutes(_refreshTokenExpirationMinutes);
 
-            return refreshToken;
+            return new(token, expires);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BusinessLogic.Configuration;
-using BusinessLogic.Mapping;
 using DataAccess.Contexts;
 using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
@@ -7,6 +6,7 @@ using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.Reflection;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
 using UsersAPI.Middlewares;
@@ -46,7 +46,7 @@ namespace UsersAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // BLL
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(Assembly.Load("BusinessLogic"));
             services.AddValidators();
             services.AddServices();
             services.AddCachingServices();

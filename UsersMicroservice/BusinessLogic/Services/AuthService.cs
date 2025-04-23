@@ -52,7 +52,7 @@ namespace BusinessLogic.Services
             }, cancellationToken);
 
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
-            var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+            var refreshToken = _tokenService.GenerateRefreshToken();
 
             var refreshTokenModel = new RefreshToken
             {
@@ -79,7 +79,7 @@ namespace BusinessLogic.Services
                     errorMessage: LoginValidationMessages.EmailOrPasswordIsInvalid);
 
             var jwtToken = _tokenService.GenerateJwtToken(user.Id, user.Name, user.Email, user.Role);
-            var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+            var refreshToken = _tokenService.GenerateRefreshToken();
 
             var refreshTokenModel = new RefreshToken
             {
@@ -156,13 +156,13 @@ namespace BusinessLogic.Services
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>New <see cref="RefreshToken"/> with the same expiration time as the previous one. If the old refresh token does not exist, returns <see langword="null"/></returns>
-        private async Task<RefreshToken> RegenerateRefreshTokenValueAsync(Guid id, CancellationToken cancellationToken = default)
+        private async Task<RefreshToken> RegenerateRefreshTokenValueAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var oldRefreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(id, cancellationToken);
+            var oldRefreshToken = await _unitOfWork.RefreshTokenRepository.GetByUserIdAsync(userId, cancellationToken);
             if (oldRefreshToken == null)
                 return null;
 
-            var newRefreshToken = _tokenService.GenerateRefreshToken(id);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
 
             oldRefreshToken.Token = newRefreshToken.Token;
 

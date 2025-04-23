@@ -21,8 +21,7 @@ namespace BusinessLogic.Services.Interfaces
         /// <summary>
         /// Generates a random refresh token.
         /// </summary>
-        /// <param name="userId">User id</param>
         /// <returns>Generated refresh token</returns>
-        (string Token, DateTime Expires) GenerateRefreshToken(Guid userId);
+        (string Token, DateTime Expires) GenerateRefreshToken();
     }
 }

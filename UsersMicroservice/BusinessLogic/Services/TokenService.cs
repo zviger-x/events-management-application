@@ -59,7 +59,7 @@ namespace BusinessLogic.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public (string Token, DateTime Expires) GenerateRefreshToken(Guid userId)
+        public (string Token, DateTime Expires) GenerateRefreshToken()
         {
             using var rng = RandomNumberGenerator.Create();
 

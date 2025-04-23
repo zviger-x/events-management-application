@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogic.Contracts;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
@@ -13,44 +14,46 @@ namespace BusinessLogic.Services
 {
     public class UserNotificationService : BaseService, IUserNotificationService
     {
-        private readonly IValidator<UserNotification> _notificationValidator;
+        private readonly IValidator<CreateUserNotificationDto> _createUserNotificationDtoValidator;
+        private readonly IValidator<UpdateUserNotificationDto> _updateUserNotificationDtoValidator;
         private readonly IValidator<PageParameters> _pageParametersValidator;
 
         public UserNotificationService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IValidator<UserNotification> notificationValidatorvalidator,
+            IValidator<CreateUserNotificationDto> createUserNotificationDtoValidator,
+            IValidator<UpdateUserNotificationDto> updateUserNotificationDtoValidator,
             IValidator<PageParameters> pageParametersValidator)
             : base(unitOfWork, mapper)
         {
-            _notificationValidator = notificationValidatorvalidator;
+            _createUserNotificationDtoValidator = createUserNotificationDtoValidator;
+            _updateUserNotificationDtoValidator = updateUserNotificationDtoValidator;
             _pageParametersValidator = pageParametersValidator;
         }
 
-        public async Task<Guid> CreateAsync(UserNotification notification, CancellationToken token = default)
+        public async Task<Guid> CreateAsync(CreateUserNotificationDto notificationDto, CancellationToken token = default)
         {
-            await _notificationValidator.ValidateAndThrowAsync(notification, token);
+            await _createUserNotificationDtoValidator.ValidateAndThrowAsync(notificationDto, token);
 
-            if (!await _unitOfWork.UserRepository.IsExists(notification.UserId, token))
+            if (!await _unitOfWork.UserRepository.IsExists(notificationDto.UserId, token))
                 throw new ValidationException(
                     UserNotificationValidationErrorCodes.UserIdIsInvalid,
                     UserNotificationValidationMessages.UserIdIsInvalid,
-                    nameof(notification.UserId));
+                    nameof(notificationDto.UserId));
 
-            // TODO: Сделать dto модели, не хранящие Id и маппить
-            notification.Id = default;
+            var notification = _mapper.Map<UserNotification>(notificationDto);
+
             return await _unitOfWork.UserNotificationRepository.CreateAsync(notification, token);
         }
 
-        public async Task UpdateAsync(Guid id, UserNotification notification, CancellationToken token = default)
+        public async Task UpdateAsync(Guid id, UpdateUserNotificationDto notificationDto, CancellationToken token = default)
         {
-            await _notificationValidator.ValidateAndThrowAsync(notification, token);
+            await _updateUserNotificationDtoValidator.ValidateAndThrowAsync(notificationDto, token);
 
             var storedEntity = await _unitOfWork.UserNotificationRepository.GetByIdAsync(id, token);
             if (storedEntity == null)
                 throw new NotFoundException("Not found.");
 
-            // TODO: Сделать dto модели, не хранящие Id и маппить
-            notification.Id = id;
+            var notification = _mapper.Map(notificationDto, storedEntity);
 
             await _unitOfWork.UserNotificationRepository.UpdateAsync(notification, token);
         }

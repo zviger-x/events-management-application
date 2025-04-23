@@ -1,10 +1,11 @@
-﻿using BusinessLogic.Services.Interfaces.Common;
+﻿using BusinessLogic.Contracts;
+using BusinessLogic.Services.Interfaces.Common;
 using DataAccess.Entities;
 
 namespace BusinessLogic.Services.Interfaces
 {
-    public interface IUserNotificationService : ICreateService<UserNotification>,
-        IUpdateService<UserNotification>,
+    public interface IUserNotificationService : ICreateService<CreateUserNotificationDto>,
+        IUpdateService<UpdateUserNotificationDto>,
         IReadService<UserNotification>,
         IDeleteService
     {

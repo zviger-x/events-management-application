@@ -1,10 +1,11 @@
-﻿using BusinessLogic.Services.Interfaces.Common;
+﻿using BusinessLogic.Contracts;
+using BusinessLogic.Services.Interfaces.Common;
 using DataAccess.Entities;
 
 namespace BusinessLogic.Services.Interfaces
 {
-    public interface IUserTransactionService : ICreateService<UserTransaction>,
-        IUpdateService<UserTransaction>,
+    public interface IUserTransactionService : ICreateService<CreateUserTransactionDto>,
+        IUpdateService<UpdateUserTransactionDto>,
         IReadService<UserTransaction>,
         IDeleteService
     {

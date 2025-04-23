@@ -45,7 +45,6 @@ namespace UsersAPI.Extensions
             services.AddDbContext<UserDbContext>(o =>
             {
                 o.UseSqlServer(sqlConfig.ConnectionString);
-                o.EnableSensitiveDataLogging();
             });
         }
 

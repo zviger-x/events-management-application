@@ -9,6 +9,8 @@ namespace BusinessLogic.Mapping
     {
         public MappingProfile()
         {
+            CreateMap(typeof(PagedCollection<>), typeof(PagedCollection<>));
+
             CreateMap<UpdateUserDto, User>();
             CreateMap<User, UpdateUserDto>();
 
@@ -20,7 +22,17 @@ namespace BusinessLogic.Mapping
                 .ForMember(dest => dest.Notifications, opt => opt.Condition(u => u.Notifications != null))
                 .ForMember(dest => dest.Transactions, opt => opt.Condition(u => u.Transactions != null));
 
-            CreateMap(typeof(PagedCollection<>), typeof(PagedCollection<>));
+            CreateMap<CreateUserNotificationDto, UserNotification>();
+            CreateMap<UserNotification, CreateUserNotificationDto>();
+
+            CreateMap<UpdateUserNotificationDto, UserNotification>();
+            CreateMap<UserNotification, UpdateUserNotificationDto>();
+
+            CreateMap<CreateUserTransactionDto, UserTransaction>();
+            CreateMap<UserTransaction, CreateUserTransactionDto>();
+
+            CreateMap<UpdateUserTransactionDto, UserTransaction>();
+            CreateMap<UserTransaction, UpdateUserTransactionDto>();
         }
     }
 }

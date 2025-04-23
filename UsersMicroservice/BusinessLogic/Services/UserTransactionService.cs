@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogic.Contracts;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
@@ -13,46 +14,48 @@ namespace BusinessLogic.Services
 {
     public class UserTransactionService : BaseService, IUserTransactionService
     {
-        private readonly IValidator<UserTransaction> _transactionValidator;
+        private readonly IValidator<CreateUserTransactionDto> _createUserTransactionDtoValidator;
+        private readonly IValidator<UpdateUserTransactionDto> _updateUserTransactionDtoValidator;
         private readonly IValidator<PageParameters> _pageParametersValidator;
 
         public UserTransactionService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IValidator<UserTransaction> transactionValidator,
+            IValidator<CreateUserTransactionDto> createUserTransactionDtoValidator,
+            IValidator<UpdateUserTransactionDto> updateUserTransactionDtoValidator,
             IValidator<PageParameters> pageParametersValidator)
             : base(unitOfWork, mapper)
         {
-            _transactionValidator = transactionValidator;
+            _createUserTransactionDtoValidator = createUserTransactionDtoValidator;
+            _updateUserTransactionDtoValidator = updateUserTransactionDtoValidator;
             _pageParametersValidator = pageParametersValidator;
         }
 
-        public async Task<Guid> CreateAsync(UserTransaction transaction, CancellationToken token = default)
+        public async Task<Guid> CreateAsync(CreateUserTransactionDto transactionDto, CancellationToken token = default)
         {
-            await _transactionValidator.ValidateAndThrowAsync(transaction, token);
+            await _createUserTransactionDtoValidator.ValidateAndThrowAsync(transactionDto, token);
 
-            if (!await _unitOfWork.UserRepository.IsExists(transaction.UserId, token))
+            if (!await _unitOfWork.UserRepository.IsExists(transactionDto.UserId, token))
                 throw new ValidationException(
                     UserTransactionValidationErrorCodes.UserIdIsInvalid,
                     UserTransactionValidationMessages.UserIdIsInvalid,
-                    nameof(transaction.UserId));
+                    nameof(transactionDto.UserId));
 
             // TODO: Нужно добавить проверку на наличие ивента (gRPC запрос в микросервису ивентов)
 
-            // TODO: Сделать dto модели, не хранящие Id и маппить
-            transaction.Id = default;
+            var transaction = _mapper.Map<UserTransaction>(transactionDto);
+
             return await _unitOfWork.UserTransactionRepository.CreateAsync(transaction, token);
         }
 
-        public async Task UpdateAsync(Guid id, UserTransaction transaction, CancellationToken token = default)
+        public async Task UpdateAsync(Guid id, UpdateUserTransactionDto transactionDto, CancellationToken token = default)
         {
-            await _transactionValidator.ValidateAndThrowAsync(transaction, token);
+            await _updateUserTransactionDtoValidator.ValidateAndThrowAsync(transactionDto, token);
 
             var storedEntity = await _unitOfWork.UserTransactionRepository.GetByIdAsync(id, token);
             if (storedEntity == null)
                 throw new NotFoundException("Not found.");
 
-            // TODO: Сделать dto модели, не хранящие Id и маппить
-            transaction.Id = id;
+            var transaction = _mapper.Map(transactionDto, storedEntity);
 
             await _unitOfWork.UserTransactionRepository.UpdateAsync(transaction, token);
         }

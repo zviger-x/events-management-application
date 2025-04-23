@@ -1,6 +1,6 @@
-﻿using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Contracts;
+using BusinessLogic.Services.Interfaces;
 using DataAccess.Common;
-using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UsersAPI.Extensions;
@@ -9,8 +9,9 @@ namespace UsersAPI.Controllers
 {
     // TODO: Создать gRPC сервис для работы с транзакциями
     // Этот класс для демонстрации и проверки корректности работы CRUD операций с транзакциями.
-    // Он будет перенесён в gRPC сервис, потому что пользователю нет смысла взаимодействовать с этими методами.
+    // Часть будет перенесена в gRPC сервис
     [ApiController]
+    [Authorize]
     [Route("api/transactions")]
     public class TransactionsController : Controller
     {
@@ -23,25 +24,22 @@ namespace UsersAPI.Controllers
             _userTransactionService = userTransactionService;
         }
 
-        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UserTransaction transaction, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] CreateUserTransactionDto transaction, CancellationToken cancellationToken)
         {
-            await _userTransactionService.CreateAsync(transaction, cancellationToken);
+            var createdId = await _userTransactionService.CreateAsync(transaction, cancellationToken);
 
-            return Ok();
+            return StatusCode(StatusCodes.Status201Created, new { Id = createdId });
         }
 
-        [Authorize]
         [HttpPut("{transactionId}")]
-        public async Task<IActionResult> Update([FromRoute] Guid transactionId, [FromBody] UserTransaction transaction, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update([FromRoute] Guid transactionId, [FromBody] UpdateUserTransactionDto transaction, CancellationToken cancellationToken)
         {
             await _userTransactionService.UpdateAsync(transactionId, transaction, cancellationToken);
 
             return Ok();
         }
 
-        [Authorize]
         [HttpDelete("{transactionId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid transactionId, CancellationToken cancellationToken)
         {
@@ -50,7 +48,6 @@ namespace UsersAPI.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpGet("{transactionId}")]
         public async Task<IActionResult> GetById([FromRoute] Guid transactionId, CancellationToken cancellationToken)
         {
@@ -59,7 +56,6 @@ namespace UsersAPI.Controllers
             return Ok(transaction);
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetPaged([FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
@@ -70,7 +66,6 @@ namespace UsersAPI.Controllers
             return Ok(transactions);
         }
 
-        [Authorize]
         [HttpGet("/api/users/{userId}/transactions")]
         public async Task<IActionResult> GetUserTransactions([FromRoute] Guid userId, CancellationToken token)
         {

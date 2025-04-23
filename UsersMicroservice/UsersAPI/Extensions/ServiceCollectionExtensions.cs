@@ -22,12 +22,8 @@ namespace UsersAPI.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddRedisServer(this IServiceCollection services, IConfiguration configuration)
+        public static void AddRedisServer(this IServiceCollection services, RedisServerConfig redisConfig)
         {
-            var redisConfig = configuration.GetSection("Caching:RedisServerConfig").Get<RedisServerConfig>();
-            if (redisConfig == null)
-                throw new ArgumentNullException(nameof(redisConfig));
-
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfig.ConnectionString));
             services.AddStackExchangeRedisCache(options =>
             {
@@ -36,16 +32,9 @@ namespace UsersAPI.Extensions
             });
         }
 
-        public static void AddUserDbContext(this IServiceCollection services, IConfiguration configuration)
+        public static void AddUserDbContext(this IServiceCollection services, SqlServerConfig sqlConfig)
         {
-            var sqlConfig = configuration.GetSection("SqlServerConfig").Get<SqlServerConfig>();
-            if (sqlConfig == null)
-                throw new ArgumentNullException(nameof(sqlConfig));
-
-            services.AddDbContext<UserDbContext>(o =>
-            {
-                o.UseSqlServer(sqlConfig.ConnectionString);
-            });
+            services.AddDbContext<UserDbContext>(o => o.UseSqlServer(sqlConfig.ConnectionString));
         }
 
         public static void AddRepositories(this IServiceCollection services)
@@ -84,12 +73,8 @@ namespace UsersAPI.Extensions
             services.AddScoped<ICacheService, RedisCacheService>();
         }
 
-        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static void AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig jwtConfig)
         {
-            var jwtConfig = configuration.GetSection("Jwt").Get<JwtTokenConfig>();
-            if (jwtConfig == null)
-                throw new ArgumentNullException(nameof(jwtConfig));
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

@@ -5,7 +5,6 @@ using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using UsersAPI.Configuration;
@@ -25,10 +24,10 @@ namespace UsersAPI
             var configuration = builder.Configuration;
 
             // Add configs
-            services.Configure<JwtTokenConfig>(configuration.GetSection("Jwt"));
-            services.Configure<CacheConfig>(configuration.GetSection("Caching:Cache"));
-            services.Configure<RedisServerConfig>(configuration.GetSection("Caching:RedisServerConfig"));
-            services.Configure<SqlServerConfig>(configuration.GetSection("SqlServerConfig"));
+            var jwtConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "Jwt");
+            var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
+            var redisConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
+            var sqlConfig = services.ConfigureAndReceive<SqlServerConfig>(configuration, "SqlServerConfig");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -39,10 +38,10 @@ namespace UsersAPI
             builder.Logging.AddSerilog();
 
             // Redis
-            services.AddRedisServer(configuration);
+            services.AddRedisServer(redisConfig);
 
             // DAL
-            services.AddUserDbContext(configuration);
+            services.AddUserDbContext(sqlConfig);
             services.AddRepositories();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -53,7 +52,7 @@ namespace UsersAPI
             services.AddCachingServices();
 
             // JWT
-            services.AddJwtAuthentication(configuration);
+            services.AddJwtAuthentication(jwtConfig);
             services.AddAuthorization();
 
             services.AddControllers();
@@ -76,12 +75,8 @@ namespace UsersAPI
 
                 // Regenerate db and seed demo data
                 // TODO: Удалить, когда будет установлен дефолтный пользователь с правами админа
-                var sqlOptions = scope.ServiceProvider.GetRequiredService<IOptions<SqlServerConfig>>();
-                if (sqlOptions.Value != null)
-                {
-                    var dbInitializer = new DBInitializer(dbContext, sqlOptions.Value.RecreateDatabase, sqlOptions.Value.SeedDemoData);
-                    dbInitializer.Initialize();
-                }
+                var dbInitializer = new DBInitializer(dbContext, sqlConfig.RecreateDatabase, sqlConfig.SeedDemoData);
+                dbInitializer.Initialize();
             }
 
             if (app.Environment.IsDevelopment())

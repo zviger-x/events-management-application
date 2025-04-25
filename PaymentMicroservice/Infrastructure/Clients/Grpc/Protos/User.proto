@@ -1,0 +1,28 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Infrastructure.Clients.Grpc.User";
+
+import "google/protobuf/timestamp.proto";
+
+package user;
+
+// Запрос: DTO транзакция, которая будет сохранена в истории пользователя
+message CreateTransactionRequest {
+	string user_id = 1;
+	string event_id = 2;
+	string event_name = 3;
+	int32 seat_row = 4;
+	int32 seat_number = 5;
+	float amount = 6;
+	google.protobuf.Timestamp transaction_date = 7;
+}
+
+// Ответ
+message CreateTransactionResult {
+	bool success = 1;
+}
+
+// gRPC-сервис
+service UserService {
+	rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResult);
+}

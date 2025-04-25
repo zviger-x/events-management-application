@@ -5,12 +5,12 @@ namespace Application.MediatR.Commands
 {
     public class ProcessPaymentCommand : IRequest<PaymentResultDto>
     {
-        public Guid UserId { get; set; }
-        public Guid EventId { get; set; }
-        public string EventName { get; set; }
-        public string Token { get; set; }
-        public float Amount { get; set; }
-        public int SeatRow { get; set; }
-        public int SeatNumber { get; set; }
+        public required Guid UserId { get; set; }
+        public required Guid EventId { get; set; }
+        public required string EventName { get; set; }
+        public required string Token { get; set; }
+        public required float Amount { get; set; }
+        public required int SeatRow { get; set; }
+        public required int SeatNumber { get; set; }
     }
 }

@@ -1,0 +1,26 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Infrastructure.Clients.Grpc.Payment";
+
+package payment;
+
+// Запрос
+message ProcessPaymentRequest {
+	string token = 1;
+	string user_id = 2;
+	string event_id = 3;
+	string event_name = 4;
+	int32 seat_row = 5;
+	int32 seat_number = 6;
+	float amount = 7;
+}
+
+// Ответ
+message ProcessPaymentResponse {
+	bool success = 1;
+}
+
+// gRPC-сервис
+service PaymentService {
+	rpc ProcessPayment (ProcessPaymentRequest) returns (ProcessPaymentResponse);
+}

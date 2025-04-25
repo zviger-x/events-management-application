@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Clients\Grpc\Protos\Payment.proto" GrpcServices="Client" />
     <Protobuf Include="Clients\Grpc\Protos\User.proto" GrpcServices="Client" />
   </ItemGroup>
   

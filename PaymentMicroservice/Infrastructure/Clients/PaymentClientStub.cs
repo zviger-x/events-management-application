@@ -1,6 +1,6 @@
 ﻿using Application.Clients;
 
-namespace Infrastructure.Clients.Grpc
+namespace Infrastructure.Clients
 {
     internal class PaymentClientStub : IPaymentClient
     {

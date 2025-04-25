@@ -1,7 +1,7 @@
 ﻿using Application.Clients;
 using Application.Contracts;
 
-namespace Infrastructure.Clients.Grpc
+namespace Infrastructure.Clients
 {
     internal class UserClientStub : IUserClient
     {

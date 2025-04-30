@@ -4,7 +4,7 @@ using AutoMapper;
 
 namespace Application.Mapping
 {
-    internal class PaymentProfile : Profile
+    public class PaymentProfile : Profile
     {
         public PaymentProfile()
         {

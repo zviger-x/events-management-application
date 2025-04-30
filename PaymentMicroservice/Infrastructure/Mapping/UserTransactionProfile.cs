@@ -5,9 +5,9 @@ using Infrastructure.Clients.Grpc.User;
 
 namespace Infrastructure.Mapping
 {
-    internal class UserTransactionProfile : Profile
+    public class UserTransactionProfile : Profile
     {
-        protected UserTransactionProfile()
+        public UserTransactionProfile()
         {
             // Guid to string, DateTime to Proto.TimeStamp
             CreateMap<CreateUserTransactionDto, CreateTransactionRequest>()

@@ -5,7 +5,7 @@ using Infrastructure.Clients.Grpc.User;
 
 namespace Infrastructure.Clients.Grpc
 {
-    internal class UserClient : IUserClient
+    public class UserClient : IUserClient
     {
         private readonly IMapper _mapper;
         private readonly UserService.UserServiceClient _userServiceClient;

@@ -2,11 +2,13 @@
 
 namespace Infrastructure.Clients
 {
-    internal class PaymentClientStub : IPaymentClient
+    public class PaymentClientStub : IPaymentClient
     {
-        public Task<bool> ProcessPaymentAsync(string token, float amount)
+        public async Task<bool> ProcessPaymentAsync(string token, float amount)
         {
-            return Task.FromResult(true);
+            await Task.Delay(500);
+
+            return await Task.FromResult(true);
         }
     }
 }

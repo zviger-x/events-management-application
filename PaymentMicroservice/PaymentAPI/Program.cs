@@ -1,3 +1,11 @@
+using Application.Clients;
+using Infrastructure.Clients;
+using PaymentAPI.Services;
+using Serilog;
+using Shared.Grpc.Interceptors;
+using Shared.Logging;
+using System.Reflection;
+
 namespace PaymentAPI
 {
     public class Program
@@ -7,10 +15,41 @@ namespace PaymentAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            var services = builder.Services;
+            var configuration = builder.Configuration;
+            var logging = builder.Logging;
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            // Add logging
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+                .CreateLogger();
+            logging.ClearProviders();
+            logging.AddSerilog();
+
+            services.AddAutoMapper([
+                Assembly.Load("Application"),
+                Assembly.Load("Infrastructure"),
+                Assembly.Load("PaymentAPI")]);
+
+            // BLL
+            services.AddScoped<IUserClient, UserClientStub>();
+            services.AddScoped<IPaymentClient, PaymentClientStub>();
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
+            // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            // services.AddGrpcClient<UserService.UserServiceClient>(options =>
+            // {
+            //     options.Address = new Uri(builder.Configuration["GrpcServices:UserServiceUrl"]);
+            // });
+
+            // API
+            services.AddGrpc(options => { options.Interceptors.Add<GrpcExceptionInterceptor>(); }).AddJsonTranscoding();
+            services.AddGrpcSwagger();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new() { Title = "gRPC Payment Microservice", Version = "v1" });
+            });
+            // services.AddEndpointsApiExplorer();
 
             var app = builder.Build();
 
@@ -21,11 +60,13 @@ namespace PaymentAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
+            // 
+            // app.UseAuthorization();
+            // 
+            // app.MapControllers();
 
-            app.UseAuthorization();
-
-            app.MapControllers();
+            app.MapGrpcService<PaymentService>();
 
             app.Run();
         }

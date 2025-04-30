@@ -3,11 +3,13 @@ using Application.Contracts;
 
 namespace Infrastructure.Clients
 {
-    internal class UserClientStub : IUserClient
+    public class UserClientStub : IUserClient
     {
-        public Task<bool> CreateTransactionAsync(CreateUserTransactionDto transaction)
+        public async Task<bool> CreateTransactionAsync(CreateUserTransactionDto transaction)
         {
-            return Task.FromResult(true);
+            await Task.Delay(500);
+
+            return await Task.FromResult(true);
         }
     }
 }

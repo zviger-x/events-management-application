@@ -37,10 +37,6 @@ namespace PaymentAPI
             services.AddScoped<IPaymentClient, PaymentClientStub>();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
             // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            // services.AddGrpcClient<UserService.UserServiceClient>(options =>
-            // {
-            //     options.Address = new Uri(builder.Configuration["GrpcServices:UserServiceUrl"]);
-            // });
 
             // API
             services.AddGrpc(options => { options.Interceptors.Add<GrpcExceptionInterceptor>(); }).AddJsonTranscoding();
@@ -49,7 +45,6 @@ namespace PaymentAPI
             {
                 c.SwaggerDoc("v1", new() { Title = "gRPC Payment Microservice", Version = "v1" });
             });
-            // services.AddEndpointsApiExplorer();
 
             var app = builder.Build();
 
@@ -59,12 +54,6 @@ namespace PaymentAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            // app.UseHttpsRedirection();
-            // 
-            // app.UseAuthorization();
-            // 
-            // app.MapControllers();
 
             app.MapGrpcService<PaymentService>();
 

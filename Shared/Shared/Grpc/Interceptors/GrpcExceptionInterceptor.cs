@@ -1,50 +1,65 @@
 ﻿using Grpc.Core;
+using Grpc.Core.Interceptors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions.ServerExceptions;
 using Shared.Logging.Extensions;
-using System.Text;
 using System.Text.Json;
 using FluentValidationException = FluentValidation.ValidationException;
 
-namespace Shared.Middlewares
+namespace Shared.Grpc.Interceptors
 {
-    public class ExceptionHandlingMiddleware
+    public class GrpcExceptionInterceptor : Interceptor
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private readonly ILogger<GrpcExceptionInterceptor> _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        public GrpcExceptionInterceptor(ILogger<GrpcExceptionInterceptor> logger)
         {
-            _next = next;
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context)
+        public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
         {
             try
             {
-                await _next(context);
+                return await continuation(request, context);
             }
             catch (Exception ex)
             {
                 TryConvertToServerException(ref ex);
 
-                var responseStatus = GetResponseStatusCode(ex);
-                var response = GetErrorResponse(ex);
+                var httpStatus = GetResponseStatusCode(ex);
+                var errorBody = GetErrorResponse(ex);
 
-                LogError(ex, responseStatus);
+                LogError(ex, httpStatus);
 
-                await SendErrorAsJsonAsync(context, response, responseStatus);
+                var grpcStatus = MapToGrpcStatusCode(httpStatus);
+
+                throw GetRpcException(grpcStatus, ex.Message, errorBody);
             }
         }
 
-        private async Task SendErrorAsJsonAsync(HttpContext context, object response, int statusCode)
+        private RpcException GetRpcException(StatusCode grpcStatus, string message, object errors)
         {
-            context.Response.StatusCode = statusCode;
-            context.Response.ContentType = "application/json";
+            var status = new Status(grpcStatus, message);
+            var errorsAsBytes = JsonSerializer.SerializeToUtf8Bytes(errors);
+            var trailers = new Metadata { { new Metadata.Entry("error-details-bin", errorsAsBytes) } };
 
-            await context.Response.WriteAsJsonAsync(response);
+            return new RpcException(status, trailers);
+        }
+
+        private StatusCode MapToGrpcStatusCode(int httpStatus)
+        {
+            return httpStatus switch
+            {
+                StatusCodes.Status400BadRequest => StatusCode.InvalidArgument,
+                StatusCodes.Status401Unauthorized => StatusCode.Unauthenticated,
+                StatusCodes.Status403Forbidden => StatusCode.PermissionDenied,
+                StatusCodes.Status404NotFound => StatusCode.NotFound,
+                StatusCodes.Status409Conflict => StatusCode.Aborted,
+                >= StatusCodes.Status500InternalServerError => StatusCode.Internal,
+                _ => StatusCode.Unknown
+            };
         }
 
         private int GetResponseStatusCode(Exception ex)
@@ -70,11 +85,18 @@ namespace Shared.Middlewares
                     return StatusCodes.Status409Conflict;
 
                 case ServerException:
-                case RpcException:
                 case Exception:
                 default:
                     return StatusCodes.Status500InternalServerError;
             }
+        }
+
+        private void LogError(Exception ex, int statusCode)
+        {
+            if (statusCode < StatusCodes.Status500InternalServerError)
+                _logger.LogErrorInterpolated($"An error occurred: {ex.Message}");
+            else
+                _logger.LogErrorInterpolated(ex, $"An unexpected error occurred");
         }
 
         private object GetErrorResponse(Exception ex)
@@ -88,9 +110,6 @@ namespace Shared.Middlewares
                 // Ошибки в бизнес логике
                 ServerException serverEx => GetErrorObject(serverEx),
 
-                // Ошибки в gRPC запросах
-                RpcException rpcEx => GetErrorObject(rpcEx),
-
                 // Любые другие ошибки
                 _ => GetErrorObject("unexpectedError", "An unexpected error occurred")
             };
@@ -98,22 +117,18 @@ namespace Shared.Middlewares
 
         private bool TryConvertToServerException(ref Exception ex)
         {
-            ex = ex switch
+            switch (ex)
             {
-                ArgumentNullException argNullEx => new ParameterNullException(argNullEx),
-                ArgumentException argEx => new ParameterException(argEx),
-                _ => ex
-            };
-
-            return ex is ServerException;
-        }
-
-        private void LogError(Exception ex, int statusCode)
-        {
-            if (statusCode < StatusCodes.Status500InternalServerError)
-                _logger.LogErrorInterpolated($"An error occurred: {ex.Message}");
-            else
-                _logger.LogErrorInterpolated(ex, $"An unexpected error occurred");
+                case ArgumentNullException ane:
+                    ex = new ParameterNullException(ane);
+                    break;
+                case ArgumentException ae:
+                    ex = new ParameterException(ae);
+                    break;
+                default:
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -172,42 +187,6 @@ namespace Shared.Middlewares
                 ex => new { ex.PropertyName, ex.Message });
 
             return new { errors = errorDictionary };
-        }
-
-        /// <summary>
-        /// Returns an object in a standardized format:
-        /// <code>
-        /// {
-        ///     "errors": {
-        ///         "unexpectedError": {
-        ///             "propertyName": null,
-        ///             "serverMessage": "An unexpected error occurred."
-        ///         }
-        ///     }
-        /// }
-        /// </code>
-        /// If the object cannot be parsed, returns null.
-        /// </summary>
-        private object GetErrorObject(RpcException ex)
-        {
-            var trailer = ex.Trailers.Get("error-details-bin");
-            if (trailer != null)
-            {
-                try
-                {
-                    var bytes = trailer.ValueBytes;
-                    var json = Encoding.UTF8.GetString(bytes);
-                    var errorObject = JsonSerializer.Deserialize<object>(json);
-
-                    return errorObject;
-                }
-                catch (Exception e)
-                {
-                    _logger.LogErrorInterpolated($"Failed to parse error details: {e.Message}");
-                }
-            }
-
-            return null;
         }
     }
 }

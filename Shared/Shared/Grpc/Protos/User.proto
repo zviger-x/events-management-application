@@ -1,10 +1,10 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "Infrastructure.Clients.Grpc.User";
+option csharp_namespace = "Shared.Grpc.User";
 
 import "google/protobuf/timestamp.proto";
 
-package user;
+package shared;
 
 // Запрос: DTO транзакция, которая будет сохранена в истории пользователя
 message CreateTransactionRequest {

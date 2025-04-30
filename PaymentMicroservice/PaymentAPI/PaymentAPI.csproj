@@ -39,11 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Services\Grpc\Protos\Payment.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="google\api\" />
+    <Protobuf Include="..\..\Shared\Shared\Grpc\Protos\Payment.proto" GrpcServices="Server" AdditionalImportDirs="..\..\Shared\Shared\Grpc" />
   </ItemGroup>
 
 </Project>

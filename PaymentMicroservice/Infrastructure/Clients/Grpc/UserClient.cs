@@ -1,7 +1,7 @@
 ﻿using Application.Clients;
 using Application.Contracts;
 using AutoMapper;
-using Infrastructure.Clients.Grpc.User;
+using Shared.Grpc.User;
 
 namespace Infrastructure.Clients.Grpc
 {

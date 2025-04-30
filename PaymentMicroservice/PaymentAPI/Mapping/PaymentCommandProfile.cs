@@ -1,6 +1,6 @@
 ﻿using Application.MediatR.Commands;
 using AutoMapper;
-using PaymentAPI.Services.Grpc.Payment;
+using Shared.Grpc.Payment;
 
 namespace PaymentAPI.Mapping
 {

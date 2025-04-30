@@ -2,8 +2,8 @@
 using AutoMapper;
 using Grpc.Core;
 using MediatR;
-using PaymentAPI.Services.Grpc.Payment;
-using GrpcPaymentService = PaymentAPI.Services.Grpc.Payment.PaymentService;
+using Shared.Grpc.Payment;
+using GrpcPaymentService = Shared.Grpc.Payment.PaymentService;
 
 namespace PaymentAPI.Services
 {

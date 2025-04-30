@@ -43,7 +43,11 @@ namespace Shared.Grpc.Interceptors
         {
             var status = new Status(grpcStatus, message);
             var errorsAsBytes = JsonSerializer.SerializeToUtf8Bytes(errors);
-            var trailers = new Metadata { { new Metadata.Entry("error-details-bin", errorsAsBytes) } };
+            var trailers = new Metadata
+            {
+                { new Metadata.Entry("error-details-bin", errorsAsBytes) },
+                { new Metadata.Entry("grpc-status-details-bin", errorsAsBytes) }
+            };
 
             return new RpcException(status, trailers);
         }

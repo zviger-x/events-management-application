@@ -1,7 +1,7 @@
 ﻿using Application.Contracts;
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
-using Infrastructure.Clients.Grpc.User;
+using Shared.Grpc.User;
 
 namespace Infrastructure.Mapping
 {

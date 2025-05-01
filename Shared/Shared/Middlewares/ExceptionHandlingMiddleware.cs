@@ -111,9 +111,19 @@ namespace Shared.Middlewares
         private void LogError(Exception ex, int statusCode)
         {
             if (statusCode < StatusCodes.Status500InternalServerError)
+            {
                 _logger.LogErrorInterpolated($"An error occurred: {ex.Message}");
+            }
+            else if (ex is RpcException rpcEx)
+            {
+                var errors = GetErrorObject(rpcEx);
+
+                _logger.LogErrorInterpolated(ex, $"An unexpected error occurred{Environment.NewLine}Founded errors:{Environment.NewLine}{errors}");
+            }
             else
+            {
                 _logger.LogErrorInterpolated(ex, $"An unexpected error occurred");
+            }
         }
 
         /// <summary>

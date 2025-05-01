@@ -5,6 +5,7 @@ using Shared.Grpc.User;
 
 namespace Infrastructure.Clients.Grpc
 {
+    // Я вместо этого класса использую заглушку, потому что в микросервисе юзеров пока нет поддержки grpc
     public class UserClient : IUserClient
     {
         private readonly IMapper _mapper;

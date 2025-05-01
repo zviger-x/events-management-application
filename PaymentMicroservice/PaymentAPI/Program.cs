@@ -39,12 +39,9 @@ namespace PaymentAPI
             // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             // API
-            services.AddGrpc(options => { options.Interceptors.Add<GrpcExceptionInterceptor>(); }).AddJsonTranscoding();
+            services.AddGrpc(o => o.Interceptors.Add<GrpcExceptionInterceptor>()).AddJsonTranscoding();
             services.AddGrpcSwagger();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new() { Title = "gRPC Payment Microservice", Version = "v1" });
-            });
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new() { Title = "gRPC Payment Microservice", Version = "v1" }));
 
             var app = builder.Build();
 

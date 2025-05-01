@@ -1,5 +1,8 @@
 using Application.Clients;
+using Application.MediatR.Behaviours;
+using FluentValidation;
 using Infrastructure.Clients;
+using MediatR;
 using PaymentAPI.Services;
 using Serilog;
 using Shared.Grpc.Interceptors;
@@ -35,8 +38,9 @@ namespace PaymentAPI
             // BLL
             services.AddScoped<IUserClient, UserClientStub>();
             services.AddScoped<IPaymentClient, PaymentClientStub>();
+            services.AddValidatorsFromAssembly(Assembly.Load("Infrastructure"));
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("Application")));
-            // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             // API
             services.AddGrpc(o => o.Interceptors.Add<GrpcExceptionInterceptor>()).AddJsonTranscoding();

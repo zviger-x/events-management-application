@@ -1,22 +1,18 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Shared.Exceptions.ServerExceptions;
-using Shared.Logging.Extensions;
-using System.Text;
+using Shared.Common;
 using System.Text.Json;
-using FluentValidationException = FluentValidation.ValidationException;
 
 namespace Shared.Grpc.Interceptors
 {
     public class GrpcExceptionInterceptor : Interceptor
     {
-        private readonly ILogger<GrpcExceptionInterceptor> _logger;
+        private readonly ErrorHandlingHelper _errorHandlingHelper;
 
-        public GrpcExceptionInterceptor(ILogger<GrpcExceptionInterceptor> logger)
+        public GrpcExceptionInterceptor()
         {
-            _logger = logger;
+            _errorHandlingHelper = new ErrorHandlingHelper();
         }
 
         public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
@@ -27,14 +23,14 @@ namespace Shared.Grpc.Interceptors
             }
             catch (Exception ex)
             {
-                TryConvertToServerException(ref ex);
+                _errorHandlingHelper.TryConvertToServerException(ref ex);
 
-                var httpStatus = GetResponseStatusCode(ex);
-                var errorBody = GetErrorResponse(ex);
+                var statusCode = _errorHandlingHelper.GetResponseStatusCode(ex);
+                var errorBody = _errorHandlingHelper.GetErrorResponse(ex);
 
-                LogError(ex, httpStatus);
+                _errorHandlingHelper.LogError(ex, statusCode);
 
-                var grpcStatus = MapToGrpcStatusCode(httpStatus);
+                var grpcStatus = MapToGrpcStatusCode(statusCode);
 
                 throw GetRpcException(grpcStatus, ex.Message, errorBody);
             }
@@ -65,179 +61,6 @@ namespace Shared.Grpc.Interceptors
                 >= StatusCodes.Status500InternalServerError => StatusCode.Internal,
                 _ => StatusCode.Unknown
             };
-        }
-
-        private int GetResponseStatusCode(Exception ex)
-        {
-            switch (ex)
-            {
-                case FluentValidationException:
-                case ValidationException:
-                case ParameterException:
-                    return StatusCodes.Status400BadRequest;
-
-                case NotFoundException:
-                    return StatusCodes.Status404NotFound;
-
-                case UnauthorizedException:
-                    return StatusCodes.Status401Unauthorized;
-
-                case ForbiddenAccessException:
-                    return StatusCodes.Status403Forbidden;
-
-                case ConflictException:
-                case PaymentException:
-                    return StatusCodes.Status409Conflict;
-
-                case ServerException:
-                case Exception:
-                default:
-                    return StatusCodes.Status500InternalServerError;
-            }
-        }
-
-        private void LogError(Exception ex, int statusCode)
-        {
-            if (statusCode < StatusCodes.Status500InternalServerError)
-            {
-                _logger.LogErrorInterpolated($"An error occurred: {ex.Message}");
-            }
-            else if (ex is RpcException rpcEx)
-            {
-                var errors = GetErrorObject(rpcEx);
-
-                _logger.LogErrorInterpolated(ex, $"An unexpected error occurred{Environment.NewLine}Founded errors:{Environment.NewLine}{errors}");
-            }
-            else
-            {
-                _logger.LogErrorInterpolated(ex, $"An unexpected error occurred");
-            }
-        }
-
-        private object GetErrorResponse(Exception ex)
-        {
-            return ex switch
-            {
-                // Ошибки в валидаторах
-                FluentValidationException fluentValidationEx =>
-                    GetErrorObject(ValidationException.GetValidationExceptions(fluentValidationEx)),
-
-                // Ошибки в бизнес логике
-                ServerException serverEx => GetErrorObject(serverEx),
-
-                // Любые другие ошибки
-                _ => GetErrorObject("unexpectedError", "An unexpected error occurred")
-            };
-        }
-
-        private bool TryConvertToServerException(ref Exception ex)
-        {
-            switch (ex)
-            {
-                case ArgumentNullException ane:
-                    ex = new ParameterNullException(ane);
-                    break;
-                case ArgumentException ae:
-                    ex = new ParameterException(ae);
-                    break;
-                default:
-                    return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Returns an object in a standardized format:
-        /// <code>
-        /// {
-        ///     "errors": {
-        ///         "unexpectedError": {
-        ///             "propertyName": null,
-        ///             "serverMessage": "An unexpected error occurred."
-        ///         }
-        ///     }
-        /// }
-        /// </code>
-        /// </summary>
-        private object GetErrorObject(string code, string message, string propertyName = null)
-        {
-            return GetErrorObject(new ServerException(code, message, propertyName));
-        }
-
-        /// <summary>
-        /// Returns an object in a standardized format:
-        /// <code>
-        /// {
-        ///     "errors": {
-        ///         "unexpectedError": {
-        ///             "propertyName": null,
-        ///             "serverMessage": "An unexpected error occurred."
-        ///         }
-        ///     }
-        /// }
-        /// </code>
-        /// </summary>
-        private object GetErrorObject(ServerException ex)
-        {
-            return GetErrorObject([ex]);
-        }
-
-        /// <summary>
-        /// Returns an object in a standardized format:
-        /// <code>
-        /// {
-        ///     "errors": {
-        ///         "unexpectedError": {
-        ///             "propertyName": null,
-        ///             "serverMessage": "An unexpected error occurred."
-        ///         }
-        ///     }
-        /// }
-        /// </code>
-        /// </summary>
-        private object GetErrorObject(IEnumerable<ServerException> exceptions)
-        {
-            var errorDictionary = exceptions.ToDictionary(
-                ex => ex.ErrorCode,
-                ex => new { ex.PropertyName, ex.Message });
-
-            return new { errors = errorDictionary };
-        }
-
-        /// <summary>
-        /// Returns an object in a standardized format:
-        /// <code>
-        /// {
-        ///     "errors": {
-        ///         "unexpectedError": {
-        ///             "propertyName": null,
-        ///             "serverMessage": "An unexpected error occurred."
-        ///         }
-        ///     }
-        /// }
-        /// </code>
-        /// If the object cannot be parsed, returns null.
-        /// </summary>
-        private object GetErrorObject(RpcException ex)
-        {
-            var trailer = ex.Trailers.Get("error-details-bin");
-            if (trailer != null)
-            {
-                try
-                {
-                    var bytes = trailer.ValueBytes;
-                    var json = Encoding.UTF8.GetString(bytes);
-                    var errorObject = JsonSerializer.Deserialize<object>(json);
-
-                    return errorObject;
-                }
-                catch (Exception e)
-                {
-                    _logger.LogErrorInterpolated($"Failed to parse error details: {e.Message}");
-                }
-            }
-
-            return null;
         }
     }
 }

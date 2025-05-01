@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions.ServerExceptions;
 using Shared.Logging.Extensions;
+using System.Text;
 using System.Text.Json;
 using FluentValidationException = FluentValidation.ValidationException;
 
@@ -98,9 +99,19 @@ namespace Shared.Grpc.Interceptors
         private void LogError(Exception ex, int statusCode)
         {
             if (statusCode < StatusCodes.Status500InternalServerError)
+            {
                 _logger.LogErrorInterpolated($"An error occurred: {ex.Message}");
+            }
+            else if (ex is RpcException rpcEx)
+            {
+                var errors = GetErrorObject(rpcEx);
+
+                _logger.LogErrorInterpolated(ex, $"An unexpected error occurred{Environment.NewLine}Founded errors:{Environment.NewLine}{errors}");
+            }
             else
+            {
                 _logger.LogErrorInterpolated(ex, $"An unexpected error occurred");
+            }
         }
 
         private object GetErrorResponse(Exception ex)
@@ -191,6 +202,42 @@ namespace Shared.Grpc.Interceptors
                 ex => new { ex.PropertyName, ex.Message });
 
             return new { errors = errorDictionary };
+        }
+
+        /// <summary>
+        /// Returns an object in a standardized format:
+        /// <code>
+        /// {
+        ///     "errors": {
+        ///         "unexpectedError": {
+        ///             "propertyName": null,
+        ///             "serverMessage": "An unexpected error occurred."
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        /// If the object cannot be parsed, returns null.
+        /// </summary>
+        private object GetErrorObject(RpcException ex)
+        {
+            var trailer = ex.Trailers.Get("error-details-bin");
+            if (trailer != null)
+            {
+                try
+                {
+                    var bytes = trailer.ValueBytes;
+                    var json = Encoding.UTF8.GetString(bytes);
+                    var errorObject = JsonSerializer.Deserialize<object>(json);
+
+                    return errorObject;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogErrorInterpolated($"Failed to parse error details: {e.Message}");
+                }
+            }
+
+            return null;
         }
     }
 }

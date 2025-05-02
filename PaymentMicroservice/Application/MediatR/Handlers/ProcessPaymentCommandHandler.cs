@@ -23,14 +23,14 @@ namespace Application.MediatR.Handlers
         public async Task<PaymentResultDto> Handle(ProcessPaymentCommand request, CancellationToken cancellationToken)
         {
             // Оплачиваем
-            var success = await _paymentClient.ProcessPaymentAsync(request.Token, request.Amount);
+            var success = await _paymentClient.ProcessPaymentAsync(request.Token, request.Amount, cancellationToken);
             if (!success)
                 return new PaymentResultDto { Success = success };
 
             var transaction = _mapper.Map<CreateUserTransactionDto>(request);
 
             // Сохраняем транзакцию в истории
-            await _userClient.CreateTransactionAsync(transaction);
+            await _userClient.CreateTransactionAsync(transaction, cancellationToken);
 
             // Возвращаем успешный статус
             return new PaymentResultDto { Success = success };

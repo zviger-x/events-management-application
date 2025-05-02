@@ -1,15 +1,15 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands;
-using Application.Sagas;
+using Application.Sagas.Interfaces;
 using MediatR;
 
 namespace Application.MediatR.Handlers
 {
     public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentCommand, PaymentResultDto>
     {
-        private readonly PaymentSagaOrchestrator _paymentSagaOrchestrator;
+        private readonly IPaymentSaga _paymentSagaOrchestrator;
 
-        public ProcessPaymentCommandHandler(PaymentSagaOrchestrator paymentSagaOrchestrator)
+        public ProcessPaymentCommandHandler(IPaymentSaga paymentSagaOrchestrator)
         {
             _paymentSagaOrchestrator = paymentSagaOrchestrator;
         }

@@ -11,7 +11,8 @@ namespace Application.Clients
         /// Creates a new user transaction in the system.
         /// </summary>
         /// <param name="transaction">The transaction data to be saved.</param>
+        /// <param name="cancellationToken">Cancellation token if needed.</param>
         /// <returns>True if transaction was successfully created, false otherwise.</returns>
-        Task<bool> CreateTransactionAsync(CreateUserTransactionDto transaction);
+        Task<bool> CreateTransactionAsync(CreateUserTransactionDto transaction, CancellationToken cancellationToken = default);
     }
 }

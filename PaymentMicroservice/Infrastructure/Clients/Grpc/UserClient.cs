@@ -17,11 +17,11 @@ namespace Infrastructure.Clients.Grpc
             _userServiceClient = userServiceClient;
         }
 
-        public async Task<bool> CreateTransactionAsync(CreateUserTransactionDto transaction)
+        public async Task<bool> CreateTransactionAsync(CreateUserTransactionDto transaction, CancellationToken cancellationToken = default)
         {
             var request = _mapper.Map<CreateTransactionRequest>(transaction);
 
-            var result = await _userServiceClient.CreateTransactionAsync(request);
+            var result = await _userServiceClient.CreateTransactionAsync(request, cancellationToken: cancellationToken);
 
             return result.Success;
         }

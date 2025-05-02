@@ -4,6 +4,7 @@ using Application.MediatR.Commands;
 using AutoMapper;
 using MediatR;
 
+#warning Удалить вызов ошибок
 namespace Application.MediatR.Handlers
 {
     public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentCommand, PaymentResultDto>

@@ -1,5 +1,7 @@
 ﻿using Application.Clients;
 using Application.MediatR.Behaviours;
+using Application.Sagas;
+using Application.Sagas.Interfaces;
 using FluentValidation;
 using Infrastructure.Clients;
 using MediatR;
@@ -27,6 +29,11 @@ namespace PaymentAPI.Extensions
         public static void AddValidators(this IServiceCollection services)
         {
             services.AddValidatorsFromAssembly(Assembly.Load("Infrastructure"));
+        }
+
+        public static void AddSagas(this IServiceCollection services)
+        {
+            services.AddScoped<IPaymentSaga, PaymentSagaOrchestrator>();
         }
 
         public static void AddMediatR(this IServiceCollection services)

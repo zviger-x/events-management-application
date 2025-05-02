@@ -30,6 +30,7 @@ namespace PaymentAPI
             // BLL
             services.AddClients();
             services.AddValidators();
+            services.AddSagas();
             services.AddMediatR();
 
             // API

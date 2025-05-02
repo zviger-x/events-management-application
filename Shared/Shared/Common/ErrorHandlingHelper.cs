@@ -94,10 +94,11 @@ namespace Shared.Common
         /// <code>
         /// {
         ///     "errors": {
-        ///         "unexpectedError": {
+        ///         "unexpectedError": [
+        ///         {
         ///             "propertyName": null,
         ///             "serverMessage": "An unexpected error occurred."
-        ///         }
+        ///         }]
         ///     }
         /// }
         /// </code>
@@ -112,10 +113,11 @@ namespace Shared.Common
         /// <code>
         /// {
         ///     "errors": {
-        ///         "unexpectedError": {
+        ///         "unexpectedError": [
+        ///         {
         ///             "propertyName": null,
         ///             "serverMessage": "An unexpected error occurred."
-        ///         }
+        ///         }]
         ///     }
         /// }
         /// </code>
@@ -130,19 +132,22 @@ namespace Shared.Common
         /// <code>
         /// {
         ///     "errors": {
-        ///         "unexpectedError": {
+        ///         "unexpectedError": [
+        ///         {
         ///             "propertyName": null,
         ///             "serverMessage": "An unexpected error occurred."
-        ///         }
+        ///         }]
         ///     }
         /// }
         /// </code>
         /// </summary>
         protected virtual object GetErrorObject(IEnumerable<ServerException> exceptions)
         {
-            var errorDictionary = exceptions.ToDictionary(
-                ex => ex.ErrorCode,
-                ex => new { ex.PropertyName, ex.Message });
+            var errorDictionary = exceptions
+                .GroupBy(ex => ex.ErrorCode)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(ex => new { propertyName = ex.PropertyName, serverMessage = ex.Message }));
 
             return new { errors = errorDictionary };
         }
@@ -152,10 +157,11 @@ namespace Shared.Common
         /// <code>
         /// {
         ///     "errors": {
-        ///         "unexpectedError": {
+        ///         "unexpectedError": [
+        ///         {
         ///             "propertyName": null,
         ///             "serverMessage": "An unexpected error occurred."
-        ///         }
+        ///         }]
         ///     }
         /// }
         /// </code>

@@ -10,6 +10,11 @@ namespace Shared.Common
 {
     internal class ErrorHandlingHelper
     {
+        /// <summary>
+        /// Determines the appropriate HTTP status code based on the provided exception type.
+        /// </summary>
+        /// <param name="ex">The exception to evaluate.</param>
+        /// <returns>An integer representing the corresponding HTTP status code.</returns>
         public int GetResponseStatusCode(Exception ex)
         {
             switch (ex)
@@ -39,6 +44,11 @@ namespace Shared.Common
             }
         }
 
+        /// <summary>
+        /// Logs the provided exception at the appropriate severity level based on the status code.
+        /// </summary>
+        /// <param name="ex">The exception to log.</param>
+        /// <param name="statusCode">The HTTP status code that corresponds to the exception.</param>
         public void LogError(Exception ex, int statusCode)
         {
             if (statusCode < StatusCodes.Status500InternalServerError)
@@ -57,6 +67,11 @@ namespace Shared.Common
             }
         }
 
+        /// <summary>
+        /// Constructs an error response object based on the provided exception.
+        /// </summary>
+        /// <param name="ex">The exception to convert to a response object.</param>
+        /// <returns>An object representing the structured error response.</returns>
         public object GetErrorResponse(Exception ex)
         {
             return ex switch
@@ -73,6 +88,15 @@ namespace Shared.Common
             };
         }
 
+        /// <summary>
+        /// Attempts to convert common .NET exceptions into standardized server exceptions.
+        /// </summary>
+        /// <param name="ex">
+        /// A reference to the exception to convert. If conversion is successful, <paramref name="ex"/> is replaced.
+        /// </param>
+        /// <returns>
+        /// True if conversion to a server exception was performed; otherwise, false.
+        /// </returns>
         public bool TryConvertToServerException(ref Exception ex)
         {
             switch (ex)
@@ -86,6 +110,7 @@ namespace Shared.Common
                 default:
                     return false;
             }
+
             return true;
         }
 

@@ -33,7 +33,7 @@ namespace Shared.Caching.Services
 
         public async Task SetAsync<T>(string key, T value, bool ignoreDefaultExpirationTime, CancellationToken cancellationToken = default)
         {
-            var expiry = ignoreDefaultExpirationTime ? (TimeSpan?)_defaultExpirationTime : null;
+            var expiry = ignoreDefaultExpirationTime ? null : (TimeSpan?)_defaultExpirationTime;
 
             await SetAsyncWithTtl(key, value, expiry, cancellationToken);
         }

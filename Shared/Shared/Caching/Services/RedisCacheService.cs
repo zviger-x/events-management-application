@@ -98,6 +98,38 @@ namespace Shared.Caching.Services
             return new RedisLock(_database, lockKey, lockValue, lockTtl);
         }
 
+        public async Task AddToSetAsync(string setKey, string value, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _database.SetAddAsync(setKey, value);
+        }
+
+        public async Task RemoveFromSetAsync(string setKey, string value, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _database.SetRemoveAsync(setKey, value);
+        }
+
+        public async Task<IEnumerable<T>> GetSetMembersAsync<T>(string setKey, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var members = await _database.SetMembersAsync(setKey);
+
+            var results = new List<T>(members.Length);
+            foreach (var key in members)
+            {
+                var item = await GetAsync<T>(key, cancellationToken);
+
+                if (item != null)
+                    results.Add(item);
+            }
+
+            return results;
+        }
+
         private async Task SetAsyncWithTtl<T>(string key, T value, TimeSpan? expirationTime, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();

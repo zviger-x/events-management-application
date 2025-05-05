@@ -37,11 +37,16 @@ namespace Application.MediatR.Handlers
             var isSaved = await _userClient.TrySaveNotificationAsync(notification, cancellationToken);
 
             // Если сохранилось, отправляем по SignalR уведомление
+            // и удаляем из кэша записи о неудачной попытке (если есть)
             if (isSaved)
             {
                 await _notificationSender.SendAsync(notification, cancellationToken);
 
                 _logger.LogInformation("Notification sent to user {UserId}", notification.UserId);
+
+                var key = CacheKeys.FailedNotification(notification.InCacheId);
+                await _cacheService.RemoveAsync(key, cancellationToken);
+                await _cacheService.RemoveFromSetAsync(CacheKeys.FailedNotificationsSet, key, cancellationToken);
 
                 return;
             }

@@ -1,11 +1,11 @@
-﻿using Application.Clients;
+﻿using Application.Caching.Constants;
+using Application.Clients;
 using Application.MediatR.Commands;
 using Application.SignalR;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Shared.Caching.Services.Interfaces;
 
-#error СДЕЛАТЬ НОРМАЛЬНЫЙ КЛЮЧ
 namespace Application.MediatR.Handlers
 {
     public class SendNotificationCommandHandler : IRequestHandler<SendNotificationCommand>
@@ -44,10 +44,11 @@ namespace Application.MediatR.Handlers
                 return;
             }
 
-            var cacheKey = $"notification:failed:{notification.InCacheId}";
+            var cacheKey = CacheKeys.FailedNotification(notification.InCacheId);
+            var cacheSetKey = CacheKeys.FailedNotificationsSet;
 
             await _cacheService.SetAsync(cacheKey, notification, true, cancellationToken);
-            await _cacheService.AddToSetAsync("FailedSetKey", cacheKey, cancellationToken);
+            await _cacheService.AddToSetAsync(cacheSetKey, cacheKey, cancellationToken);
 
             _logger.LogWarning("Failed to save notification. Cached for retry. UserId: {UserId}", notification.UserId);
         }

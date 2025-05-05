@@ -1,11 +1,11 @@
-﻿using Application.Contracts;
+﻿using Application.Caching.Constants;
+using Application.Contracts;
 using Application.MediatR.Commands;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shared.Caching.Services.Interfaces;
 
-#error СДЕЛАТЬ НОРМАЛЬНЫЙ КЛЮЧ
 namespace Application.Services.Background
 {
     public class NotificationRetrySaveService : BackgroundService
@@ -35,8 +35,9 @@ namespace Application.Services.Background
             {
                 try
                 {
-                    var failedNotifications = await _cacheService
-                        .GetSetMembersAsync<NotificationDto>("setKey", cancellationToken);
+                    var cacheSetKey = CacheKeys.FailedNotificationsSet;
+
+                    var failedNotifications = await _cacheService.GetSetMembersAsync<NotificationDto>(cacheSetKey, cancellationToken);
 
                     if (!failedNotifications.Any())
                     {

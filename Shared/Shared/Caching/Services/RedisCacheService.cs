@@ -31,19 +31,16 @@ namespace Shared.Caching.Services
             _defaultExpirationTime = TimeSpan.FromSeconds(config.CacheExpirationSeconds);
         }
 
-        public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default)
+        public async Task SetAsync<T>(string key, T value, bool ignoreDefaultExpirationTime, CancellationToken cancellationToken = default)
         {
-            await SetAsync(key, value, _defaultExpirationTime, cancellationToken);
+            var expiry = ignoreDefaultExpirationTime ? (TimeSpan?)_defaultExpirationTime : null;
+
+            await SetAsyncWithTtl(key, value, expiry, cancellationToken);
         }
 
         public async Task SetAsync<T>(string key, T value, TimeSpan expirationTime, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var json = JsonSerializer.Serialize(value);
-            await _database.StringSetAsync(key, json, expirationTime);
-
-            _logger.LogInformationInterpolated($"Cache set for key: {key} with expiration: {expirationTime.TotalSeconds} seconds");
+            await SetAsyncWithTtl(key, value, expirationTime, cancellationToken);
         }
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
@@ -99,6 +96,26 @@ namespace Shared.Caching.Services
 
             _logger.LogInformationInterpolated($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
             return new RedisLock(_database, lockKey, lockValue, lockTtl);
+        }
+
+        private async Task SetAsyncWithTtl<T>(string key, T value, TimeSpan? expirationTime, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var json = JsonSerializer.Serialize(value);
+
+            if (expirationTime.HasValue)
+            {
+                await _database.StringSetAsync(key, json, expirationTime);
+
+                _logger.LogInformationInterpolated($"Cache set for key: {key} with expiration: {expirationTime.Value.TotalSeconds} seconds");
+            }
+            else
+            {
+                await _database.StringSetAsync(key, json);
+
+                _logger.LogInformationInterpolated($"Cache set for key: {key} with infinite lifetime");
+            }
         }
     }
 }

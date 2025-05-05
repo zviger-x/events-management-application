@@ -35,16 +35,19 @@ namespace Application.Services.Background
             {
                 try
                 {
+                    // Для начала получаем ожидающие уведомления
                     var cacheSetKey = CacheKeys.FailedNotificationsSet;
 
                     var failedNotifications = await _cacheService.GetSetMembersAsync<NotificationDto>(cacheSetKey, cancellationToken);
 
+                    // Если их нет, пропускаем текущую итерацию
                     if (!failedNotifications.Any())
                     {
                         await Task.Delay(_interval, cancellationToken);
                         continue;
                     }
 
+                    // Если они есть, то в через Parallel.ForEachAsync пытаемся их переотправить.
                     _logger.LogInformation("Found {Count} failed notifications to retry", failedNotifications.Count());
 
                     var parallelOptions = new ParallelOptions

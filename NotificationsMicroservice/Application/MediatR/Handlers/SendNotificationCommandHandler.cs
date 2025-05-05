@@ -33,8 +33,10 @@ namespace Application.MediatR.Handlers
 
             _logger.LogInformation("Handling SendNotificationCommand for user {UserId}", notification.UserId);
 
+            // Пытаемся сохранить уведомление в базе данных на стороне микросервиса пользователей
             var isSaved = await _userClient.TrySaveNotificationAsync(notification, cancellationToken);
 
+            // Если сохранилось, отправляем по SignalR уведомление
             if (isSaved)
             {
                 await _notificationSender.SendAsync(notification, cancellationToken);
@@ -43,6 +45,11 @@ namespace Application.MediatR.Handlers
 
                 return;
             }
+
+            // Если сохранение не удалось, добавляем уведомление в список неотправленных уведомлений
+            // Для этого сохраняем в редисе по InCacheId объект уведомления, а так же добавляем этот Id во множество
+            // После этого ничего не делаем. Дальше ответственность NotificationRetrySaveService
+            // Он пройдёт по объектам в кэше и вызовет повторно SendNotificationCommandHandler через медиатр.
 
             var cacheKey = CacheKeys.FailedNotification(notification.InCacheId);
             var cacheSetKey = CacheKeys.FailedNotificationsSet;

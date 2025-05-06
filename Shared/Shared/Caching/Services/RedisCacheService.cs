@@ -51,7 +51,7 @@ namespace Shared.Caching.Services
             if (cachedData.IsNullOrEmpty)
                 return default;
 
-            _logger.LogInformationInterpolated($"Cache hit for key: {key}");
+            _logger.LogDebugInterpolated($"Cache hit for key: {key}");
 
             return JsonSerializer.Deserialize<T>(cachedData);
         }
@@ -80,7 +80,7 @@ namespace Shared.Caching.Services
 
             await _database.KeyDeleteAsync(key);
 
-            _logger.LogInformationInterpolated($"Cache removed for key: {key}");
+            _logger.LogDebugInterpolated($"Cache removed for key: {key}");
         }
 
         public async Task<IRedisLock> AcquireLockAsync(string lockKey, string lockValue, TimeSpan lockTtl, CancellationToken cancellationToken = default)
@@ -90,11 +90,11 @@ namespace Shared.Caching.Services
             var isAcquired = await _database.LockTakeAsync(lockKey, lockValue, lockTtl);
             if (!isAcquired)
             {
-                _logger.LogInformationInterpolated($"Failed to acquire lock for key: {lockKey} (already exists)");
+                _logger.LogDebugInterpolated($"Failed to acquire lock for key: {lockKey} (already exists)");
                 return null;
             }
 
-            _logger.LogInformationInterpolated($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
+            _logger.LogDebugInterpolated($"Lock acquired for key: {lockKey} with TTL: {lockTtl.TotalSeconds} seconds");
             return new RedisLock(_database, lockKey, lockValue, lockTtl);
         }
 
@@ -140,13 +140,13 @@ namespace Shared.Caching.Services
             {
                 await _database.StringSetAsync(key, json, expirationTime);
 
-                _logger.LogInformationInterpolated($"Cache set for key: {key} with expiration: {expirationTime.Value.TotalSeconds} seconds");
+                _logger.LogDebugInterpolated($"Cache set for key: {key} with expiration: {expirationTime.Value.TotalSeconds} seconds");
             }
             else
             {
                 await _database.StringSetAsync(key, json);
 
-                _logger.LogInformationInterpolated($"Cache set for key: {key} with infinite lifetime");
+                _logger.LogDebugInterpolated($"Cache set for key: {key} with infinite lifetime");
             }
         }
     }

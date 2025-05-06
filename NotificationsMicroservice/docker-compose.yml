@@ -1,0 +1,6 @@
+services:
+  notificationsapi:
+    image: ${DOCKER_REGISTRY-}notificationsapi
+    build:
+      context: ..
+      dockerfile: NotificationsMicroservice/NotificationsAPI/Dockerfile

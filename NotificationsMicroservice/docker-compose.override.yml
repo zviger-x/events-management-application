@@ -1,0 +1,46 @@
+services:
+  notificationsapi:
+    container_name: NotificationsAPI
+    stdin_open: true
+    tty: true
+    environment:
+      - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
+      - TERM=xterm-256color
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080"
+      - "8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - internal-docker-network
+
+  redis:
+    image: redis:latest
+    container_name: RedisServer
+    volumes:
+      - redis_data:/data
+    restart: always
+    networks:
+      - internal-docker-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  internal-docker-network:
+    driver: bridge
+
+volumes:
+  redis_data:

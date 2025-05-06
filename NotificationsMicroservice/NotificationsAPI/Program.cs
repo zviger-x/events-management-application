@@ -1,5 +1,7 @@
+using Application.Clients;
 using Application.Services.Background;
 using Application.SignalR;
+using Infrastructure.Clients;
 using NotificationsAPI.Configuration;
 using NotificationsAPI.Extensions;
 using NotificationsAPI.SignalR.Hubs;
@@ -42,6 +44,7 @@ namespace NotificationsAPI
             services.AddMediatR();
             services.AddHostedService<NotificationRetrySaveService>();
             services.AddScoped<INotificationSender, NotificationSender>();
+            services.AddScoped<IUserNotificationsClient, UserNotificationsClientStub>();
 
             // API
             services.AddSignalR();

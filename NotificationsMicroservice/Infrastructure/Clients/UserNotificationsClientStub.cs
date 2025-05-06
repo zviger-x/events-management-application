@@ -9,6 +9,9 @@ namespace Infrastructure.Clients
         {
             await Task.Delay(500, cancellationToken);
 
+            if (Random.Shared.NextDouble() < 30 / 100d)
+                return await Task.FromResult(false);
+
             return await Task.FromResult(true);
         }
     }

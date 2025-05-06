@@ -11,7 +11,7 @@ namespace Infrastructure.Services.Background
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<StubNotificationSenderService> _logger;
-        private readonly TimeSpan _interval = TimeSpan.FromSeconds(20);
+        private readonly TimeSpan _interval = TimeSpan.FromSeconds(15);
 
         public StubNotificationSenderService(IServiceScopeFactory scopeFactory, ILogger<StubNotificationSenderService> logger)
         {
@@ -21,6 +21,8 @@ namespace Infrastructure.Services.Background
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            await Task.Delay(_interval / 2, cancellationToken);
+
             _logger.LogInformation("Stub Notification Sender Service started.");
 
             while (!cancellationToken.IsCancellationRequested)
@@ -37,7 +39,7 @@ namespace Infrastructure.Services.Background
                     {
                         Notification = new NotificationDto
                         {
-                            UserId = Guid.NewGuid(),
+                            UserId = Guid.Parse("4bef6735-b9eb-446f-2382-08dd75c5f04b"),
                             Message = $"[Stub] Test notification at {DateTime.UtcNow:T}"
                         }
                     };

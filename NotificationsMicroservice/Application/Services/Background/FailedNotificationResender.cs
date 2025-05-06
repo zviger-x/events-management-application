@@ -43,13 +43,13 @@ namespace Application.Services.Background
 
                     var failedNotifications = await cacheService.GetSetMembersAsync<NotificationDto>(cacheSetKey, cancellationToken);
 
-                    _logger.LogInformation("Found {Count} failed notifications to retry", failedNotifications.Count());
-
                     // Если их нет, пропускаем текущую итерацию
                     if (!failedNotifications.Any())
                         continue;
 
                     // Если они есть, то в через Parallel.ForEachAsync пытаемся их переотправить.
+                    _logger.LogInformation("Found {Count} failed notifications to retry", failedNotifications.Count());
+
                     var parallelOptions = new ParallelOptions
                     {
                         MaxDegreeOfParallelism = MaxDegreeOfParallelism,

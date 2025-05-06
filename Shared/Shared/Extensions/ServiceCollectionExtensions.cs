@@ -1,10 +1,39 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Shared.Configuration;
+using System.Text;
 
 namespace Shared.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds JWT Bearer authentication using the specified token configuration.
+        /// </summary>
+        /// <param name="services">The service collection to register authentication services with.</param>
+        /// <param name="config">The JWT token configuration containing issuer, audience, and secret key.</param>
+        public static AuthenticationBuilder AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig config)
+        {
+            return services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = config.Issuer,
+                        ValidAudience = config.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.SecretKey)),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+        }
+
         /// <summary>
         /// Binds a configuration section to a strongly-typed configuration class, 
         /// registers it with the service collection, and returns the configured instance.

@@ -28,6 +28,7 @@ namespace NotificationsAPI
             // Add configs
             var redisServerConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
             var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
+            var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -50,12 +51,20 @@ namespace NotificationsAPI
             // Infrastructure
             services.AddHostedService<StubNotificationSenderService>();
 
+            // JWT
+            services.AddJwtAuthentication(jwtTokenConfig)
+                .ConfigureSignalRTokenHandling("/hubs/notifications");
+            services.AddAuthorization();
+
             // API
             services.AddSignalR();
 
             var app = builder.Build();
 
-            app.MapHub<NotificationHub>("/notifications");
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapHub<NotificationHub>("/hubs/notifications");
 
             app.Run();
         }

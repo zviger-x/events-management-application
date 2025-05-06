@@ -31,7 +31,7 @@ namespace Application.MediatR.Handlers
         {
             var notification = request.Notification;
 
-            _logger.LogInformation("Handling SendNotificationCommand for user {UserId}", notification.UserId);
+            _logger.LogInformation("Handling send notification command for user {UserId}", notification.UserId);
 
             // Пытаемся сохранить уведомление в базе данных на стороне микросервиса пользователей
             var isSaved = await _userClient.TrySaveNotificationAsync(notification, cancellationToken);

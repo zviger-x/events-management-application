@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
-using Application.SignalR;
+using Application.MediatR.Commands;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,29 +19,32 @@ namespace Infrastructure.Services.Background
             _logger = logger;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Stub Notification Sender Service started.");
 
-            while (!stoppingToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(_interval, stoppingToken);
+                await Task.Delay(_interval, cancellationToken);
 
                 try
                 {
                     using var scope = _scopeFactory.CreateScope();
 
-                    var sender = scope.ServiceProvider.GetRequiredService<INotificationSender>();
+                    var mediatr = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-                    var testNotification = new NotificationDto
+                    var command = new SendNotificationCommand
                     {
-                        UserId = Guid.NewGuid(),
-                        Message = $"[Stub] Test notification at {DateTime.UtcNow:T}"
+                        Notification = new NotificationDto
+                        {
+                            UserId = Guid.NewGuid(),
+                            Message = $"[Stub] Test notification at {DateTime.UtcNow:T}"
+                        }
                     };
 
-                    await sender.SendAsync(testNotification, stoppingToken);
+                    _logger.LogInformation("Sending stub notification to user {UserId}", command.Notification.UserId);
 
-                    _logger.LogInformation("Sent stub notification to user {UserId}", testNotification.UserId);
+                    await mediatr.Send(command, cancellationToken);
                 }
                 catch (Exception ex)
                 {

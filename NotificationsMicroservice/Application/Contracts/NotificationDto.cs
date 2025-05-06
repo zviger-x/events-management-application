@@ -4,7 +4,7 @@ namespace Application.Contracts
 {
     public class NotificationDto
     {
-        public Guid InCacheId { get; } = Guid.NewGuid();
+        public Guid InCacheId { get; init; } = Guid.NewGuid();
 
         public Guid UserId { get; init; }
 

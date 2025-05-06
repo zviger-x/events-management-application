@@ -2,28 +2,24 @@
 using Application.Contracts;
 using Application.MediatR.Commands;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shared.Caching.Services.Interfaces;
 
 namespace Application.Services.Background
 {
-    public class NotificationRetrySaveService : BackgroundService
+    public class FailedNotificationResender : BackgroundService
     {
         private const int MaxDegreeOfParallelism = 5;
 
-        private readonly IRedisCacheService _cacheService;
-        private readonly IMediator _mediator;
-        private readonly ILogger<NotificationRetrySaveService> _logger;
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ILogger<FailedNotificationResender> _logger;
         private readonly TimeSpan _interval = TimeSpan.FromSeconds(30);
 
-        public NotificationRetrySaveService(
-            IRedisCacheService cacheService,
-            IMediator mediator,
-            ILogger<NotificationRetrySaveService> logger)
+        public FailedNotificationResender(IServiceScopeFactory serviceScopeFactory, ILogger<FailedNotificationResender> logger)
         {
-            _cacheService = cacheService;
-            _mediator = mediator;
+            _scopeFactory = serviceScopeFactory;
             _logger = logger;
         }
 
@@ -33,19 +29,23 @@ namespace Application.Services.Background
 
             while (!cancellationToken.IsCancellationRequested)
             {
+                await Task.Delay(_interval, cancellationToken);
+
                 try
                 {
+                    using var scope = _scopeFactory.CreateScope();
+
+                    var cacheService = scope.ServiceProvider.GetRequiredService<IRedisCacheService>();
+                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
                     // Для начала получаем ожидающие уведомления
                     var cacheSetKey = CacheKeys.FailedNotificationsSet;
 
-                    var failedNotifications = await _cacheService.GetSetMembersAsync<NotificationDto>(cacheSetKey, cancellationToken);
+                    var failedNotifications = await cacheService.GetSetMembersAsync<NotificationDto>(cacheSetKey, cancellationToken);
 
                     // Если их нет, пропускаем текущую итерацию
                     if (!failedNotifications.Any())
-                    {
-                        await Task.Delay(_interval, cancellationToken);
                         continue;
-                    }
 
                     // Если они есть, то в через Parallel.ForEachAsync пытаемся их переотправить.
                     _logger.LogInformation("Found {Count} failed notifications to retry", failedNotifications.Count());
@@ -63,7 +63,7 @@ namespace Application.Services.Background
                             {
                                 var command = new SendNotificationCommand { Notification = notification };
 
-                                await _mediator.Send(command, cancellationToken);
+                                await mediator.Send(command, token);
                             }
                             catch (Exception ex)
                             {
@@ -75,8 +75,6 @@ namespace Application.Services.Background
                 {
                     _logger.LogError(ex, "Error while retrying notifications");
                 }
-
-                await Task.Delay(_interval, cancellationToken);
             }
 
             _logger.LogInformation("Notification retry background service stopped.");

@@ -2,7 +2,9 @@ using Application.Clients;
 using Application.Services.Background;
 using Application.SignalR;
 using Infrastructure.Clients;
-using Infrastructure.Services.Background;
+using Infrastructure.Kafka.MessageHandlers;
+using Infrastructure.Kafka.MessageHandlers.Interfaces;
+using Infrastructure.Kafka.Services;
 using NotificationsAPI.Configuration;
 using NotificationsAPI.Extensions;
 using NotificationsAPI.SignalR.Hubs;
@@ -29,6 +31,7 @@ namespace NotificationsAPI
             var redisServerConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
             var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
+            var kafkaServerConfig = services.ConfigureAndReceive<KafkaServerConfig>(configuration, "KafkaServerConfig");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -49,7 +52,9 @@ namespace NotificationsAPI
             services.AddScoped<IUserNotificationsClient, UserNotificationsClientStub>();
 
             // Infrastructure
-            services.AddHostedService<StubNotificationSenderService>();
+            // services.AddHostedService<StubNotificationSenderService>();
+            services.AddSingleton<IStubKafkaMessageHandler, StubKafkaMessageHandler>();
+            services.AddHostedService<StubKafkaReceiveService>();
 
             // JWT
             services.AddJwtAuthentication(jwtTokenConfig)

@@ -2,8 +2,7 @@
 
 namespace Infrastructure.Kafka.MessageHandlers.Interfaces
 {
-
-    public interface IStubKafkaMessageHandler : IKafkaMessageHandler
+    public interface IEventCompletedMessageHandler : IKafkaMessageHandler
     {
     }
 }

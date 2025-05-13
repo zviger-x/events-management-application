@@ -118,7 +118,7 @@ namespace Infrastructure.Kafka.Services.Common
 
                 _logger.LogWarning("Topic {topic} not yet available, retrying...", topic);
 
-                await Task.Delay(5000, cancellationToken);
+                await Task.Delay(10000, cancellationToken);
             }
         }
 

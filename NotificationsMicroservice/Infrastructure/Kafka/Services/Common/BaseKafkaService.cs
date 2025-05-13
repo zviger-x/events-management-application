@@ -63,7 +63,12 @@ namespace Infrastructure.Kafka.Services.Common
             catch (ConsumeException ex)
             {
                 _logger.LogError(ex, "Kafka ConsumeException. Topic: {topic}, Reason: {reason}", _messageHandler.Topic, ex.Error.Reason);
-                return;
+
+                if (ex.Error.IsFatal)
+                {
+                    _logger.LogCritical("Fatal Kafka error");
+                    Environment.FailFast("Fatal Kafka error", ex);
+                }
             }
 
             if (consumeResult?.Message?.Value == null)

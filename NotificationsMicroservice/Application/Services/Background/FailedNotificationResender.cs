@@ -56,7 +56,8 @@ namespace Application.Services.Background
                 {
                     try
                     {
-                        var command = new SendNotificationCommand { Notification = notification };
+#warning TODO: Убрать выброс ошибки!
+                        var command = new SendNotificationCommand { Notification = notification, ThrowError = false };
 
                         await mediator.Send(command, cancellationToken);
                     }

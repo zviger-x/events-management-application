@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shared.Configuration;
-using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace Infrastructure.Kafka.MessageHandlers
 {
@@ -27,24 +27,29 @@ namespace Infrastructure.Kafka.MessageHandlers
             using var scope = _serviceScopeFactory.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            var node = JsonNode.Parse(message);
+            var model = JsonSerializer.Deserialize<StubModel>(message);
 
-            var name = node["name"]?.ToString();
-            var users = node["users"]?.AsArray().Select(a => Guid.Parse(a.ToString())).ToList();
-
-            foreach (var user in users)
+            foreach (var user in model.Users)
             {
                 var command = new SendNotificationCommand
                 {
                     Notification = new NotificationDto
                     {
                         UserId = user,
-                        Message = $"\"Тестовое\" уведомление о изменении ивента{Environment.NewLine}Для пользователя: {{{user}}}{Environment.NewLine}Название ивента: {name}"
-                    }
+                        Message = $"\"Тестовое\" уведомление о изменении ивента{Environment.NewLine}Для пользователя: {{{user}}}{Environment.NewLine}Название ивента: {model.Name}"
+                    },
+                    ThrowError = !model.IsValid
                 };
 
                 await mediator.Send(command, cancellationToken);
             }
+        }
+
+        private class StubModel
+        {
+            public string Name { get; set; }
+            public Guid[] Users { get; set; }
+            public bool IsValid { get; set; }
         }
     }
 }

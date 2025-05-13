@@ -54,7 +54,17 @@ namespace Infrastructure.Kafka.Services.Common
 
         protected override async Task ExecuteIterationAsync(CancellationToken cancellationToken)
         {
-            var consumeResult = _consumer.Consume(cancellationToken);
+            var consumeResult = default(ConsumeResult<Ignore, string>);
+
+            try
+            {
+                consumeResult = _consumer.Consume(cancellationToken);
+            }
+            catch (ConsumeException ex)
+            {
+                _logger.LogError(ex, "Kafka ConsumeException. Topic: {topic}, Reason: {reason}", _messageHandler.Topic, ex.Error.Reason);
+                return;
+            }
 
             if (consumeResult?.Message?.Value == null)
                 return;

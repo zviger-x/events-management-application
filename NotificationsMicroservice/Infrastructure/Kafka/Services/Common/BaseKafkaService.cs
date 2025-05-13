@@ -10,6 +10,9 @@ namespace Infrastructure.Kafka.Services.Common
     public abstract class BaseKafkaService<TMessageHandler> : AdvancedBackgroundService
         where TMessageHandler : IKafkaMessageHandler
     {
+        private static readonly TimeSpan _topicConnectionRetryMinInterval = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan _topicConnectionRetryMaxInterval = TimeSpan.FromMinutes(1);
+
         protected readonly TMessageHandler _messageHandler;
         protected readonly ILogger<BaseKafkaService<TMessageHandler>> _logger;
         protected readonly ConsumerConfig _kafkaConfig;
@@ -36,8 +39,6 @@ namespace Infrastructure.Kafka.Services.Common
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Kafka service started. Service: {service}", GetType().Name);
-
             _consumer = new ConsumerBuilder<Ignore, string>(_kafkaConfig).Build();
 
             await WaitForTopicToBecomeAvailableAsync(_messageHandler.Topic, cancellationToken);
@@ -85,7 +86,7 @@ namespace Infrastructure.Kafka.Services.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error while parsing json message: {message}", ex.Message);
+                _logger.LogError("Error while handling message: {message}", ex.Message);
             }
         }
 
@@ -93,14 +94,15 @@ namespace Infrastructure.Kafka.Services.Common
         {
             _consumer.Close();
 
-            _logger.LogInformation("Kafka service stopped. Service: {service}", GetType().Name);
-
             await Task.CompletedTask;
         }
 
         private async Task WaitForTopicToBecomeAvailableAsync(string topic, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Checking if topic is available. Topic: {topic}", topic);
+
+            var retryInterval = _topicConnectionRetryMinInterval;
+            var maxRetryInterval = _topicConnectionRetryMaxInterval;
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -116,9 +118,12 @@ namespace Infrastructure.Kafka.Services.Common
                     break;
                 }
 
-                _logger.LogWarning("Topic {topic} not yet available, retrying...", topic);
+                _logger.LogWarning("Topic {topic} not yet available, retrying in {interval} s...", topic, retryInterval.TotalSeconds);
 
-                await Task.Delay(10000, cancellationToken);
+                await Task.Delay(retryInterval, cancellationToken);
+
+                if (retryInterval < maxRetryInterval)
+                    retryInterval = TimeSpan.FromTicks(Math.Min(retryInterval.Ticks * 2, maxRetryInterval.Ticks));
             }
         }
 

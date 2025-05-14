@@ -12,28 +12,16 @@ namespace BusinessLogic.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly string _secretKey;
-        private readonly string _issuer;
-        private readonly string _audience;
-        private readonly int _tokenExpirationMinutes;
-
-        private readonly int _refreshTokenExpirationMinutes;
+        private readonly JwtTokenConfig _jwtConfig;
 
         public TokenService(IOptions<JwtTokenConfig> config)
         {
-            var cfg = config.Value;
-
-            _secretKey = cfg.SecretKey;
-            _issuer = cfg.Issuer;
-            _audience = cfg.Audience;
-            _tokenExpirationMinutes = cfg.TokenExpirationMinutes;
-
-            _refreshTokenExpirationMinutes = cfg.RefreshTokenExpirationMinutes;
+            _jwtConfig = config.Value;
         }
 
-        public int TokenExpirationMinutes => _tokenExpirationMinutes;
+        public int TokenExpirationMinutes => _jwtConfig.TokenExpirationMinutes;
 
-        public int RefreshTokenExpirationMinutes => _refreshTokenExpirationMinutes;
+        public int RefreshTokenExpirationMinutes => _jwtConfig.RefreshTokenExpirationMinutes;
 
         public string GenerateJwtToken(Guid id, string name, string email, UserRoles role)
         {
@@ -45,14 +33,14 @@ namespace BusinessLogic.Services
                 new Claim(ClaimTypes.Role, role.ToString()),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _issuer,
-                audience: _audience,
+                issuer: _jwtConfig.Issuer,
+                audience: _jwtConfig.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_tokenExpirationMinutes),
+                expires: DateTime.UtcNow.AddMinutes(_jwtConfig.TokenExpirationMinutes),
                 signingCredentials: creds
             );
 
@@ -67,7 +55,7 @@ namespace BusinessLogic.Services
             rng.GetBytes(randomBytes);
 
             var token = Convert.ToBase64String(randomBytes);
-            var expires = DateTime.UtcNow.AddMinutes(_refreshTokenExpirationMinutes);
+            var expires = DateTime.UtcNow.AddMinutes(_jwtConfig.RefreshTokenExpirationMinutes);
 
             return new(token, expires);
         }

@@ -71,9 +71,9 @@ namespace BusinessLogic.Services
             await _loginValidator.ValidateAndThrowAsync(userLogin, cancellationToken);
 
             var user = await _unitOfWork.UserRepository.GetByEmailAsync(userLogin.Email, cancellationToken);
-            var isValidEmailOrPassword = user != null && _passwordHashingService.VerifyPassword(userLogin.Password, user.PasswordHash);
+            var isValidCredentials = user != null && _passwordHashingService.VerifyPassword(userLogin.Password, user.PasswordHash);
 
-            if (!isValidEmailOrPassword)
+            if (!isValidCredentials)
                 throw new ValidationException(
                     errorCode: LoginValidationErrorCodes.EmailOrPasswordIsInvalid,
                     errorMessage: LoginValidationMessages.EmailOrPasswordIsInvalid);

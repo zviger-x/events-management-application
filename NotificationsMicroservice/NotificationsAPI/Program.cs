@@ -52,12 +52,10 @@ namespace NotificationsAPI
             services.AddScoped<IUserNotificationsClient, UserNotificationsClientStub>();
 
             // Infrastructure
-            services.AddSingleton<IStubKafkaMessageHandler, StubKafkaMessageHandler>();
             services.AddSingleton<IEventUpcomingMessageHandler, EventUpcomingMessageHandler>();
             services.AddSingleton<IEventUpdatedMessageHandler, EventUpdatedMessageHandler>();
             services.AddSingleton<IEventCompletedMessageHandler, EventCompletedMessageHandler>();
             services.AddSingleton<IPaymentConfirmedMessageHandler, PaymentConfirmedMessageHandler>();
-            services.AddHostedService<StubKafkaReceiveService>();
             services.AddHostedService<EventUpcomingKafkaReceiveService>();
             services.AddHostedService<EventUpdatedKafkaReceiveService>();
             services.AddHostedService<EventCompletedKafkaReceiveService>();

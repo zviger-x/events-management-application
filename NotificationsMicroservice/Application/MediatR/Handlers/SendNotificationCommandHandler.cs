@@ -36,10 +36,6 @@ namespace Application.MediatR.Handlers
             // Пытаемся сохранить уведомление в базе данных на стороне микросервиса пользователей
             var isSaved = await _userClient.TrySaveNotificationAsync(notification, cancellationToken);
 
-#warning TODO: Убрать выброс ошибки!
-            if (request.ThrowError)
-                isSaved = false;
-
             // Если сохранилось, отправляем по SignalR уведомление
             // и удаляем из кэша записи о неудачной попытке (если есть)
             if (isSaved)

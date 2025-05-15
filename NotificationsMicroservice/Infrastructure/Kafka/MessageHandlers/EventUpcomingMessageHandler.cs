@@ -1,8 +1,12 @@
-﻿using Infrastructure.Kafka.MessageHandlers.Interfaces;
+﻿using Application.Contracts;
+using Application.MediatR.Commands;
+using Infrastructure.Kafka.MessageHandlers.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shared.Configuration;
+using Shared.KafkaContracts.Events;
+using System.Text.Json;
 
 namespace Infrastructure.Kafka.MessageHandlers
 {
@@ -19,13 +23,35 @@ namespace Infrastructure.Kafka.MessageHandlers
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public Task HandleMessage(string message, CancellationToken cancellationToken)
+        public async Task HandleMessage(string message, CancellationToken cancellationToken)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-#warning TODO: EventUpcomingMessageHandler
-            throw new NotImplementedException(nameof(EventUpcomingMessageHandler));
+            var dto = JsonSerializer.Deserialize<EventUpcomingDto>(message);
+
+            foreach (var user in dto.TargetUsers)
+            {
+                var notification = new NotificationDto
+                {
+                    UserId = user,
+                    Message = GetMessage(dto.Name, dto.StartTime),
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { nameof(dto.EventId), dto.EventId.ToString() }
+                    }
+                };
+
+                var commend = new SendNotificationCommand { Notification = notification };
+
+                await mediator.Send(commend, cancellationToken);
+            }
+        }
+
+        private static string GetMessage(string eventName, DateTime startTime)
+        {
+            return $"Напоминаем: завтра состоится мероприятие \"{eventName}\" " +
+                   $"({startTime:dd.MM.yyyy в HH:mm}). Не пропустите!";
         }
     }
 }

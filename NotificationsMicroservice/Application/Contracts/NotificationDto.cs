@@ -13,5 +13,7 @@ namespace Application.Contracts
         public DateTime DateTime { get; } = DateTime.UtcNow;
 
         public NotificationStatuses Status { get; } = NotificationStatuses.Pending;
+
+        public Dictionary<string, string> Metadata { get; init; } = new();
     }
 }

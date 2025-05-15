@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands;
+using Infrastructure.Common;
 using Infrastructure.Kafka.MessageHandlers.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,12 +31,14 @@ namespace Infrastructure.Kafka.MessageHandlers
 
             var dto = JsonSerializer.Deserialize<EventUpcomingDto>(message);
 
+            var notificationMessage = NotificationMessageFactory.EventUpcoming(dto.Name, dto.StartTime);
+
             foreach (var user in dto.TargetUsers)
             {
                 var notification = new NotificationDto
                 {
                     UserId = user,
-                    Message = GetMessage(dto.Name, dto.StartTime),
+                    Message = notificationMessage,
                     Metadata = new Dictionary<string, string>
                     {
                         { nameof(dto.EventId), dto.EventId.ToString() }
@@ -46,12 +49,6 @@ namespace Infrastructure.Kafka.MessageHandlers
 
                 await mediator.Send(commend, cancellationToken);
             }
-        }
-
-        private static string GetMessage(string eventName, DateTime startTime)
-        {
-            return $"Напоминаем: завтра состоится мероприятие \"{eventName}\" " +
-                   $"({startTime:dd.MM.yyyy в HH:mm}). Не пропустите!";
         }
     }
 }

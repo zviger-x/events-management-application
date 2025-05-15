@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands;
+using Infrastructure.Common;
 using Infrastructure.Kafka.MessageHandlers.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,12 +31,14 @@ namespace Infrastructure.Kafka.MessageHandlers
 
             var dto = JsonSerializer.Deserialize<EventCompletedDto>(message);
 
+            var notificationMessage = NotificationMessageFactory.EventCompleted(dto.Name, dto.CompletedAt);
+
             foreach (var user in dto.TargetUsers)
             {
                 var notification = new NotificationDto
                 {
                     UserId = user,
-                    Message = GetMessage(dto.Name, dto.CompletedAt),
+                    Message = notificationMessage,
                     Metadata = new Dictionary<string, string>
                     {
                         { nameof(dto.EventId), dto.EventId.ToString() }
@@ -46,12 +49,6 @@ namespace Infrastructure.Kafka.MessageHandlers
 
                 await mediator.Send(commend, cancellationToken);
             }
-        }
-
-        private static string GetMessage(string eventName, DateTime completedAt)
-        {
-            return $"Мероприятие \"{eventName}\" завершилось {completedAt:dd.MM.yyyy в HH:mm}. " +
-                   "Не забудьте оставить свой отзыв или комментарий. Спасибо, что были с нами!";
         }
     }
 }

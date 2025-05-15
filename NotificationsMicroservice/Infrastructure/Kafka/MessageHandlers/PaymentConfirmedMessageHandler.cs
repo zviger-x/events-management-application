@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.MediatR.Commands;
+using Infrastructure.Common;
 using Infrastructure.Kafka.MessageHandlers.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,10 +31,12 @@ namespace Infrastructure.Kafka.MessageHandlers
 
             var dto = JsonSerializer.Deserialize<PaymentConfirmedDto>(message);
 
+            var notificationMessage = NotificationMessageFactory.PaymentConfirmed(dto.EventName, dto.ConfirmedAt, dto.Amount);
+
             var notification = new NotificationDto
             {
                 UserId = dto.TargetUser,
-                Message = GetMessage(dto.EventName, dto.ConfirmedAt, dto.Amount),
+                Message = notificationMessage,
                 Metadata = new Dictionary<string, string>
                 {
                     { nameof(dto.EventId), dto.EventId.ToString() }
@@ -43,12 +46,6 @@ namespace Infrastructure.Kafka.MessageHandlers
             var commend = new SendNotificationCommand { Notification = notification };
 
             await mediator.Send(commend, cancellationToken);
-        }
-
-        private static string GetMessage(string eventName, DateTime confirmedAt, float amount)
-        {
-            return $"Оплата за участие в мероприятии \"{eventName}\" была успешно подтверждена " +
-                   $"{confirmedAt:dd.MM.yyyy в HH:mm}. Сумма: {amount:0.00}. Спасибо за вашу регистрацию!";
         }
     }
 }

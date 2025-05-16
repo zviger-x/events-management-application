@@ -16,5 +16,31 @@ namespace Shared.Caching.Services.Interfaces
         /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> that can be used to cancel the lock acquisition operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is an <see cref="IRedisLock"/> instance if the lock is successfully acquired; otherwise, <see langword="null"/>.</returns>
         Task<IRedisLock> AcquireLockAsync(string lockKey, string lockValue, TimeSpan lockTtl, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retrieves and deserializes all objects referenced by keys in a Redis Set.
+        /// Each member in the set is expected to be a Redis key containing a serialized object of type T.
+        /// </summary>
+        /// <typeparam name="T">The type of objects to retrieve and deserialize.</typeparam>
+        /// <param name="setKey">The Redis key of the Set.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A collection of deserialized objects of type T.</returns>
+        Task<IEnumerable<T>> GetSetMembersAsync<T>(string setKey, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Adds a value to a Redis Set at the specified key.
+        /// </summary>
+        /// <param name="setKey">The Redis key of the Set.</param>
+        /// <param name="value">The value to add.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task AddToSetAsync(string setKey, string value, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Removes a value from a Redis Set at the specified key.
+        /// </summary>
+        /// <param name="setKey">The Redis key of the Set.</param>
+        /// <param name="value">The value to remove.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task RemoveFromSetAsync(string setKey, string value, CancellationToken cancellationToken);
     }
 }

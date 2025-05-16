@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -16,10 +17,9 @@ namespace Shared.Extensions
         /// </summary>
         /// <param name="services">The service collection to register authentication services with.</param>
         /// <param name="config">The JWT token configuration containing issuer, audience, and secret key.</param>
-        public static void AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig config)
+        public static AuthenticationBuilder AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig config)
         {
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            return services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters

@@ -1,4 +1,7 @@
-﻿using NotificationsAPI.Configuration;
+﻿using Infrastructure.Kafka.MessageHandlers;
+using Infrastructure.Kafka.MessageHandlers.Interfaces;
+using Infrastructure.Kafka.Services;
+using NotificationsAPI.Configuration;
 using Shared.Caching.Services;
 using Shared.Caching.Services.Interfaces;
 using StackExchange.Redis;
@@ -28,6 +31,22 @@ namespace NotificationsAPI.Extensions
         {
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRedisCacheService, RedisCacheService>();
+        }
+
+        public static void AddKafkaMessageHandlers(this IServiceCollection services)
+        {
+            services.AddSingleton<IEventUpcomingMessageHandler, EventUpcomingMessageHandler>();
+            services.AddSingleton<IEventUpdatedMessageHandler, EventUpdatedMessageHandler>();
+            services.AddSingleton<IEventCompletedMessageHandler, EventCompletedMessageHandler>();
+            services.AddSingleton<IPaymentConfirmedMessageHandler, PaymentConfirmedMessageHandler>();
+        }
+
+        public static void AddKafkaBackgroundServices(this IServiceCollection services)
+        {
+            services.AddHostedService<EventUpcomingKafkaReceiveService>();
+            services.AddHostedService<EventUpdatedKafkaReceiveService>();
+            services.AddHostedService<EventCompletedKafkaReceiveService>();
+            services.AddHostedService<PaymentConfirmedKafkaReceiveService>();
         }
     }
 }

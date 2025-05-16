@@ -2,9 +2,6 @@ using Application.Clients;
 using Application.Services.Background;
 using Application.SignalR;
 using Infrastructure.Clients;
-using Infrastructure.Kafka.MessageHandlers;
-using Infrastructure.Kafka.MessageHandlers.Interfaces;
-using Infrastructure.Kafka.Services;
 using NotificationsAPI.Configuration;
 using NotificationsAPI.Extensions;
 using NotificationsAPI.SignalR.Hubs;
@@ -52,14 +49,8 @@ namespace NotificationsAPI
             services.AddScoped<IUserNotificationsClient, UserNotificationsClientStub>();
 
             // Infrastructure
-            services.AddSingleton<IEventUpcomingMessageHandler, EventUpcomingMessageHandler>();
-            services.AddSingleton<IEventUpdatedMessageHandler, EventUpdatedMessageHandler>();
-            services.AddSingleton<IEventCompletedMessageHandler, EventCompletedMessageHandler>();
-            services.AddSingleton<IPaymentConfirmedMessageHandler, PaymentConfirmedMessageHandler>();
-            services.AddHostedService<EventUpcomingKafkaReceiveService>();
-            services.AddHostedService<EventUpdatedKafkaReceiveService>();
-            services.AddHostedService<EventCompletedKafkaReceiveService>();
-            services.AddHostedService<PaymentConfirmedKafkaReceiveService>();
+            services.AddKafkaMessageHandlers();
+            services.AddKafkaBackgroundServices();
 
             // JWT
             services.AddJwtAuthentication(jwtTokenConfig)

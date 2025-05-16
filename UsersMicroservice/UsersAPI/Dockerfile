@@ -7,12 +7,17 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Добавление переменных окружения
+ENV DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
+ENV TERM=xterm-256color
 
 # Этот этап используется для сборки проекта службы
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["UsersAPI/UsersAPI.csproj", "UsersAPI/"]
+COPY ["BusinessLogic/BusinessLogic.csproj", "BusinessLogic/"]
+COPY ["DataAccess/DataAccess.csproj", "DataAccess/"]
 RUN dotnet restore "./UsersAPI/UsersAPI.csproj"
 COPY . .
 WORKDIR "/src/UsersAPI"

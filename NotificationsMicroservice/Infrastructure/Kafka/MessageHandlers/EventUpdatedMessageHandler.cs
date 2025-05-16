@@ -32,6 +32,10 @@ namespace Infrastructure.Kafka.MessageHandlers
             var dto = JsonSerializer.Deserialize<EventUpdatedDto>(message);
 
             var notificationMessage = NotificationMessageFactory.EventUpdated(dto.Name, dto.UpdatedAt);
+            var metadata = new Dictionary<string, string>
+            {
+                { nameof(dto.EventId), dto.EventId.ToString() }
+            };
 
             foreach (var user in dto.TargetUsers)
             {
@@ -39,10 +43,7 @@ namespace Infrastructure.Kafka.MessageHandlers
                 {
                     UserId = user,
                     Message = notificationMessage,
-                    Metadata = new Dictionary<string, string>
-                    {
-                        { nameof(dto.EventId), dto.EventId.ToString() }
-                    }
+                    Metadata = metadata,
                 };
 
                 var commend = new SendNotificationCommand { Notification = notification };

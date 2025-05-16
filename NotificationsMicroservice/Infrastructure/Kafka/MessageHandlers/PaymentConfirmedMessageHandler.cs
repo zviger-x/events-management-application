@@ -32,15 +32,16 @@ namespace Infrastructure.Kafka.MessageHandlers
             var dto = JsonSerializer.Deserialize<PaymentConfirmedDto>(message);
 
             var notificationMessage = NotificationMessageFactory.PaymentConfirmed(dto.EventName, dto.ConfirmedAt, dto.Amount);
+            var metadata = new Dictionary<string, string>
+            {
+                { nameof(dto.EventId), dto.EventId.ToString() }
+            };
 
             var notification = new NotificationDto
             {
                 UserId = dto.TargetUser,
                 Message = notificationMessage,
-                Metadata = new Dictionary<string, string>
-                {
-                    { nameof(dto.EventId), dto.EventId.ToString() }
-                }
+                Metadata = metadata
             };
 
             var commend = new SendNotificationCommand { Notification = notification };

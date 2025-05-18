@@ -21,10 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Validation\Validators\Requests\" />
-  </ItemGroup>
   
   <ItemGroup>
     <Protobuf Include="..\..\Shared\Shared\Grpc\Protos\User.proto" GrpcServices="Client" />

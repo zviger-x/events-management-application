@@ -1,6 +1,9 @@
 using Application.UnitOfWork.Interfaces;
 using EventsAPI.Configuration;
 using EventsAPI.Extensions;
+using Hangfire;
+using Infrastructure.BackgroundJobs;
+using Infrastructure.BackgroundJobs.Interfaces;
 using Infrastructure.Contexts;
 using Infrastructure.UnitOfWork;
 using MediatR;
@@ -49,6 +52,12 @@ namespace EventsAPI
             services.AddRedisServer(redisServerConfig);
             services.AddCachingServices();
 
+            // Hangfire
+            services.AddHangfire(config =>
+                config.UseSqlServerStorage(configuration.GetSection("HangfireConfig:ConnectionString").Value));
+            services.AddHangfireServer();
+            services.AddScoped<INotifyCompletedEventsJob, NotifyCompletedEventsJob>();
+
             // Data access
             services.AddMongoServer(mongoServerConfig);
             services.AddScoped<TransactionContext>();
@@ -91,6 +100,9 @@ namespace EventsAPI
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseHangfireDashboard("/hangfire");
+            app.UseHangfireRecurringJobs();
 
             app.Run();
         }

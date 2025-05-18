@@ -47,7 +47,7 @@
 
 networks:
   internal-docker-network:
-    driver: bridge
+    external: true
 
 volumes:
   sql_data:

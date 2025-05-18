@@ -61,7 +61,7 @@ services:
 
 networks:
   internal-docker-network:
-    driver: bridge
+    external: true
 
 volumes:
   mongo_data:

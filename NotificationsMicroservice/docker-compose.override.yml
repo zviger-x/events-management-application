@@ -7,11 +7,9 @@ services:
       - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
       - TERM=xterm-256color
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_HTTPS_PORTS=8094
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8094:8094"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -28,7 +26,7 @@ services:
 
   redis:
     image: redis:latest
-    container_name: RedisServer
+    container_name: NotificationsAPI_RedisServer
     volumes:
       - redis_data:/data
     restart: always
@@ -42,7 +40,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: KafkaServer
+    container_name: NotificationsAPI_KafkaServer
     environment:
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
       - KAFKA_LISTENERS=PLAINTEXT://:9092,INTERNAL://:29092
@@ -67,7 +65,7 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
-    container_name: Zookeeper
+    container_name: NotificationsAPI_Zookeeper
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
       - ZOOKEEPER_TICK_TIME=2000

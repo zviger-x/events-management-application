@@ -16,7 +16,7 @@ namespace Application.MediatR.Behaviours
         {
             await _validator.ValidateAndThrowAsync(request, cancellationToken);
 
-            return await next();
+            return await next(cancellationToken);
         }
     }
 }

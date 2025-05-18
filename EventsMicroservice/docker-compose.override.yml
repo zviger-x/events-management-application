@@ -7,18 +7,16 @@ services:
       - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
       - TERM=xterm-256color
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_HTTPS_PORTS=8092
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8092:8092"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
     depends_on:
       mongoserver:
         condition: service_healthy
-      redis:
+      redisserver:
         condition: service_healthy
     restart: always
     networks:
@@ -45,11 +43,11 @@ services:
         test "$(mongosh --quiet --eval "rs.isMaster().ismaster")" = "true"
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 10   
 
-  redis:
+  redisserver:
     image: redis:latest
-    container_name: RedisServer
+    container_name: EventsAPI_RedisServer
     volumes:
       - redis_data:/data
     restart: always

@@ -15,10 +15,9 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ../Shared/Shared/Configuration/Json/kafka-server-settings.json:/app/config/kafka-server-settings.json:ro
     depends_on:
       redis:
-        condition: service_healthy
-      kafka:
         condition: service_healthy
     restart: always
     networks:
@@ -37,42 +36,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: NotificationsAPI_KafkaServer
-    environment:
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
-      - KAFKA_LISTENERS=PLAINTEXT://:9092,INTERNAL://:29092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
-      - KAFKA_LISTENER_SECURITY_PROTOCOL=PLAINTEXT
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
-    ports:
-      - "9092:9092"
-      - "29092:29092"
-    depends_on:
-      - zookeeper
-    healthcheck:
-      test: /usr/bin/kafka-topics --bootstrap-server kafka:29092 --list
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - internal-docker-network
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: NotificationsAPI_Zookeeper
-    environment:
-      - ZOOKEEPER_CLIENT_PORT=2181
-      - ZOOKEEPER_TICK_TIME=2000
-    ports:
-      - "2181:2181"
-    networks:
-      - internal-docker-network
 
 networks:
   internal-docker-network:

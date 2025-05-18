@@ -24,6 +24,10 @@ namespace EventsAPI
             var logging = builder.Logging;
 
             // Add configs
+            configuration.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("/app/config/kafka-server-settings.json", optional: true) // для контейнера
+                .AddEnvironmentVariables();
             var redisServerConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
             var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
             var mongoServerConfig = services.ConfigureAndReceive<MongoServerConfig>(configuration, "MongoServerConfig");

@@ -17,6 +17,12 @@ namespace PaymentAPI
             var configuration = builder.Configuration;
             var logging = builder.Logging;
 
+            // Add configs
+            configuration.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("/app/config/kafka-server-settings.json", optional: true) // для контейнера
+                .AddEnvironmentVariables();
+
             // Add logging
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
@@ -35,17 +41,8 @@ namespace PaymentAPI
 
             // API
             services.AddGrpcWithInterceptors();
-            // services.AddGrpcSwagger();
-            // services.AddSwagger();
 
             var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            // if (app.Environment.IsDevelopment())
-            // {
-            //     app.UseSwagger();
-            //     app.UseSwaggerUI();
-            // }
 
             app.MapGrpcService<PaymentService>();
 

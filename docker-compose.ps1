@@ -10,7 +10,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $networkName = "internal-docker-network"
-$services = @("UsersMicroservice", "EventsMicroservice", "PaymentMicroservice", "NotificationsMicroservice")
+$services = @("KafkaServer", "UsersMicroservice", "EventsMicroservice", "PaymentMicroservice", "NotificationsMicroservice")
 
 switch ($command) {
     "up" {

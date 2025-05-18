@@ -1,0 +1,12 @@
+{
+  "KafkaServerConfig": {
+    "BootstrapServers": "KafkaServer:29092",
+    "GroupId": "api-notification-consumer-group",
+    "Topics": {
+      "EventUpcoming": "event-upcoming",
+      "EventUpdated": "event-updated",
+      "EventCompleted": "event-completed",
+      "PaymentConfirmed": "payment-confirmed"
+    }
+  }
+}

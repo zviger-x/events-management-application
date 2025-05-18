@@ -1,0 +1,6 @@
+{
+  "GrpcConnections": {
+    "UsersMicroservice": "https://usersapi:8091",
+    "PaymentMicroservice": "https://paymentapi:8093"
+  }
+}

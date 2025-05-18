@@ -2,6 +2,8 @@ using MediatR;
 using PaymentAPI.Extensions;
 using PaymentAPI.Services;
 using Serilog;
+using Shared.Configuration;
+using Shared.Extensions;
 using Shared.Logging;
 
 namespace PaymentAPI
@@ -20,8 +22,10 @@ namespace PaymentAPI
             // Add configs
             configuration.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("/app/config/kafka-server-settings.json", optional: true) // для контейнера
+                .AddJsonFile("/app/config/grpc-connections.json", optional: true)
+                .AddJsonFile("/app/config/kafka-server-settings.json", optional: true)
                 .AddEnvironmentVariables();
+            var grpcConnections = services.ConfigureAndReceive<GrpcConnectionsConfig>(configuration, "GrpcConnections");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -34,7 +38,7 @@ namespace PaymentAPI
             services.AddAutoMapper();
 
             // BLL
-            services.AddClients();
+            services.AddClients(grpcConnections);
             services.AddValidators();
             services.AddSagas();
             services.AddMediatR();

@@ -13,6 +13,8 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ../Shared/Shared/Configuration/Json/kafka-server-settings.json:/app/config/kafka-server-settings.json:ro
+      - ../Shared/Shared/Configuration/Json/grpc-connections.json:/app/config/grpc-connections.json:ro
     depends_on:
       mongoserver:
         condition: service_healthy

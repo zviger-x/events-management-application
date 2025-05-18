@@ -6,6 +6,7 @@ using FluentValidation;
 using Infrastructure.Clients;
 using Infrastructure.Clients.Grpc;
 using MediatR;
+using Shared.Configuration;
 using Shared.Grpc.Interceptors;
 using Shared.Grpc.User;
 using System.Reflection;
@@ -22,7 +23,7 @@ namespace PaymentAPI.Extensions
                 Assembly.Load("PaymentAPI")]);
         }
 
-        public static void AddClients(this IServiceCollection services)
+        public static void AddClients(this IServiceCollection services, GrpcConnectionsConfig grpcConnections)
         {
             var httpHandler = () => new HttpClientHandler
             {
@@ -31,7 +32,7 @@ namespace PaymentAPI.Extensions
 
             services.AddGrpcClient<UserService.UserServiceClient>(o =>
             {
-                o.Address = new Uri("https://usersapi:8091");
+                o.Address = new Uri(grpcConnections.UsersMicroservice);
             })
             .ConfigurePrimaryHttpMessageHandler(httpHandler);
 

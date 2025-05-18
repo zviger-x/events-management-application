@@ -6,6 +6,7 @@ using Infrastructure.Kafka.Services;
 using NotificationsAPI.Configuration;
 using Shared.Caching.Services;
 using Shared.Caching.Services.Interfaces;
+using Shared.Configuration;
 using Shared.Grpc.User;
 using StackExchange.Redis;
 using System.Reflection;
@@ -52,7 +53,7 @@ namespace NotificationsAPI.Extensions
             services.AddHostedService<PaymentConfirmedKafkaReceiveService>();
         }
 
-        public static void AddClients(this IServiceCollection services)
+        public static void AddClients(this IServiceCollection services, GrpcConnectionsConfig grpcConnections)
         {
             var httpHandler = () => new HttpClientHandler
             {
@@ -61,7 +62,7 @@ namespace NotificationsAPI.Extensions
 
             services.AddGrpcClient<UserService.UserServiceClient>(o =>
             {
-                o.Address = new Uri("https://usersapi:8091");
+                o.Address = new Uri(grpcConnections.UsersMicroservice);
             })
             .ConfigurePrimaryHttpMessageHandler(httpHandler);
 

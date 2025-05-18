@@ -26,12 +26,14 @@ namespace NotificationsAPI
             // Add configs
             configuration.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("/app/config/kafka-server-settings.json", optional: true) // для контейнера
+                .AddJsonFile("/app/config/grpc-connections.json", optional: true)
+                .AddJsonFile("/app/config/kafka-server-settings.json", optional: true)
                 .AddEnvironmentVariables();
             var redisServerConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
             var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
             var kafkaServerConfig = services.ConfigureAndReceive<KafkaServerConfig>(configuration, "KafkaServerConfig");
+            var grpcConnections = services.ConfigureAndReceive<GrpcConnectionsConfig>(configuration, "GrpcConnections");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -50,7 +52,7 @@ namespace NotificationsAPI
             services.AddMediatR();
             services.AddHostedService<FailedNotificationResender>();
             services.AddScoped<INotificationSender, NotificationSender>();
-            services.AddClients();
+            services.AddClients(grpcConnections);
 
             // Infrastructure
             services.AddKafkaMessageHandlers();

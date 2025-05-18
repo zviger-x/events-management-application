@@ -1,4 +1,4 @@
-﻿namespace Shared.KafkaContracts.Payment
+﻿namespace Shared.Kafka.Contracts.Payment
 {
     public class PaymentConfirmedDto
     {

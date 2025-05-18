@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shared.Configuration;
-using Shared.KafkaContracts.Payment;
+using Shared.Kafka.Contracts.Payment;
 using System.Text.Json;
 
 namespace Infrastructure.Kafka.MessageHandlers

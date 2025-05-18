@@ -1,4 +1,4 @@
-﻿namespace Shared.KafkaContracts.Events
+﻿namespace Shared.Kafka.Contracts.Events
 {
     public class EventUpcomingDto
     {

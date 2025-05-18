@@ -4,10 +4,9 @@ using Shared.Grpc.Payment;
 
 namespace Infrastructure.Mapping
 {
-    public class MappingProfile : Profile
+    public class ProcessPaymentProfile : Profile
     {
-        // TODO: Переименовать профиль!
-        public MappingProfile()
+        public ProcessPaymentProfile()
         {
             CreateMap<ProcessPaymentDto, ProcessPaymentRequest>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId.ToString()))

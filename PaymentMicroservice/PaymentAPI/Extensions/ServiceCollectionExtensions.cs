@@ -1,14 +1,18 @@
 ﻿using Application.Clients;
 using Application.MediatR.Behaviours;
+using Application.Messages;
 using Application.Sagas;
 using Application.Sagas.Interfaces;
 using FluentValidation;
 using Infrastructure.Clients;
 using Infrastructure.Clients.Grpc;
+using Infrastructure.Kafka.Producers;
 using MediatR;
 using Shared.Configuration;
 using Shared.Grpc.Interceptors;
 using Shared.Grpc.User;
+using Shared.Kafka.Producers.Common;
+using Shared.Kafka.Producers.Common.Interfaces;
 using System.Reflection;
 
 namespace PaymentAPI.Extensions
@@ -68,6 +72,13 @@ namespace PaymentAPI.Extensions
         public static void AddSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new() { Title = "gRPC Payment Microservice", Version = "v1" }));
+        }
+
+        public static void AddKafkaProducers(this IServiceCollection services)
+        {
+            services.AddSingleton(typeof(IKafkaMessageProducer<>), typeof(BaseKafkaMessageProducer<>));
+
+            services.AddScoped<IPaymentConfirmedMessageProducer, PaymentConfirmedMessageProducer>();
         }
     }
 }

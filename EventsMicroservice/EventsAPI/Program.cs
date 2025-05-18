@@ -9,6 +9,7 @@ using Shared.Configuration;
 using Shared.Extensions;
 using Shared.Logging;
 using Shared.Middlewares;
+using System.Reflection;
 
 namespace EventsAPI
 {
@@ -34,6 +35,7 @@ namespace EventsAPI
             var mongoServerConfig = services.ConfigureAndReceive<MongoServerConfig>(configuration, "MongoServerConfig");
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
             var grpcConnections = services.ConfigureAndReceive<GrpcConnectionsConfig>(configuration, "GrpcConnections");
+            var kafkaServerConfig = services.ConfigureAndReceive<KafkaServerConfig>(configuration, "KafkaServerConfig");
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
@@ -55,10 +57,11 @@ namespace EventsAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Business logic
-            services.AddAutoMapper(typeof(Application.Mapping.MappingProfile), typeof(Infrastructure.Mapping.MappingProfile));
+            services.AddAutoMapper(Assembly.Load("Application"), Assembly.Load("Infrastructure"));
             services.AddClients(grpcConnections);
             services.AddValidators();
             services.AddMediatR();
+            services.AddKafkaProducers();
 
             // JWT
             services.AddJwtAuthentication(jwtTokenConfig);

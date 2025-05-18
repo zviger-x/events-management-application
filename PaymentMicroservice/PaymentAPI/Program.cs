@@ -25,6 +25,7 @@ namespace PaymentAPI
                 .AddJsonFile("/app/config/grpc-connections.json", optional: true)
                 .AddJsonFile("/app/config/kafka-server-settings.json", optional: true)
                 .AddEnvironmentVariables();
+            var kafkaServerConfig = services.ConfigureAndReceive<KafkaServerConfig>(configuration, "KafkaServerConfig");
             var grpcConnections = services.ConfigureAndReceive<GrpcConnectionsConfig>(configuration, "GrpcConnections");
 
             // Add logging
@@ -42,6 +43,7 @@ namespace PaymentAPI
             services.AddValidators();
             services.AddSagas();
             services.AddMediatR();
+            services.AddKafkaProducers();
 
             // API
             services.AddGrpcWithInterceptors();

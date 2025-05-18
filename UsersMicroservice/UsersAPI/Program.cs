@@ -47,7 +47,7 @@ namespace UsersAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // BLL
-            services.AddAutoMapper(Assembly.Load("BusinessLogic"));
+            services.AddAutoMapper(Assembly.Load("BusinessLogic"), Assembly.Load("UsersAPI"));
             services.AddValidators();
             services.AddServices();
             services.AddCachingServices();

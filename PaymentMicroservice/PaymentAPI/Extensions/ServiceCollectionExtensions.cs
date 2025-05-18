@@ -4,8 +4,10 @@ using Application.Sagas;
 using Application.Sagas.Interfaces;
 using FluentValidation;
 using Infrastructure.Clients;
+using Infrastructure.Clients.Grpc;
 using MediatR;
 using Shared.Grpc.Interceptors;
+using Shared.Grpc.User;
 using System.Reflection;
 
 namespace PaymentAPI.Extensions
@@ -22,7 +24,18 @@ namespace PaymentAPI.Extensions
 
         public static void AddClients(this IServiceCollection services)
         {
-            services.AddScoped<IUserClient, UserClientStub>();
+            var httpHandler = () => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            services.AddGrpcClient<UserService.UserServiceClient>(o =>
+            {
+                o.Address = new Uri("https://usersapi:8091");
+            })
+            .ConfigurePrimaryHttpMessageHandler(httpHandler);
+
+            services.AddScoped<IUserClient, UserClient>();
             services.AddScoped<IPaymentClient, PaymentClientStub>();
         }
 

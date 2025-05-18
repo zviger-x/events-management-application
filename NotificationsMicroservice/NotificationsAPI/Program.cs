@@ -1,7 +1,5 @@
-using Application.Clients;
 using Application.Services.Background;
 using Application.SignalR;
-using Infrastructure.Clients;
 using NotificationsAPI.Configuration;
 using NotificationsAPI.Extensions;
 using NotificationsAPI.SignalR.Hubs;
@@ -10,6 +8,7 @@ using Serilog;
 using Shared.Configuration;
 using Shared.Extensions;
 using Shared.Logging;
+using System.Reflection;
 
 namespace NotificationsAPI
 {
@@ -43,10 +42,11 @@ namespace NotificationsAPI
             services.AddCachingServices();
 
             // Business logic
+            services.AddAutoMapper(Assembly.Load("Infrastructure"));
             services.AddMediatR();
             services.AddHostedService<FailedNotificationResender>();
             services.AddScoped<INotificationSender, NotificationSender>();
-            services.AddScoped<IUserNotificationsClient, UserNotificationsClientStub>();
+            services.AddClients();
 
             // Infrastructure
             services.AddKafkaMessageHandlers();

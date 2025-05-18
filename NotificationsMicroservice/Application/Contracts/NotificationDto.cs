@@ -1,6 +1,4 @@
-﻿using Shared.Enums;
-
-namespace Application.Contracts
+﻿namespace Application.Contracts
 {
     public class NotificationDto
     {
@@ -12,8 +10,8 @@ namespace Application.Contracts
 
         public DateTime DateTime { get; } = DateTime.UtcNow;
 
-        public NotificationStatuses Status { get; } = NotificationStatuses.Pending;
-
+        // Метаданные пока передаются только в signalR и не сохраняются на стороне БД
+        // TODO: Сделать сохранение метаданных
         public Dictionary<string, string> Metadata { get; init; } = new();
     }
 }

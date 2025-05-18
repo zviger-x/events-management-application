@@ -12,5 +12,8 @@
         public const string SeatIdIsEmpty = "Seat ID cannot be empty.";
 
         public const string RegistrationTimeIsInvalid = "Registration time cannot be in the future.";
+
+        public const string TokenIsNull = "Token cannot be null.";
+        public const string TokenIsEmpty = "Token cannot be empty.";
     }
 }

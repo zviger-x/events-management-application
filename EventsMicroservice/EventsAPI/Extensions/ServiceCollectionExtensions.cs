@@ -15,6 +15,7 @@ using MongoDB.Driver;
 using Shared.Caching.Services;
 using Shared.Caching.Services.Interfaces;
 using Shared.Grpc.Interceptors;
+using Shared.Grpc.Payment;
 using Shared.Grpc.User;
 using Shared.Repositories.Interfaces;
 using StackExchange.Redis;
@@ -105,16 +106,25 @@ namespace EventsAPI.Extensions
 
         public static void AddClients(this IServiceCollection services)
         {
+            var httpHandler = () => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
             services.AddGrpcClient<UserService.UserServiceClient>(o =>
             {
                 o.Address = new Uri("https://usersapi:8091");
             })
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            .ConfigurePrimaryHttpMessageHandler(httpHandler);
+
+            services.AddGrpcClient<PaymentService.PaymentServiceClient>(o =>
             {
-                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            });
+                o.Address = new Uri("https://paymentapi:8093");
+            })
+            .ConfigurePrimaryHttpMessageHandler(httpHandler);
 
             services.AddScoped<IUserClient, UserClient>();
+            services.AddScoped<IPaymentClient, PaymentClient>();
         }
 
         public static void AddGrpcWithInterceptors(this IServiceCollection services)

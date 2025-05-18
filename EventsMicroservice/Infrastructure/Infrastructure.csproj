@@ -28,6 +28,7 @@
   
   <ItemGroup>
     <Protobuf Include="..\..\Shared\Shared\Grpc\Protos\User.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\Shared\Shared\Grpc\Protos\Payment.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

@@ -25,7 +25,7 @@ namespace EventsAPI.Controllers
 
         [Authorize]
         [HttpPost("/api/events/{eventId}/seats/{seatId}/register")]
-        public async Task<IActionResult> RegisterUser([FromRoute] Guid eventId, [FromRoute] Guid seatId, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterUser([FromRoute] Guid eventId, [FromRoute] Guid seatId, [FromBody] string token, CancellationToken cancellationToken)
         {
             var userId = User.GetUserIdOrThrow();
             var command = new EventUserCreateCommand
@@ -34,7 +34,8 @@ namespace EventsAPI.Controllers
                 {
                     EventId = eventId,
                     UserId = userId,
-                    SeatId = seatId
+                    SeatId = seatId,
+                    Token = token,
                 }
             };
 

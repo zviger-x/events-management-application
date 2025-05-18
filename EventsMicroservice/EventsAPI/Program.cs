@@ -1,4 +1,3 @@
-using Application.Mapping;
 using Application.UnitOfWork.Interfaces;
 using EventsAPI.Configuration;
 using EventsAPI.Extensions;
@@ -50,7 +49,7 @@ namespace EventsAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Business logic
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(Application.Mapping.MappingProfile), typeof(Infrastructure.Mapping.MappingProfile));
             services.AddClients();
             services.AddValidators();
             services.AddMediatR();

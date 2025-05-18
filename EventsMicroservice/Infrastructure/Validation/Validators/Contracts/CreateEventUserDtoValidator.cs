@@ -32,6 +32,14 @@ namespace Infrastructure.Validation.Validators.Contracts
                 .NotEmpty()
                     .WithMessage(EventUserValidationMessages.SeatIdIsEmpty)
                     .WithErrorCode(EventUserValidationErrorCodes.SeatIdIsEmpty);
+
+            RuleFor(eu => eu.Token)
+                .NotNull()
+                    .WithMessage(EventUserValidationMessages.TokenIsNull)
+                    .WithErrorCode(EventUserValidationErrorCodes.TokenIsNull)
+                .NotEmpty()
+                    .WithMessage(EventUserValidationMessages.TokenIsEmpty)
+                    .WithErrorCode(EventUserValidationErrorCodes.TokenIsEmpty);
         }
     }
 }

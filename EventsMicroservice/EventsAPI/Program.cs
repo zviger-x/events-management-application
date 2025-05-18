@@ -51,6 +51,7 @@ namespace EventsAPI
 
             // Business logic
             services.AddAutoMapper(typeof(MappingProfile));
+            services.AddClients();
             services.AddValidators();
             services.AddMediatR();
 
@@ -58,6 +59,8 @@ namespace EventsAPI
             services.AddJwtAuthentication(jwtTokenConfig);
             services.AddAuthorization();
 
+            // API
+            services.AddGrpcWithInterceptors();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwagger(true, 1);

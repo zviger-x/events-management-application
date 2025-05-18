@@ -68,5 +68,13 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="cancellationToken">Cancellation token to cancel the operation if needed.</param>
         /// <returns></returns>
         Task ChangeUserRoleAsync(Guid userRouteId, ChangeUserRoleDto changeUserRole, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Checks if a user with the specified ID exists
+        /// </summary>
+        /// <param name="userId">User id.</param>
+        /// <param name="cancellationToken">Cancellation token if needed.</param>
+        /// <returns></returns>
+        Task<bool> UserExists(Guid userId, CancellationToken cancellationToken = default);
     }
 }

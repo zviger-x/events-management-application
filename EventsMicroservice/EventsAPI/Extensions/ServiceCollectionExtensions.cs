@@ -1,8 +1,10 @@
-﻿using Application.MediatR.Behaviours;
+﻿using Application.Clients;
+using Application.MediatR.Behaviours;
 using Application.Repositories.Interfaces;
 using Domain.Entities;
 using EventsAPI.Configuration;
 using FluentValidation;
+using Infrastructure.Clients.Grpc;
 using Infrastructure.Mongo;
 using Infrastructure.Repositories;
 using MediatR;
@@ -12,6 +14,8 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Shared.Caching.Services;
 using Shared.Caching.Services.Interfaces;
+using Shared.Grpc.Interceptors;
+using Shared.Grpc.User;
 using Shared.Repositories.Interfaces;
 using StackExchange.Redis;
 using System.Reflection;
@@ -97,6 +101,28 @@ namespace EventsAPI.Extensions
         {
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRedisCacheService, RedisCacheService>();
+        }
+
+        public static void AddClients(this IServiceCollection services)
+        {
+            services.AddGrpcClient<UserService.UserServiceClient>(o =>
+            {
+                o.Address = new Uri("https://usersapi:8091");
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            });
+
+            services.AddScoped<IUserClient, UserClient>();
+        }
+
+        public static void AddGrpcWithInterceptors(this IServiceCollection services)
+        {
+            services.AddGrpc(o =>
+            {
+                o.Interceptors.Add<GrpcExceptionInterceptor>();
+            });
         }
     }
 }

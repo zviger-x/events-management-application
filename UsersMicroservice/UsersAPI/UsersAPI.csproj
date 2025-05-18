@@ -7,6 +7,7 @@
     <UserSecretsId>9a534318-9ec0-43bb-9bce-edbbd1f19f5b</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\Shared\Shared\Grpc\Protos\User.proto" GrpcServices="Server" AdditionalImportDirs="..\..\Shared\Shared\Grpc" />
   </ItemGroup>
 
 </Project>

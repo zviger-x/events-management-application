@@ -10,6 +10,7 @@ using System.Reflection;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
 using UsersAPI.Middlewares;
+using UsersAPI.Services;
 
 namespace UsersAPI
 {
@@ -55,6 +56,8 @@ namespace UsersAPI
             services.AddJwtAuthentication(jwtConfig);
             services.AddAuthorization();
 
+            // API
+            services.AddGrpcWithInterceptors();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwagger(true, 1);
@@ -91,6 +94,7 @@ namespace UsersAPI
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapGrpcService<UserService>();
 
             app.Run();
         }

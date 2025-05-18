@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Shared.Grpc.Interceptors;
 using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
@@ -138,6 +139,14 @@ namespace UsersAPI.Extensions
 
             services.Configure<TConfig>(section);
             return config;
+        }
+
+        public static void AddGrpcWithInterceptors(this IServiceCollection services)
+        {
+            services.AddGrpc(o =>
+            {
+                o.Interceptors.Add<GrpcExceptionInterceptor>();
+            });
         }
     }
 }

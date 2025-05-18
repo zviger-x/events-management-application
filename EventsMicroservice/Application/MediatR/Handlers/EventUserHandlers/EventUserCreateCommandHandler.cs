@@ -1,4 +1,5 @@
 ﻿using Application.Caching.Constants;
+using Application.Clients;
 using Application.MediatR.Commands.EventUserCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
@@ -13,11 +14,17 @@ namespace Application.MediatR.Handlers.EventUserHandlers
     {
         private readonly TimeSpan _lockTtl = TimeSpan.FromMinutes(5);
         private readonly IRedisCacheService _redisCacheService;
+        private readonly IUserClient _userClient;
 
-        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IRedisCacheService cacheService)
+        public EventUserCreateCommandHandler(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IRedisCacheService cacheService,
+            IUserClient userClient)
             : base(unitOfWork, mapper, cacheService)
         {
             _redisCacheService = cacheService;
+            _userClient = userClient;
         }
 
         public async Task<Guid> Handle(EventUserCreateCommand request, CancellationToken cancellationToken)
@@ -58,7 +65,10 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             if (seat.IsBought)
                 throw new ParameterException("This seat has already been bought");
 
-            // TODO: Добавить проверку наличия пользователя (gRPC запрос)
+            // Проверку наличия пользователя (gRPC запрос)
+            var isUserExists = await _userClient.UserExistsAsync(eventUser.UserId, cancellationToken);
+            if (!isUserExists)
+                throw new NotFoundException("The user with this id does not exist.");
 
             // Проверка подписан ли пользователь на этот ивент.
             // TODO: Что-то сделать здесь или забить. Ведь нужна ли в действительности проверка на то, что пользователь подписан на ивент?
@@ -85,7 +95,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             }
             catch
             {
-                // TODO: Сделать что-то в случаи успешной оплаты и не успешной покупки. Например "вернуть" деньги.
+                // TODO: Сделать что-то в случае успешной оплаты и не успешной покупки. Например "вернуть" деньги.
                 throw;
             }
         }

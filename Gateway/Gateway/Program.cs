@@ -18,8 +18,6 @@ namespace Gateway
             // Add configs
             configuration.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("/app/config/grpc-connections.json", optional: true)
-                .AddJsonFile("/app/config/kafka-server-settings.json", optional: true)
                 .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
                 .AddEnvironmentVariables();
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");

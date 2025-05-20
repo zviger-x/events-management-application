@@ -5,6 +5,7 @@ using NotificationsAPI.Extensions;
 using NotificationsAPI.SignalR.Hubs;
 using NotificationsAPI.SignalR.Senders;
 using Serilog;
+using Serilog.Events;
 using Shared.Configuration;
 using Shared.Extensions;
 using Shared.Logging;
@@ -39,6 +40,7 @@ namespace NotificationsAPI
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
                 .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+                .WriteTo.Http("http://logstash:8098", null, restrictedToMinimumLevel: LogEventLevel.Warning)
                 .CreateLogger();
             logging.ClearProviders();
             logging.AddSerilog();

@@ -2,6 +2,7 @@ using MediatR;
 using PaymentAPI.Extensions;
 using PaymentAPI.Services;
 using Serilog;
+using Serilog.Events;
 using Shared.Configuration;
 using Shared.Extensions;
 using Shared.Logging;
@@ -32,6 +33,7 @@ namespace PaymentAPI
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
                 .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+                .WriteTo.Http("http://logstash:8098", null, restrictedToMinimumLevel: LogEventLevel.Warning)
                 .CreateLogger();
             logging.ClearProviders();
             logging.AddSerilog();

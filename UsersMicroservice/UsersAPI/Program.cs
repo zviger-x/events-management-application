@@ -5,7 +5,8 @@ using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
+using Serilog.Events;
+using Shared.Logging;
 using System.Reflection;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
@@ -32,8 +33,9 @@ namespace UsersAPI
 
             // Add logging
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+                .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
                 .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+                .WriteTo.Http("http://logstash:8098", null, restrictedToMinimumLevel: LogEventLevel.Warning)
                 .CreateLogger();
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog();

@@ -14,7 +14,7 @@ namespace EventsAPI.Extensions
                 Cron.Hourly()); // каждый час
 
             RecurringJob.AddOrUpdate<INotifyUpcomingEventsJob>(
-                "notify-completed-events-daily-job",
+                "notify-upcoming-events-daily-job",
                 job => job.ExecuteAsync(default),
                 Cron.Daily); // каждый день
 

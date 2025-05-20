@@ -1,11 +1,9 @@
 using MediatR;
 using PaymentAPI.Extensions;
 using PaymentAPI.Services;
-using Serilog;
-using Serilog.Events;
 using Shared.Configuration;
 using Shared.Extensions;
-using Shared.Logging;
+using System.Reflection;
 
 namespace PaymentAPI
 {
@@ -25,18 +23,18 @@ namespace PaymentAPI
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile("/app/config/grpc-connections.json", optional: true)
                 .AddJsonFile("/app/config/kafka-server-settings.json", optional: true)
+                .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
                 .AddEnvironmentVariables();
             var kafkaServerConfig = services.ConfigureAndReceive<KafkaServerConfig>(configuration, "KafkaServerConfig");
             var grpcConnections = services.ConfigureAndReceive<GrpcConnectionsConfig>(configuration, "GrpcConnections");
+            var elkConfig = services.ConfigureAndReceive<ELKConfig>(configuration, "ELKConfig");
 
             // Add logging
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
-                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
-                .WriteTo.Http("http://logstash:8098", null, restrictedToMinimumLevel: LogEventLevel.Warning)
-                .CreateLogger();
-            logging.ClearProviders();
-            logging.AddSerilog();
+            logging.ConfigureLogger(
+                microserviceName: Assembly.GetExecutingAssembly().GetName().Name,
+                writeToLogstash: true,
+                logstashUri: elkConfig.LogstashUri,
+                logstashMinimumLevel: elkConfig.MinimumLevel);
 
             services.AddAutoMapper();
 

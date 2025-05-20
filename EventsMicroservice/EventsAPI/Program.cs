@@ -7,11 +7,8 @@ using Infrastructure.BackgroundJobs.Interfaces;
 using Infrastructure.Contexts;
 using Infrastructure.UnitOfWork;
 using MediatR;
-using Serilog;
-using Serilog.Events;
 using Shared.Configuration;
 using Shared.Extensions;
-using Shared.Logging;
 using Shared.Middlewares;
 using System.Reflection;
 
@@ -33,6 +30,7 @@ namespace EventsAPI
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile("/app/config/grpc-connections.json", optional: true)
                 .AddJsonFile("/app/config/kafka-server-settings.json", optional: true)
+                .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
                 .AddEnvironmentVariables();
             var redisServerConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
             var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
@@ -40,15 +38,14 @@ namespace EventsAPI
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
             var grpcConnections = services.ConfigureAndReceive<GrpcConnectionsConfig>(configuration, "GrpcConnections");
             var kafkaServerConfig = services.ConfigureAndReceive<KafkaServerConfig>(configuration, "KafkaServerConfig");
+            var elkConfig = services.ConfigureAndReceive<ELKConfig>(configuration, "ELKConfig");
 
             // Add logging
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
-                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
-                .WriteTo.Http("http://logstash:8098", null, restrictedToMinimumLevel: LogEventLevel.Warning)
-                .CreateLogger();
-            logging.ClearProviders();
-            logging.AddSerilog();
+            logging.ConfigureLogger(
+                microserviceName: Assembly.GetExecutingAssembly().GetName().Name,
+                writeToLogstash: true,
+                logstashUri: elkConfig.LogstashUri,
+                logstashMinimumLevel: elkConfig.MinimumLevel);
 
             // Caching
             services.AddRedisServer(redisServerConfig);

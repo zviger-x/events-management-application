@@ -1,0 +1,6 @@
+{
+  "ELKConfig": {
+    "LogstashUri": "http://logstash:8098",
+    "MinimumLevel": "Warning"
+  }
+}

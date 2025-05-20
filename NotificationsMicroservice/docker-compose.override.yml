@@ -17,6 +17,7 @@ services:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ../Shared/Shared/Configuration/Json/kafka-server-settings.json:/app/config/kafka-server-settings.json:ro
       - ../Shared/Shared/Configuration/Json/grpc-connections.json:/app/config/grpc-connections.json:ro
+      - ../Shared/Shared/Configuration/Json/elk-stack-settings.json:/app/config/elk-stack-settings.json:ro
     depends_on:
       redis:
         condition: service_healthy

@@ -1,12 +1,10 @@
-﻿using BusinessLogic.Configuration;
-using DataAccess.Contexts;
+﻿using DataAccess.Contexts;
 using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Serilog.Events;
-using Shared.Logging;
+using Shared.Configuration;
+using Shared.Extensions;
 using System.Reflection;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
@@ -24,21 +22,25 @@ namespace UsersAPI
             // Add services to the container.
             var services = builder.Services;
             var configuration = builder.Configuration;
+            var logging = builder.Logging;
 
             // Add configs
+            configuration.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
+                .AddEnvironmentVariables();
             var jwtConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "Jwt");
             var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
             var redisConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
             var sqlConfig = services.ConfigureAndReceive<SqlServerConfig>(configuration, "SqlServerConfig");
+            var elkConfig = services.ConfigureAndReceive<ELKConfig>(configuration, "ELKConfig");
 
             // Add logging
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
-                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
-                .WriteTo.Http("http://logstash:8098", null, restrictedToMinimumLevel: LogEventLevel.Warning)
-                .CreateLogger();
-            builder.Logging.ClearProviders();
-            builder.Logging.AddSerilog();
+            logging.ConfigureLogger(
+                microserviceName: Assembly.GetExecutingAssembly().GetName().Name,
+                writeToLogstash: true,
+                logstashUri: elkConfig.LogstashUri,
+                logstashMinimumLevel: elkConfig.MinimumLevel);
 
             // Redis
             services.AddRedisServer(redisConfig);

@@ -1,8 +1,8 @@
-﻿using BusinessLogic.Configuration;
-using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Services.Interfaces;
 using DataAccess.Enums;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;

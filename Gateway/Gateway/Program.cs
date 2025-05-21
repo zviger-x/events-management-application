@@ -1,3 +1,6 @@
+using Microsoft.OpenApi.Models;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 using Shared.Configuration;
 using Shared.Extensions;
 using System.Reflection;
@@ -6,7 +9,7 @@ namespace Gateway
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,7 @@ namespace Gateway
             // Add configs
             configuration.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
                 .AddEnvironmentVariables();
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
@@ -36,7 +40,16 @@ namespace Gateway
 
             // API
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddOcelot();
+            services.AddSwaggerForOcelot(configuration);
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Gateway API",
+                    Version = "v1",
+                });
+            });
 
             var app = builder.Build();
 
@@ -44,12 +57,18 @@ namespace Gateway
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseSwaggerForOcelotUI(options =>
+                {
+                    options.PathToSwaggerGenerator = "/swagger/docs";
+                });
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            await app.UseOcelot();
 
             app.Run();
         }

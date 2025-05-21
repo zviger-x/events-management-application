@@ -7,9 +7,11 @@ services:
       - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
       - TERM=xterm-256color
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTPS_PORTS=8094
+      - ASPNETCORE_HTTPS_PORTS=8097
+      - ASPNETCORE_HTTPS_PORTS=8098
     ports:
-      - "8094:8094"
+      - "8097:8097"
+      - "8098:8098"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

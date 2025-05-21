@@ -39,7 +39,7 @@ services:
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     ports:
-      - "8098:8098"
+      - "8180:8180"
     networks:
       - internal-docker-network
     depends_on:

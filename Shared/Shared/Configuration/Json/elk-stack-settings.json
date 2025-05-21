@@ -1,6 +1,6 @@
 {
   "ELKConfig": {
-    "LogstashUri": "http://logstash:8098",
+    "LogstashUri": "http://logstash:8180",
     "MinimumLevel": "Information"
   }
 }

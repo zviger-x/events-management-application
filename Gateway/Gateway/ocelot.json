@@ -1,0 +1,34 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:8000"
+  },
+
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/events",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/api/events",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "eventsapi",
+          "Port": 8093
+        }
+      ],
+      "SwaggerKey": "EventsAPI"
+    }
+  ],
+
+  "SwaggerEndPoints": [
+    {
+      "Key": "EventsAPI",
+      "Config": [
+        {
+          "Name": "EventsAPI",
+          "Version": "v1",
+          "Url": "http://eventsapi:8093/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}

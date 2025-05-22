@@ -57,7 +57,7 @@ namespace Shared.Services.Background
                 {
                     _logger.LogError(ex, "Unhandled exception in service. Service: {service}", serviceName);
 
-                    if (RestartOnUnhandledException)
+                    if (!RestartOnUnhandledException)
                         break;
 
                     _logger.LogInformation("Restarting service due to unhandled exception. Service: {service}", serviceName);

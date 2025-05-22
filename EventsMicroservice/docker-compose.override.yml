@@ -9,9 +9,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8093
       - ASPNETCORE_HTTPS_PORTS=8094
-    ports:
-      - "8093:8093"
-      - "8094:8094"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
@@ -74,8 +71,6 @@ services:
       - SA_PASSWORD=SA_passw0rd
     volumes:
       - sql_data:/var/opt/mssql
-    ports:
-      - "1434:1434"
     restart: always
     networks:
       - internal-docker-network

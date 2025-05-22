@@ -7,16 +7,15 @@ namespace EventsAPI.Extensions
     {
         public static IApplicationBuilder UseHangfireRecurringJobs(this IApplicationBuilder app)
         {
-            // Запускаем задачи по расписанию
             RecurringJob.AddOrUpdate<INotifyCompletedEventsJob>(
                 "notify-completed-events-hourly-job",
                 job => job.ExecuteAsync(default),
-                Cron.Hourly()); // каждый час
+                Cron.Hourly());
 
             RecurringJob.AddOrUpdate<INotifyUpcomingEventsJob>(
                 "notify-upcoming-events-daily-job",
                 job => job.ExecuteAsync(default),
-                Cron.Daily); // каждый день
+                Cron.Daily);
 
             return app;
         }

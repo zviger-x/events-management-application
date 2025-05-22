@@ -56,6 +56,7 @@ namespace EventsAPI
                 config.UseSqlServerStorage(configuration.GetSection("HangfireConfig:ConnectionString").Value));
             services.AddHangfireServer();
             services.AddScoped<INotifyCompletedEventsJob, NotifyCompletedEventsJob>();
+            services.AddScoped<INotifyUpcomingEventsJob, NotifyUpcomingEventsJob>();
 
             // Data access
             services.AddMongoServer(mongoServerConfig);
@@ -92,8 +93,6 @@ namespace EventsAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();

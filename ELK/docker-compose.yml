@@ -14,8 +14,6 @@ services:
         hard: -1
     volumes:
       - es-data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
     networks:
       - internal-docker-network
 
@@ -39,8 +37,6 @@ services:
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
       - ./template.json:/usr/share/logstash/config/template.json:ro
-    ports:
-      - "8180:8180"
     networks:
       - internal-docker-network
     depends_on:

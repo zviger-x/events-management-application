@@ -11,9 +11,6 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
-    ports:
-      - "9092:9092"
-      - "29092:29092"
     depends_on:
       - zookeeper
     healthcheck:
@@ -30,8 +27,6 @@ services:
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
       - ZOOKEEPER_TICK_TIME=2000
-    ports:
-      - "2181:2181"
     networks:
       - internal-docker-network
 

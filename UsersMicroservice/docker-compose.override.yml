@@ -13,9 +13,6 @@
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ../Shared/Shared/Configuration/Json/elk-stack-settings.json:/app/config/elk-stack-settings.json:ro
-    ports:
-      - "8091:8091"
-      - "8092:8092"
     depends_on:
       - sqlserver
       - redis
@@ -31,8 +28,6 @@
       - SA_PASSWORD=SA_passw0rd
     volumes:
       - sql_data:/var/opt/mssql
-    ports:
-      - "1433:1433"
     restart: always
     networks:
       - internal-docker-network
@@ -42,8 +37,6 @@
     container_name: UsersAPI_RedisServer
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
     restart: always
     networks:
       - internal-docker-network

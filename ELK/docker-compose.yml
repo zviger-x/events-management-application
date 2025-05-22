@@ -37,7 +37,8 @@ services:
     environment:
       - LS_JAVA_OPTS=-Xms512m -Xmx512m
     volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ./template.json:/usr/share/logstash/config/template.json:ro
     ports:
       - "8180:8180"
     networks:

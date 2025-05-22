@@ -24,11 +24,13 @@ namespace Infrastructure.BackgroundJobs
             var command = new EventGetAllQuery();
 
             var now = DateTime.UtcNow;
-            var windowStart = now.AddMinutes(-45);
+            var windowStart = now.AddHours(-1) + TimeSpan.FromTicks(1);
             var windowEnd = now;
 
             var events = await _mediator.Send(command, cancellationToken);
-            var eventsInInterval = events.Where(e => e.EndDate >= windowStart && e.EndDate <= windowEnd);
+            var eventsInInterval = events.Where(e =>
+                e.EndDate.ToUniversalTime() >= windowStart &&
+                e.EndDate.ToUniversalTime() <= windowEnd);
 
             foreach (var evt in eventsInInterval)
             {

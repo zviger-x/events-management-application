@@ -4,7 +4,7 @@
     {
         public Guid EventId { get; set; }
         public string Name { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; }
         public IEnumerable<Guid> TargetUsers { get; set; }
     }
 }

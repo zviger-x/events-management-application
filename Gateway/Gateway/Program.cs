@@ -1,3 +1,4 @@
+using Gateway.Extensions;
 using Microsoft.OpenApi.Models;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
@@ -21,7 +22,8 @@ namespace Gateway
             // Add configs
             configuration.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("Ocelot/ocelot.json", optional: false, reloadOnChange: true)
+                .OverrideOcelotRoutesFromDirectory("Ocelot/Routes")
                 .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
                 .AddEnvironmentVariables();
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
@@ -55,8 +57,6 @@ namespace Gateway
 
             if (app.Environment.IsDevelopment())
             {
-                // app.UseSwagger();
-                // app.UseSwaggerUI();
                 app.UseSwaggerForOcelotUI(options =>
                 {
                     options.PathToSwaggerGenerator = "/swagger/docs";

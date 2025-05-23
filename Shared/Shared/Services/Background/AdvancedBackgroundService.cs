@@ -32,7 +32,7 @@ namespace Shared.Services.Background
         /// <summary>
         /// A single "skeleton" of the service's operation: initialization -> cycle -> cleanup.
         /// </summary>
-        protected sealed override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected sealed override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var serviceName = GetType().Name;
 
@@ -41,12 +41,12 @@ namespace Shared.Services.Background
                 try
                 {
                     _logger.LogInformation("Service initializing... Service: {service}", serviceName);
-                    await InitializeAsync(stoppingToken);
+                    await InitializeAsync(cancellationToken);
 
                     _logger.LogInformation("Entering execution loop... Service: {service}", serviceName);
-                    while (!stoppingToken.IsCancellationRequested)
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-                        await ExecuteIterationAsync(stoppingToken);
+                        await ExecuteIterationAsync(cancellationToken);
                     }
                 }
                 catch (OperationCanceledException)
@@ -62,16 +62,16 @@ namespace Shared.Services.Background
 
                     _logger.LogInformation("Restarting service due to unhandled exception. Service: {service}", serviceName);
 
-                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 }
                 finally
                 {
                     _logger.LogInformation("Service cleaning up... Service: {service}", serviceName);
 
-                    await CleanupAsync(stoppingToken);
+                    await CleanupAsync(cancellationToken);
                 }
             }
-            while (RestartOnUnhandledException && !stoppingToken.IsCancellationRequested);
+            while (RestartOnUnhandledException && !cancellationToken.IsCancellationRequested);
 
             _logger.LogInformation("Service stopped. Service: {service}", serviceName);
         }

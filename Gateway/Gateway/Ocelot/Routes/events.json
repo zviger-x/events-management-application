@@ -1,0 +1,277 @@
+[
+  {
+    "UpstreamPathTemplate": "/events",
+    "UpstreamHttpMethod": [
+      "POST"
+    ],
+    "DownstreamPathTemplate": "/api/events",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "EventManager",
+        "Admin"
+      ]
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/events",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/events",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi"
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}",
+    "UpstreamHttpMethod": [
+      "PUT",
+      "DELETE"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "EventManager",
+        "Admin"
+      ]
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi"
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}/comments",
+    "UpstreamHttpMethod": [
+      "POST"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}/comments",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}/comments",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}/comments",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi"
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}/comments/{commentId}",
+    "UpstreamHttpMethod": [
+      "PATCH",
+      "DELETE"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}/comments/{commentId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}/seats/{seatId}/register",
+    "UpstreamHttpMethod": [
+      "POST"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}/seats/{seatId}/register",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}/users",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}/users",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "EventManager",
+        "Admin"
+      ]
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/events/{eventId}/seats",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/events/{eventId}/seats",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi"
+  },
+  {
+    "UpstreamPathTemplate": "/event-users/events/{eventId}/users/{userId}",
+    "UpstreamHttpMethod": [
+      "DELETE"
+    ],
+    "DownstreamPathTemplate": "/api/event-users/events/{eventId}/users/{userId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "Admin"
+      ]
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/event-users",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/event-users",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "EventManager",
+        "Admin"
+      ]
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/seat-configurations",
+    "UpstreamHttpMethod": [
+      "POST",
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/seat-configurations",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "EventManager",
+        "Admin"
+      ]
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/seat-configurations/{seatConfigurationId}",
+    "UpstreamHttpMethod": [
+      "PUT",
+      "DELETE",
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/seat-configurations/{seatConfigurationId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "eventsapi",
+        "Port": 8093
+      }
+    ],
+    "SwaggerKey": "eventsapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "EventManager",
+        "Admin"
+      ]
+    }
+  }
+]

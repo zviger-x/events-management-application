@@ -1,91 +1,44 @@
-﻿using Application.MediatR.Queries.EventQueries;
-using Application.MediatR.Queries.EventUserQueries;
-using Application.Messages;
+﻿using Application.Messages;
 using Domain.Entities;
+using Infrastructure.BackgroundJobs.Common;
 using Infrastructure.BackgroundJobs.Interfaces;
 using MediatR;
-using Shared.Extensions;
 using Shared.Kafka.Contracts.Events;
 
 namespace Infrastructure.BackgroundJobs
 {
-    public class NotifyCompletedEventsJob : INotifyCompletedEventsJob
+    public class NotifyCompletedEventsJob : BaseEventNotifierJob<EventCompletedDto>, INotifyCompletedEventsJob
     {
-        private const int MaxDegreeOfParallelismForEvents = 20;
-        private const int MaxDegreeOfParallelismForUsers = 100;
-        private const int UsersBatchSize = 1000;
+        private readonly IEventCompletedMessageProducer _producer;
 
-        private readonly IMediator _mediator;
-        private readonly IEventCompletedMessageProducer _eventCompletedMessageProducer;
-
-        public NotifyCompletedEventsJob(IMediator mediator, IEventCompletedMessageProducer eventCompletedMessageProducer)
+        public NotifyCompletedEventsJob(IMediator mediator, IEventCompletedMessageProducer producer)
+            : base(mediator)
         {
-            _mediator = mediator;
-            _eventCompletedMessageProducer = eventCompletedMessageProducer;
+            _producer = producer;
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+        protected override EventCompletedDto CreateDto(Event @event, IEnumerable<Guid> users)
         {
-            var command = new EventGetAllQuery();
+            return new EventCompletedDto
+            {
+                CompletedAt = @event.StartDate,
+                EventId = @event.Id,
+                Name = @event.Name,
+                TargetUsers = users
+            };
+        }
 
+        protected override (DateTime Start, DateTime End) GetWindow()
+        {
             var now = DateTime.UtcNow;
-            var windowStart = now.AddHours(-1) + TimeSpan.FromTicks(1);
-            var windowEnd = now;
+            var windowStart = now.AddHours(-1).AddTicks(1);
 
-            var events = await _mediator.Send(command, cancellationToken);
-            var eventsInInterval = events.Where(e => IsEventInWindow(e.EndDate, windowStart, windowEnd));
-
-            var options = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = MaxDegreeOfParallelismForEvents,
-                CancellationToken = cancellationToken
-            };
-
-            await Parallel.ForEachAsync(
-                eventsInInterval,
-                options,
-                async (evt, ct) =>
-                {
-                    await NotifyUsersAsync(evt, ct);
-                });
+            return new(windowStart, now);
         }
 
-        private async Task NotifyUsersAsync(Event evt, CancellationToken cancellationToken)
+        protected override async Task PublishAsync(EventCompletedDto dto, CancellationToken cancellationToken)
         {
-            var command = new EventUserGetAllByEventQuery { EventId = evt.Id };
-
-            var users = (await _mediator.Send(command, cancellationToken))
-                .Select(eu => eu.UserId)
-                .Batch(UsersBatchSize);
-
-            var options = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = MaxDegreeOfParallelismForUsers,
-                CancellationToken = cancellationToken
-            };
-
-            await Parallel.ForEachAsync(
-                users,
-                options,
-                async (currentBatch, ct) =>
-                {
-                    var dto = new EventCompletedDto
-                    {
-                        CompletedAt = evt.StartDate,
-                        EventId = evt.Id,
-                        Name = evt.Name,
-                        TargetUsers = currentBatch
-                    };
-
-                    await _eventCompletedMessageProducer.PublishAsync(dto, ct);
-                });
-        }
-
-        private static bool IsEventInWindow(DateTimeOffset currentDate, DateTime windowStart, DateTime windowEnd)
-        {
-            var now = currentDate.ToUniversalTime();
-
-            return now >= windowStart && now <= windowEnd;
+            await _producer.PublishAsync(dto, cancellationToken);
         }
     }
 }

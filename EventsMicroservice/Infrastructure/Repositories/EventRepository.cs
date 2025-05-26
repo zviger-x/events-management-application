@@ -2,9 +2,9 @@
 using Domain.Entities;
 using Infrastructure.Contexts;
 using Infrastructure.Extensions;
+using Infrastructure.Specifications;
 using MongoDB.Driver;
 using Shared.Common;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -94,14 +94,10 @@ namespace Infrastructure.Repositories
 
         public async Task<PagedCollection<Event>> GetPagedByFilterAsync(string name, string description, string location, DateTime? fromDate, DateTime? toDate, int pageNumber, int pageSize, CancellationToken token = default)
         {
-            Expression<Func<Event, bool>> filterExpression = e =>
-                (string.IsNullOrEmpty(name) || e.Name.Contains(name)) &&
-                (string.IsNullOrEmpty(description) || e.Description.Contains(description)) &&
-                (string.IsNullOrEmpty(location) || e.Location.Contains(location)) &&
-                (!fromDate.HasValue || e.StartDate >= fromDate.Value) &&
-                (!toDate.HasValue || e.EndDate <= toDate.Value);
+            var filter = new EventByFilterSpecification(name, description, location, fromDate, toDate);
+            var expression = filter.ToExpression();
 
-            return await GetPagedByFilterAsync(filterExpression, pageNumber, pageSize, token);
+            return await GetPagedByFilterAsync(expression, pageNumber, pageSize, token);
         }
     }
 }

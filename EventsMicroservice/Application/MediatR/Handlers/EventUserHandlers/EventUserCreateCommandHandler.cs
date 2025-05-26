@@ -62,7 +62,8 @@ namespace Application.MediatR.Handlers.EventUserHandlers
 
             // Проверка подписан ли пользователь на этот ивент.
             // TODO: Что-то сделать здесь или забить. Ведь нужна ли в действительности проверка на то, что пользователь подписан на ивент?
-            var isRegistered = (await _unitOfWork.EventUserRepository.GetAllAsync(cancellationToken)).Any(e => e.UserId == eventUser.UserId);
+            var isRegistered = (await _unitOfWork.EventUserRepository.GetAllAsync(cancellationToken))
+                .Any(e => e.UserId == eventUser.UserId && e.EventId == eventUser.EventId);
             if (isRegistered)
                 throw new ParameterException("User is already registered.");
 
@@ -85,7 +86,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             }
             catch
             {
-                // TODO: Сделать что-то в случаи успешной оплаты и не успешной покупки. Например "вернуть" деньги.
+                // TODO: Сделать что-то в случае успешной оплаты и не успешной покупки. Например "вернуть" деньги.
                 throw;
             }
         }

@@ -11,6 +11,8 @@ namespace Application.Services.Background
 {
     public class FailedNotificationResender : AdvancedBackgroundService
     {
+        private const int MaxDegreeOfParallelismForResend = 25;
+
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly TimeSpan _interval = TimeSpan.FromSeconds(30);
 
@@ -50,19 +52,24 @@ namespace Application.Services.Background
                 // Если они есть, то в через Parallel.ForEachAsync пытаемся их переотправить.
                 _logger.LogInformation("Found {Count} failed notifications to retry", failedNotifications.Count());
 
-                foreach (var notification in failedNotifications)
+                var options = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = MaxDegreeOfParallelismForResend,
+                    CancellationToken = cancellationToken
+                };
+
+                await Parallel.ForEachAsync(failedNotifications, options, async (notification, ct) =>
                 {
                     try
                     {
                         var command = new SendNotificationCommand { Notification = notification };
-
-                        await mediator.Send(command, cancellationToken);
+                        await mediator.Send(command, ct);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to resend notification for user {UserId}", notification.UserId);
                     }
-                }
+                });
             }
             catch (Exception ex)
             {

@@ -15,6 +15,8 @@ namespace Infrastructure.Kafka.MessageHandlers
     {
         public string Topic { get; init; }
 
+        private const int MaxDegreeOfParallelism = 20;
+
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public EventCompletedMessageHandler(IOptions<KafkaServerConfig> kafkaConfig, IServiceScopeFactory serviceScopeFactory)
@@ -31,13 +33,19 @@ namespace Infrastructure.Kafka.MessageHandlers
 
             var dto = JsonSerializer.Deserialize<EventCompletedDto>(message);
 
-            var notificationMessage = NotificationMessageFactory.EventCompleted(dto.Name, dto.CompletedAt.Date);
+            var notificationMessage = NotificationMessageFactory.EventCompleted(dto.Name, dto.CompletedAt);
             var metadata = new Dictionary<string, string>
             {
                 { nameof(dto.EventId), dto.EventId.ToString() }
             };
 
-            foreach (var user in dto.TargetUsers)
+            var options = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                CancellationToken = cancellationToken
+            };
+
+            await Parallel.ForEachAsync(dto.TargetUsers, options, async (user, ct) =>
             {
                 var notification = new NotificationDto
                 {
@@ -46,10 +54,10 @@ namespace Infrastructure.Kafka.MessageHandlers
                     Metadata = metadata
                 };
 
-                var commend = new SendNotificationCommand { Notification = notification };
+                var command = new SendNotificationCommand { Notification = notification };
 
-                await mediator.Send(commend, cancellationToken);
-            }
+                await mediator.Send(command, ct);
+            });
         }
     }
 }

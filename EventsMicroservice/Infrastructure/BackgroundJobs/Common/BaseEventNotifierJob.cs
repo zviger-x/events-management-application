@@ -10,7 +10,7 @@ namespace Infrastructure.BackgroundJobs.Common
     public abstract class BaseEventNotifierJob<TKafkaDto> : IBackgroundJob
     {
         protected const int MaxDegreeOfParallelismForEvents = 20;
-        protected const int MaxDegreeOfParallelismForUsers = 100;
+        protected const int MaxDegreeOfParallelismForUsers = 50;
         protected const int UsersBatchSize = 1000;
 
         protected readonly IMediator _mediator;

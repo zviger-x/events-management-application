@@ -9,6 +9,7 @@ using Infrastructure.UnitOfWork;
 using MediatR;
 using Shared.Configuration;
 using Shared.Extensions;
+using Shared.Hangfire.Filters;
 using Shared.Middlewares;
 using System.Reflection;
 
@@ -99,7 +100,10 @@ namespace EventsAPI
 
             app.MapControllers();
 
-            app.UseHangfireDashboard("/hangfire");
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = [new HangfireAllowAllAuthorizationFilter()]
+            });
             app.UseHangfireRecurringJobs(hangfireConfig);
 
             app.Run();

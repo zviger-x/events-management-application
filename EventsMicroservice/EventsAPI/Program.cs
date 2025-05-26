@@ -39,6 +39,7 @@ namespace EventsAPI
             var grpcConnections = services.ConfigureAndReceive<GrpcConnectionsConfig>(configuration, "GrpcConnections");
             var kafkaServerConfig = services.ConfigureAndReceive<KafkaServerConfig>(configuration, "KafkaServerConfig");
             var elkConfig = services.ConfigureAndReceive<ELKConfig>(configuration, "ELKConfig");
+            var hangfireConfig = services.ConfigureAndReceive<HangfireConfig>(configuration, "HangfireConfig");
 
             // Add logging
             logging.ConfigureLogger(
@@ -52,8 +53,7 @@ namespace EventsAPI
             services.AddCachingServices();
 
             // Hangfire
-            services.AddHangfire(config =>
-                config.UseSqlServerStorage(configuration.GetSection("HangfireConfig:ConnectionString").Value));
+            services.AddHangfire(config => config.UseSqlServerStorage(hangfireConfig.ConnectionString));
             services.AddHangfireServer();
             services.AddScoped<INotifyCompletedEventsJob, NotifyCompletedEventsJob>();
             services.AddScoped<INotifyUpcomingEventsJob, NotifyUpcomingEventsJob>();
@@ -100,7 +100,7 @@ namespace EventsAPI
             app.MapControllers();
 
             app.UseHangfireDashboard("/hangfire");
-            app.UseHangfireRecurringJobs();
+            app.UseHangfireRecurringJobs(hangfireConfig);
 
             app.Run();
         }

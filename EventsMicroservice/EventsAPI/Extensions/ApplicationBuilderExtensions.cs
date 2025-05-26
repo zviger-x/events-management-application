@@ -1,21 +1,22 @@
-﻿using Hangfire;
+﻿using EventsAPI.Configuration;
+using Hangfire;
 using Infrastructure.BackgroundJobs.Interfaces;
 
 namespace EventsAPI.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseHangfireRecurringJobs(this IApplicationBuilder app)
+        public static IApplicationBuilder UseHangfireRecurringJobs(this IApplicationBuilder app, HangfireConfig config)
         {
             RecurringJob.AddOrUpdate<INotifyCompletedEventsJob>(
-                "notify-completed-events-hourly-job",
+                config.NotifyCompletedEventsJob.Name,
                 job => job.ExecuteAsync(default),
-                Cron.Hourly());
+                config.NotifyCompletedEventsJob.Cron);
 
             RecurringJob.AddOrUpdate<INotifyUpcomingEventsJob>(
-                "notify-upcoming-events-daily-job",
+                config.NotifyUpcomingEventsJob.Name,
                 job => job.ExecuteAsync(default),
-                Cron.Daily);
+                config.NotifyUpcomingEventsJob.Cron);
 
             return app;
         }

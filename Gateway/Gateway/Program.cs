@@ -1,5 +1,4 @@
 using Gateway.Extensions;
-using Microsoft.OpenApi.Models;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Shared.Configuration;
@@ -26,6 +25,7 @@ namespace Gateway
                 .OverrideOcelotRoutesFromDirectory("Ocelot/Routes")
                 .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
                 .AddEnvironmentVariables();
+
             var jwtTokenConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "JwtConfig");
             var elkConfig = services.ConfigureAndReceive<ELKConfig>(configuration, "ELKConfig");
 
@@ -44,14 +44,7 @@ namespace Gateway
             services.AddEndpointsApiExplorer();
             services.AddOcelot();
             services.AddSwaggerForOcelot(configuration);
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Gateway API",
-                    Version = "v1",
-                });
-            });
+            services.AddSwagger();
 
             var app = builder.Build();
 
@@ -63,7 +56,7 @@ namespace Gateway
                 });
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();

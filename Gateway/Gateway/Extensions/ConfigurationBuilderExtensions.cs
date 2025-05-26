@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Text;
+﻿using System.Text;
+using System.Text.Json.Nodes;
 
 namespace Gateway.Extensions
 {
@@ -16,26 +16,31 @@ namespace Gateway.Extensions
             this IConfigurationBuilder builder,
             string directory)
         {
-            var mergedRoutes = new JArray();
+            var mergedRoutes = new JsonArray();
             var files = Directory.GetFiles(directory, "*.json");
 
             foreach (var file in files)
             {
                 var json = File.ReadAllText(file);
-                var routesArray = JArray.Parse(json);
+                var routesArray = JsonNode.Parse(json)?.AsArray();
+                if (routesArray != null)
+                {
+                    foreach (var route in routesArray)
+                    {
+                        if (route == null)
+                            continue;
 
-                mergedRoutes.Merge(routesArray);
+                        var routeCopy = JsonNode.Parse(route.ToJsonString());
+                        mergedRoutes.Add(routeCopy);
+                    }
+                }
             }
 
-            var finalRoutes = new JObject
-            {
-                ["Routes"] = mergedRoutes
-            };
-
-            var jsonString = finalRoutes.ToString();
+            var finalObject = new JsonObject { ["Routes"] = mergedRoutes };
+            var jsonString = finalObject.ToJsonString();
             var jsonBytes = Encoding.UTF8.GetBytes(jsonString);
-            using var jsonStream = new MemoryStream(jsonBytes);
 
+            using var jsonStream = new MemoryStream(jsonBytes);
             builder.AddJsonStream(jsonStream);
 
             return builder;

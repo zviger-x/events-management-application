@@ -5,7 +5,9 @@ namespace Shared.Services.Background
 {
     public abstract class AdvancedBackgroundService : BackgroundService
     {
-        private readonly ILogger<AdvancedBackgroundService> _logger;
+        protected bool RestartOnUnhandledException { get; set; }
+
+        protected readonly ILogger<AdvancedBackgroundService> _logger;
 
         protected AdvancedBackgroundService(ILogger<AdvancedBackgroundService> logger)
         {
@@ -30,37 +32,48 @@ namespace Shared.Services.Background
         /// <summary>
         /// A single "skeleton" of the service's operation: initialization -> cycle -> cleanup.
         /// </summary>
-        protected sealed override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected sealed override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var serviceName = GetType().Name;
 
-            try
+            do
             {
-                _logger.LogInformation("Service initializing... Service: {service}", serviceName);
-                await InitializeAsync(stoppingToken);
-
-                _logger.LogInformation("Entering execution loop... Service: {service}", serviceName);
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
-                    await ExecuteIterationAsync(stoppingToken);
+                    _logger.LogInformation("Service initializing... Service: {service}", serviceName);
+                    await InitializeAsync(cancellationToken);
+
+                    _logger.LogInformation("Entering execution loop... Service: {service}", serviceName);
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+                        await ExecuteIterationAsync(cancellationToken);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogInformation("Service cancellation requested. Service: {service}", serviceName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unhandled exception in service. Service: {service}", serviceName);
+
+                    if (!RestartOnUnhandledException)
+                        break;
+
+                    _logger.LogInformation("Restarting service due to unhandled exception. Service: {service}", serviceName);
+
+                    await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+                }
+                finally
+                {
+                    _logger.LogInformation("Service cleaning up... Service: {service}", serviceName);
+
+                    await CleanupAsync(cancellationToken);
                 }
             }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("Service cancellation requested. Service: {service}", serviceName);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled exception in service. Service: {service}", serviceName);
-            }
-            finally
-            {
-                _logger.LogInformation("Service cleaning up... Service: {service}", serviceName);
+            while (RestartOnUnhandledException && !cancellationToken.IsCancellationRequested);
 
-                await CleanupAsync(stoppingToken);
-
-                _logger.LogInformation("Service stopped. Service: {service}", serviceName);
-            }
+            _logger.LogInformation("Service stopped. Service: {service}", serviceName);
         }
     }
 }

@@ -2,25 +2,23 @@
 
 # Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# Добавление переменных окружения
-ENV DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
-ENV TERM=xterm-256color
 
 # Этот этап используется для сборки проекта службы
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["UsersAPI/UsersAPI.csproj", "UsersAPI/"]
-COPY ["BusinessLogic/BusinessLogic.csproj", "BusinessLogic/"]
-COPY ["DataAccess/DataAccess.csproj", "DataAccess/"]
-RUN dotnet restore "./UsersAPI/UsersAPI.csproj"
+COPY ["UsersMicroservice/UsersAPI/UsersAPI.csproj", "UsersMicroservice/UsersAPI/"]
+COPY ["Shared/Shared/Shared.csproj", "Shared/Shared/"]
+COPY ["UsersMicroservice/BusinessLogic/BusinessLogic.csproj", "UsersMicroservice/BusinessLogic/"]
+COPY ["UsersMicroservice/DataAccess/DataAccess.csproj", "UsersMicroservice/DataAccess/"]
+RUN dotnet restore "./UsersMicroservice/UsersAPI/UsersAPI.csproj"
 COPY . .
-WORKDIR "/src/UsersAPI"
+WORKDIR "/src/UsersMicroservice/UsersAPI"
 RUN dotnet build "./UsersAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап

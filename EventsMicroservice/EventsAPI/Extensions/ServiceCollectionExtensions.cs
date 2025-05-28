@@ -1,8 +1,12 @@
-﻿using Application.MediatR.Behaviours;
+﻿using Application.Clients;
+using Application.MediatR.Behaviours;
+using Application.Messages;
 using Application.Repositories.Interfaces;
 using Domain.Entities;
 using EventsAPI.Configuration;
 using FluentValidation;
+using Infrastructure.Clients.Grpc;
+using Infrastructure.Kafka.Producers;
 using Infrastructure.Mongo;
 using Infrastructure.Repositories;
 using MediatR;
@@ -12,6 +16,12 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Shared.Caching.Services;
 using Shared.Caching.Services.Interfaces;
+using Shared.Configuration;
+using Shared.Grpc.Interceptors;
+using Shared.Grpc.Payment;
+using Shared.Grpc.User;
+using Shared.Kafka.Producers.Common;
+using Shared.Kafka.Producers.Common.Interfaces;
 using Shared.Repositories.Interfaces;
 using StackExchange.Redis;
 using System.Reflection;
@@ -97,6 +107,46 @@ namespace EventsAPI.Extensions
         {
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRedisCacheService, RedisCacheService>();
+        }
+
+        public static void AddClients(this IServiceCollection services, GrpcConnectionsConfig grpcConnections)
+        {
+            var httpHandler = () => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            services.AddGrpcClient<UserService.UserServiceClient>(o =>
+            {
+                o.Address = new Uri(grpcConnections.UsersMicroservice);
+            })
+            .ConfigurePrimaryHttpMessageHandler(httpHandler);
+
+            services.AddGrpcClient<PaymentService.PaymentServiceClient>(o =>
+            {
+                o.Address = new Uri(grpcConnections.PaymentMicroservice);
+            })
+            .ConfigurePrimaryHttpMessageHandler(httpHandler);
+
+            services.AddScoped<IUserClient, UserClient>();
+            services.AddScoped<IPaymentClient, PaymentClient>();
+        }
+
+        public static void AddGrpcWithInterceptors(this IServiceCollection services)
+        {
+            services.AddGrpc(o =>
+            {
+                o.Interceptors.Add<GrpcExceptionInterceptor>();
+            });
+        }
+
+        public static void AddKafkaProducers(this IServiceCollection services)
+        {
+            services.AddSingleton(typeof(IKafkaMessageProducer<>), typeof(BaseKafkaMessageProducer<>));
+
+            services.AddScoped<IEventUpcomingMessageProducer, EventUpcomingMessageProducer>();
+            services.AddScoped<IEventUpdatedMessageProducer, EventUpdatedMessageProducer>();
+            services.AddScoped<IEventCompletedMessageProducer, EventCompletedMessageProducer>();
         }
     }
 }

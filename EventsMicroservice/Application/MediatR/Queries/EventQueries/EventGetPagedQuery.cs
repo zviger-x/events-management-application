@@ -9,8 +9,8 @@ namespace Application.MediatR.Queries.EventQueries
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required string Location { get; set; }
-        public required DateTime? FromDate { get; set; }
-        public required DateTime? ToDate { get; set; }
+        public required DateTimeOffset? FromDate { get; set; }
+        public required DateTimeOffset? ToDate { get; set; }
         public required PageParameters PageParameters { get; set; }
     }
 }

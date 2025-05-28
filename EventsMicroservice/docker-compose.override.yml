@@ -7,19 +7,21 @@ services:
       - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
       - TERM=xterm-256color
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
-    ports:
-      - "8080:8080"
-      - "8081:8081"
+      - ASPNETCORE_HTTP_PORTS=8093
+      - ASPNETCORE_HTTPS_PORTS=8094
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-    depends_on:
+      - ../Shared/Shared/Configuration/Json/kafka-server-settings.json:/app/config/kafka-server-settings.json:ro
+      - ../Shared/Shared/Configuration/Json/grpc-connections.json:/app/config/grpc-connections.json:ro
+      - ../Shared/Shared/Configuration/Json/elk-stack-settings.json:/app/config/elk-stack-settings.json:ro
+    depends_on: 
       mongoserver:
         condition: service_healthy
-      redis:
+      redisserver:
         condition: service_healthy
+      sqlserver:
+        condition: service_started
     restart: always
     networks:
       - internal-docker-network
@@ -45,11 +47,11 @@ services:
         test "$(mongosh --quiet --eval "rs.isMaster().ismaster")" = "true"
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 10   
 
-  redis:
+  redisserver:
     image: redis:latest
-    container_name: RedisServer
+    container_name: EventsAPI_RedisServer
     volumes:
       - redis_data:/data
     restart: always
@@ -61,10 +63,23 @@ services:
       timeout: 3s
       retries: 5
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: EventsAPI_SQLServer
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SA_passw0rd
+    volumes:
+      - sql_data:/var/opt/mssql
+    restart: always
+    networks:
+      - internal-docker-network
+
 networks:
   internal-docker-network:
-    driver: bridge
+    external: true
 
 volumes:
   mongo_data:
   redis_data:
+  sql_data:

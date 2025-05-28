@@ -1,4 +1,6 @@
 ﻿using Application.Caching.Constants;
+using Application.Clients;
+using Application.Contracts;
 using Application.MediatR.Commands.EventUserCommands;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
@@ -13,11 +15,21 @@ namespace Application.MediatR.Handlers.EventUserHandlers
     {
         private readonly TimeSpan _lockTtl = TimeSpan.FromMinutes(5);
         private readonly IRedisCacheService _redisCacheService;
+        private readonly IUserClient _userClient;
+        private readonly IPaymentClient _paymentClient;
 
-        public EventUserCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IRedisCacheService cacheService)
+        public EventUserCreateCommandHandler(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IRedisCacheService cacheService,
+            IUserClient userClient,
+            IPaymentClient paymentClient)
             : base(unitOfWork, mapper, cacheService)
         {
             _redisCacheService = cacheService;
+            _userClient = userClient;
+            _paymentClient = paymentClient;
+
         }
 
         public async Task<Guid> Handle(EventUserCreateCommand request, CancellationToken cancellationToken)
@@ -58,7 +70,10 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             if (seat.IsBought)
                 throw new ParameterException("This seat has already been bought");
 
-            // TODO: Добавить проверку наличия пользователя (gRPC запрос)
+            // Проверку наличия пользователя (gRPC запрос)
+            var isUserExists = await _userClient.UserExistsAsync(eventUser.UserId, cancellationToken);
+            if (!isUserExists)
+                throw new NotFoundException("The user with this id does not exist.");
 
             // Проверка подписан ли пользователь на этот ивент.
             // TODO: Что-то сделать здесь или забить. Ведь нужна ли в действительности проверка на то, что пользователь подписан на ивент?
@@ -67,8 +82,19 @@ namespace Application.MediatR.Handlers.EventUserHandlers
             if (isRegistered)
                 throw new ParameterException("User is already registered.");
 
-            // TODO: gRPC запрос в Payment Microservice для обработки покупки по токену
-            var paymentResult = true;
+            // gRPC запрос в Payment Microservice для обработки покупки по токену
+            var processPaymentDto = new ProcessPaymentDto
+            {
+                Token = request.EventUser.Token,
+                UserId = request.EventUser.UserId,
+                EventId = @event.Id,
+                EventName = @event.Name,
+                SeatNumber = seat.Number,
+                SeatRow = seat.Row,
+                Amount = seat.Price,
+            };
+
+            var paymentResult = await _paymentClient.ProcessPaymentAsync(processPaymentDto, cancellationToken);
             if (!paymentResult)
                 throw new PaymentException("Failed to complete payment. Please try again or use another card.");
 

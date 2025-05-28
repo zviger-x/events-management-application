@@ -1,0 +1,28 @@
+{
+  "Routes": [],
+  "SwaggerEndPoints": [
+    {
+      "Key": "usersapi",
+      "Config": [
+        {
+          "Name": "Users API",
+          "Version": "v1",
+          "Url": "http://usersapi:8091/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "eventsapi",
+      "Config": [
+        {
+          "Name": "Events API",
+          "Version": "v1",
+          "Url": "http://eventsapi:8093/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:8000"
+  }
+}

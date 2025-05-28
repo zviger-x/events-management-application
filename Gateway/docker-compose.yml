@@ -1,0 +1,6 @@
+services:
+  gateway:
+    image: ${DOCKER_REGISTRY-}gateway
+    build:
+      context: ..
+      dockerfile: Gateway/Gateway/Dockerfile

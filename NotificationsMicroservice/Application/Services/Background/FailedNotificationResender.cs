@@ -14,14 +14,12 @@ namespace Application.Services.Background
         private const int MaxDegreeOfParallelismForResend = 25;
 
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<FailedNotificationResender> _logger;
         private readonly TimeSpan _interval = TimeSpan.FromSeconds(30);
 
         public FailedNotificationResender(IServiceScopeFactory scopeFactory, ILogger<FailedNotificationResender> logger)
             : base(logger)
         {
             _scopeFactory = scopeFactory;
-            _logger = logger;
         }
 
         protected override Task InitializeAsync(CancellationToken cancellationToken)

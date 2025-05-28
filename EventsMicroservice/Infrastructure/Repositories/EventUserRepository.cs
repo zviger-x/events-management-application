@@ -13,6 +13,13 @@ namespace Infrastructure.Repositories
         {
         }
 
+        public async Task<IEnumerable<EventUser>> GetByEventAsync(Guid eventId, CancellationToken cancellationToken = default)
+        {
+            var filter = Builders<EventUser>.Filter.Where(eu => eu.EventId == eventId);
+            using var cursor = await _context.EventUsers.FindAsync(filter, cancellationToken: cancellationToken);
+            return await cursor.ToListAsync(cancellationToken);
+        }
+
         public async Task<EventUser> GetByUserAndEventAsync(Guid userId, Guid eventId, CancellationToken cancellationToken = default)
         {
             var filter = Builders<EventUser>.Filter.Where(eu => eu.UserId == userId && eu.EventId == eventId);

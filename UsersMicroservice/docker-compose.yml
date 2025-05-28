@@ -2,5 +2,5 @@ services:
   usersapi:
     image: ${DOCKER_REGISTRY-}usersapi
     build:
-      context: .
-      dockerfile: UsersAPI/Dockerfile
+      context: ..
+      dockerfile: UsersMicroservice/UsersAPI/Dockerfile

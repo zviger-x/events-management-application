@@ -18,6 +18,6 @@ namespace Application.Repositories.Interfaces
         /// <param name="pageSize">The number of items per page.</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>A paged collection of events matching the specified filters.</returns>
-        Task<PagedCollection<Event>> GetPagedByFilterAsync(string name, string description, string location, DateTime? fromDate, DateTime? toDate, int pageNumber, int pageSize, CancellationToken token = default);
+        Task<PagedCollection<Event>> GetPagedByFilterAsync(string name, string description, string location, DateTimeOffset? fromDate, DateTimeOffset? toDate, int pageNumber, int pageSize, CancellationToken token = default);
     }
 }

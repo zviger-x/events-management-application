@@ -12,5 +12,8 @@
         public const string SeatIdIsEmpty = "seatIdIsEmpty";
 
         public const string RegistrationTimeIsInvalid = "registrationTimeIsInvalid";
+
+        public const string TokenIsNull = "tokenIsNull";
+        public const string TokenIsEmpty = "tokenIsEmpty";
     }
 }

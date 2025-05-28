@@ -1,0 +1,286 @@
+[
+  {
+    "UpstreamPathTemplate": "/auth/register",
+    "UpstreamHttpMethod": [
+      "POST"
+    ],
+    "DownstreamPathTemplate": "/api/auth/register",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi"
+  },
+  {
+    "UpstreamPathTemplate": "/auth/login",
+    "UpstreamHttpMethod": [
+      "POST"
+    ],
+    "DownstreamPathTemplate": "/api/auth/login",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi"
+  },
+  {
+    "UpstreamPathTemplate": "/auth/logout",
+    "UpstreamHttpMethod": [
+      "POST"
+    ],
+    "DownstreamPathTemplate": "/api/auth/logout",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/auth/refresh",
+    "UpstreamHttpMethod": [
+      "POST"
+    ],
+    "DownstreamPathTemplate": "/api/auth/refresh",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi"
+  },
+  {
+    "UpstreamPathTemplate": "/notifications",
+    "UpstreamHttpMethod": [
+      "POST",
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/notifications",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/notifications/{notificationId}",
+    "UpstreamHttpMethod": [
+      "PUT",
+      "DELETE",
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/notifications/{notificationId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/transactions",
+    "UpstreamHttpMethod": [
+      "POST",
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/transactions",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/transactions/{transactionId}",
+    "UpstreamHttpMethod": [
+      "PUT",
+      "DELETE",
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/transactions/{transactionId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/users/{userId}/notifications",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/users/{userId}/notifications",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/users/{userId}/transactions",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/users/{userId}/transactions",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/users/{userId}/profile",
+    "UpstreamHttpMethod": [
+      "PUT"
+    ],
+    "DownstreamPathTemplate": "/api/users/{userId}/profile",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/users/{userId}/password",
+    "UpstreamHttpMethod": [
+      "PATCH"
+    ],
+    "DownstreamPathTemplate": "/api/users/{userId}/password",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/users/{userId}/role",
+    "UpstreamHttpMethod": [
+      "PATCH"
+    ],
+    "DownstreamPathTemplate": "/api/users/{userId}/role",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "Admin"
+      ]
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/users/{userId}",
+    "UpstreamHttpMethod": [
+      "DELETE",
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/users/{userId}",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": []
+    }
+  },
+  {
+    "UpstreamPathTemplate": "/users",
+    "UpstreamHttpMethod": [
+      "GET"
+    ],
+    "DownstreamPathTemplate": "/api/users",
+    "DownstreamScheme": "http",
+    "DownstreamHostAndPorts": [
+      {
+        "Host": "usersapi",
+        "Port": 8091
+      }
+    ],
+    "SwaggerKey": "usersapi",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKey": "Bearer",
+      "AllowedScopes": [
+        "Admin"
+      ]
+    }
+  }
+]

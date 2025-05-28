@@ -1,7 +1,7 @@
 ﻿using BusinessLogic.Caching.Interfaces;
-using BusinessLogic.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shared.Configuration;
 using StackExchange.Redis;
 using System.Text.Json;
 

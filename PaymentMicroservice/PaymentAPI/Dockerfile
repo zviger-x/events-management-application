@@ -2,7 +2,7 @@
 
 # Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -12,10 +12,13 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["PaymentAPI/PaymentAPI.csproj", "PaymentAPI/"]
-RUN dotnet restore "./PaymentAPI/PaymentAPI.csproj"
+COPY ["PaymentMicroservice/PaymentAPI/PaymentAPI.csproj", "PaymentMicroservice/PaymentAPI/"]
+COPY ["Shared/Shared/Shared.csproj", "Shared/Shared/"]
+COPY ["PaymentMicroservice/Application/Application.csproj", "PaymentMicroservice/Application/"]
+COPY ["PaymentMicroservice/Infrastructure/Infrastructure.csproj", "PaymentMicroservice/Infrastructure/"]
+RUN dotnet restore "./PaymentMicroservice/PaymentAPI/PaymentAPI.csproj"
 COPY . .
-WORKDIR "/src/PaymentAPI"
+WORKDIR "/src/PaymentMicroservice/PaymentAPI"
 RUN dotnet build "./PaymentAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап

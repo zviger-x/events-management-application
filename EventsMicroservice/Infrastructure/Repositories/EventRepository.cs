@@ -92,7 +92,7 @@ namespace Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(token);
         }
 
-        public async Task<PagedCollection<Event>> GetPagedByFilterAsync(string name, string description, string location, DateTime? fromDate, DateTime? toDate, int pageNumber, int pageSize, CancellationToken token = default)
+        public async Task<PagedCollection<Event>> GetPagedByFilterAsync(string name, string description, string location, DateTimeOffset? fromDate, DateTimeOffset? toDate, int pageNumber, int pageSize, CancellationToken token = default)
         {
             var filter = new EventByFilterSpecification(name, description, location, fromDate, toDate);
             var expression = filter.ToExpression();

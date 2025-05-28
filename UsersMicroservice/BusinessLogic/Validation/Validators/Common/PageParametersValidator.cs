@@ -1,7 +1,7 @@
 ﻿using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using DataAccess.Common;
 using FluentValidation;
+using Shared.Common;
 
 namespace BusinessLogic.Validation.Validators.Common
 {

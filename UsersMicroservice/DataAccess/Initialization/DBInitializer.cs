@@ -1,7 +1,7 @@
 ﻿using DataAccess.Contexts;
 using DataAccess.Entities;
-using DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
 
 namespace DataAccess.Initialization
 {

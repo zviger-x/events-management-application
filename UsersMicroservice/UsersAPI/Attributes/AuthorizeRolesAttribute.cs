@@ -1,5 +1,5 @@
-﻿using DataAccess.Enums;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Shared.Enums;
 
 namespace UsersAPI.Attributes
 {

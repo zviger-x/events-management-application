@@ -1,15 +1,12 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Common;
 using UsersAPI.Extensions;
 
 namespace UsersAPI.Controllers
 {
-    // TODO: Создать gRPC сервис для работы с транзакциями
-    // Этот класс для демонстрации и проверки корректности работы CRUD операций с транзакциями.
-    // Часть будет перенесена в gRPC сервис
     [ApiController]
     [Authorize]
     [Route("api/transactions")]

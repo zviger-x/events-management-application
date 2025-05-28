@@ -1,7 +1,7 @@
 ﻿using DataAccess.Entities;
-using DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared.Enums;
 
 namespace DataAccess.EntityConfigurations
 {

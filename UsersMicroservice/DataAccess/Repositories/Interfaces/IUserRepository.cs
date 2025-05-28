@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities;
+using Shared.Repositories.Interfaces;
 
 namespace DataAccess.Repositories.Interfaces
 {

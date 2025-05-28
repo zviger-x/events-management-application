@@ -1,6 +1,9 @@
 ﻿using DataAccess.Contexts;
-using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
+using Shared.Entities.Interfaces;
+using Shared.Repositories.Interfaces;
+using Shared.UnitOfWork;
 
 namespace DataAccess.UnitOfWork
 {
@@ -11,10 +14,27 @@ namespace DataAccess.UnitOfWork
 
         protected IDbContextTransaction _transaction;
 
+        private readonly Dictionary<Type, object> _repositories;
+
         public BaseUnitOfWork(UserDbContext context, IServiceProvider serviceProvider)
         {
             _context = context;
             _serviceProvider = serviceProvider;
+
+            _repositories = new();
+        }
+
+        public IRepository<T> Repository<T>()
+            where T : class, IEntity
+        {
+            var type = typeof(T);
+            if (!_repositories.ContainsKey(type))
+            {
+                var repositoryInstance = _serviceProvider.GetRequiredService<IRepository<T>>();
+                _repositories[type] = repositoryInstance;
+            }
+
+            return (IRepository<T>)_repositories[type];
         }
 
         public virtual async Task BeginTransactionAsync(CancellationToken token = default)
@@ -52,6 +72,23 @@ namespace DataAccess.UnitOfWork
             {
                 await action(token);
                 await CommitTransactionAsync(token);
+            }
+            catch
+            {
+                await RollbackTransactionAsync(token);
+                throw;
+            }
+        }
+
+        public virtual async Task<T> InvokeWithTransactionAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken token = default)
+        {
+            await BeginTransactionAsync(token);
+            try
+            {
+                var result = await action(token);
+                await CommitTransactionAsync(token);
+
+                return result;
             }
             catch
             {

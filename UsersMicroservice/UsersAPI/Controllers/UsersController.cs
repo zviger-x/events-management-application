@@ -1,9 +1,9 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Common;
-using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Common;
+using Shared.Enums;
 using UsersAPI.Attributes;
 using UsersAPI.Extensions;
 

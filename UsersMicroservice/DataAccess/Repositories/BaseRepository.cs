@@ -1,8 +1,9 @@
-﻿using DataAccess.Common;
-using DataAccess.Contexts;
-using DataAccess.Entities.Interfaces;
-using DataAccess.Repositories.Interfaces;
+﻿using DataAccess.Contexts;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Shared.Common;
+using Shared.Entities.Interfaces;
+using Shared.Repositories.Interfaces;
 
 namespace DataAccess.Repositories
 {
@@ -73,6 +74,21 @@ namespace DataAccess.Repositories
                 CurrentPage = pageNumber,
                 PageSize = pageSize
             };
+        }
+
+        public virtual async Task CreateManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            await _context.BulkInsertAsync(entities, cancellationToken: token);
+        }
+
+        public virtual async Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            await _context.BulkUpdateAsync(entities, cancellationToken: token);
+        }
+
+        public virtual async Task DeleteManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            await _context.BulkDeleteAsync(entities, cancellationToken: token);
         }
 
         public virtual void Dispose()

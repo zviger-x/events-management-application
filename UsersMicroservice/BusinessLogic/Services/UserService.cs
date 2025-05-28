@@ -6,10 +6,10 @@ using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
+using Shared.Common;
 using ValidationException = BusinessLogic.Exceptions.ValidationException;
 
 namespace BusinessLogic.Services
@@ -54,7 +54,7 @@ namespace BusinessLogic.Services
             {
                 var entity = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, token);
                 if (entity == null)
-                    return; // Идемпотентный запрос возврощает тот же результат
+                    return; // TODO: Исправить на возврат 404
 
                 await _unitOfWork.UserRepository.DeleteAsync(entity, token);
             }, cancellationToken);

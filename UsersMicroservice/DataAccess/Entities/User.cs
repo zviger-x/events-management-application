@@ -1,5 +1,5 @@
-﻿using DataAccess.Entities.Interfaces;
-using DataAccess.Enums;
+﻿using Shared.Entities.Interfaces;
+using Shared.Enums;
 
 namespace DataAccess.Entities
 {

@@ -9,6 +9,7 @@ using DataAccess.Repositories.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Shared.Grpc.Interceptors;
+using Shared.Repositories.Interfaces;
 using StackExchange.Redis;
 using System.Reflection;
 using UsersAPI.Configuration;

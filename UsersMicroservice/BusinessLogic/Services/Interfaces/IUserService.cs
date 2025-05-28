@@ -1,5 +1,5 @@
 ﻿using BusinessLogic.Contracts;
-using DataAccess.Common;
+using Shared.Common;
 
 namespace BusinessLogic.Services.Interfaces
 {

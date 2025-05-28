@@ -1,5 +1,5 @@
 ﻿using BusinessLogic.Exceptions;
-using DataAccess.Enums;
+using Shared.Enums;
 using System.Security.Claims;
 
 namespace UsersAPI.Extensions

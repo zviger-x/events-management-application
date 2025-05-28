@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BusinessLogic.Contracts;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
@@ -8,7 +7,8 @@ using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
 using Shared.Common;
-using ValidationException = BusinessLogic.Exceptions.ValidationException;
+using Shared.Exceptions.ServerExceptions;
+using ValidationException = Shared.Exceptions.ServerExceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {

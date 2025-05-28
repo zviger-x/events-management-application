@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using BusinessLogic.Caching.Constants;
-using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
+using Shared.Caching.Services.Interfaces;
 using Shared.Common;
-using ValidationException = BusinessLogic.Exceptions.ValidationException;
+using Shared.Exceptions.ServerExceptions;
+using ValidationException = Shared.Exceptions.ServerExceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -70,7 +70,7 @@ namespace BusinessLogic.Services
 
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
 
-            await _cacheService.SetAsync(CacheKeys.AllUsers, userDtos, token);
+            await _cacheService.SetAsync(CacheKeys.AllUsers, userDtos, cancellationToken: token);
 
             return userDtos;
         }
@@ -90,7 +90,7 @@ namespace BusinessLogic.Services
 
             var pagedUserDtos = _mapper.Map<PagedCollection<UserDto>>(pagedUsers);
 
-            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), pagedUserDtos, token);
+            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), pagedUserDtos, cancellationToken: token);
 
             return pagedUserDtos;
         }
@@ -112,7 +112,7 @@ namespace BusinessLogic.Services
 
             var userDto = _mapper.Map<UserDto>(user);
 
-            await _cacheService.SetAsync(CacheKeys.UserById(targetUserId), userDto, token);
+            await _cacheService.SetAsync(CacheKeys.UserById(targetUserId), userDto, cancellationToken: token);
 
             return userDto;
         }

@@ -33,7 +33,7 @@ namespace Infrastructure.Kafka.MessageHandlers
 
             var dto = JsonSerializer.Deserialize<EventUpcomingDto>(message);
 
-            var notificationMessage = NotificationMessageFactory.EventUpcoming(dto.Name, dto.StartTime);
+            var notificationMessage = NotificationMessageFactory.EventUpcoming(dto.Name, dto.StartTime.Date);
             var metadata = new Dictionary<string, string>
             {
                 { nameof(dto.EventId), dto.EventId.ToString() }

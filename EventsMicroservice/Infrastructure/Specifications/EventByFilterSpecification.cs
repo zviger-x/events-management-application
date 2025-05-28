@@ -9,15 +9,15 @@ namespace Infrastructure.Specifications
         private readonly string _name;
         private readonly string _description;
         private readonly string _location;
-        private readonly DateTime? _fromDate;
-        private readonly DateTime? _toDate;
+        private readonly DateTimeOffset? _fromDate;
+        private readonly DateTimeOffset? _toDate;
 
         public EventByFilterSpecification(
             string name,
             string description,
             string location,
-            DateTime? fromDate,
-            DateTime? toDate)
+            DateTimeOffset? fromDate,
+            DateTimeOffset? toDate)
         {
             _name = name;
             _description = description;

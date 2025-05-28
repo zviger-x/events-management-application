@@ -33,7 +33,7 @@ namespace Infrastructure.Kafka.MessageHandlers
 
             var dto = JsonSerializer.Deserialize<EventUpdatedDto>(message);
 
-            var notificationMessage = NotificationMessageFactory.EventUpdated(dto.Name, dto.UpdatedAt);
+            var notificationMessage = NotificationMessageFactory.EventUpdated(dto.Name, dto.UpdatedAt.Date);
             var metadata = new Dictionary<string, string>
             {
                 { nameof(dto.EventId), dto.EventId.ToString() }

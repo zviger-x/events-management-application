@@ -1,6 +1,4 @@
-﻿using BusinessLogic.Caching;
-using BusinessLogic.Caching.Interfaces;
-using BusinessLogic.Services;
+﻿using BusinessLogic.Services;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Contexts;
 using DataAccess.Entities;
@@ -8,6 +6,8 @@ using DataAccess.Repositories;
 using DataAccess.Repositories.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Shared.Caching.Services;
+using Shared.Caching.Services.Interfaces;
 using Shared.Grpc.Interceptors;
 using Shared.Repositories.Interfaces;
 using StackExchange.Redis;

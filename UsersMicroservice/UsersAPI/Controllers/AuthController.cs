@@ -2,7 +2,7 @@
 using BusinessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UsersAPI.Extensions;
+using Shared.Extensions;
 
 namespace UsersAPI.Controllers
 {

@@ -5,10 +5,10 @@ using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shared.Configuration;
 using Shared.Extensions;
+using Shared.Middlewares;
 using System.Reflection;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
-using UsersAPI.Middlewares;
 using UsersAPI.Services;
 
 namespace UsersAPI

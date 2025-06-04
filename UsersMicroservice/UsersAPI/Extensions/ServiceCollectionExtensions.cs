@@ -51,6 +51,7 @@ namespace UsersAPI.Extensions
         public static void AddValidators(this IServiceCollection services)
         {
             services.AddValidatorsFromAssembly(Assembly.Load("BusinessLogic"));
+            services.AddValidatorsFromAssembly(Assembly.Load("Shared"));
         }
 
         public static void AddServices(this IServiceCollection services)

@@ -3,6 +3,7 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventHandlers
 {
@@ -17,7 +18,7 @@ namespace Application.MediatR.Handlers.EventHandlers
         {
             var @event = await _unitOfWork.EventRepository.GetByIdAsync(request.Id, cancellationToken);
             if (@event == null)
-                return;
+                throw new NotFoundException("Event is already deleted or not found");
 
             await _unitOfWork.EventRepository.DeleteAsync(@event, cancellationToken);
         }

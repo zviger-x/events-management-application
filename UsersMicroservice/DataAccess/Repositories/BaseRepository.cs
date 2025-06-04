@@ -22,7 +22,7 @@ namespace DataAccess.Repositories
             await _context.AddAsync(entity, token);
             await _context.SaveChangesAsync(token);
 
-            _context.Entry(entity).State = EntityState.Detached;
+            DetachEntity(entity);
 
             return entity.Id;
         }
@@ -32,7 +32,7 @@ namespace DataAccess.Repositories
             _context.Update(entity);
             await _context.SaveChangesAsync(token);
 
-            _context.Entry(entity).State = EntityState.Detached;
+            DetachEntity(entity);
         }
 
         public virtual async Task DeleteAsync(T entity, CancellationToken token = default)
@@ -94,6 +94,11 @@ namespace DataAccess.Repositories
         public virtual void Dispose()
         {
             _context.Dispose();
+        }
+
+        protected virtual void DetachEntity(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Detached;
         }
     }
 }

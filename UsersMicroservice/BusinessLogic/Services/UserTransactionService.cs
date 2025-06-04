@@ -34,7 +34,7 @@ namespace BusinessLogic.Services
         {
             await _createUserTransactionDtoValidator.ValidateAndThrowAsync(transactionDto, token);
 
-            if (!await _unitOfWork.UserRepository.IsExists(transactionDto.UserId, token))
+            if (!await _unitOfWork.UserRepository.IsExistsAsync(transactionDto.UserId, token))
                 throw new ValidationException(
                     UserTransactionValidationErrorCodes.UserIdIsInvalid,
                     UserTransactionValidationMessages.UserIdIsInvalid,
@@ -64,7 +64,7 @@ namespace BusinessLogic.Services
         {
             var entity = await _unitOfWork.UserTransactionRepository.GetByIdAsync(id, token);
             if (entity == null)
-                return;
+                throw new NotFoundException("Transaction is already deleted or not found");
 
             await _unitOfWork.UserTransactionRepository.DeleteAsync(entity, token);
         }

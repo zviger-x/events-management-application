@@ -27,6 +27,6 @@ namespace DataAccess.Repositories.Interfaces
         /// <param name="id">The unique identifier of the user.</param>
         /// <param name="token">Cancellation token to cancel the operation if needed.</param>
         /// <returns>True if the user exists, otherwise false.</returns>
-        Task<bool> IsExists(Guid id, CancellationToken token = default);
+        Task<bool> IsExistsAsync(Guid id, CancellationToken token = default);
     }
 }

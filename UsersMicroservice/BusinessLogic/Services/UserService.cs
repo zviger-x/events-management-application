@@ -54,7 +54,7 @@ namespace BusinessLogic.Services
             {
                 var entity = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, token);
                 if (entity == null)
-                    return; // TODO: Исправить на возврат 404
+                    throw new NotFoundException("User is already deleted or not found.");
 
                 await _unitOfWork.UserRepository.DeleteAsync(entity, token);
             }, cancellationToken);
@@ -62,7 +62,7 @@ namespace BusinessLogic.Services
 
         public async Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken token = default)
         {
-            var cachedUsers = await _cacheService.GetAsync<List<UserDto>>(CacheKeys.AllUsers, token);
+            var cachedUsers = await _cacheService.GetAsync<IEnumerable<UserDto>>(CacheKeys.AllUsers, token);
             if (cachedUsers != null)
                 return cachedUsers;
 
@@ -173,7 +173,7 @@ namespace BusinessLogic.Services
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
-                throw new ArgumentException("There is no user with this Id.");
+                throw new ParameterException("There is no user with this Id.");
 
             user.Role = changeUserRoleDto.Role;
 
@@ -185,6 +185,11 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
+        public async Task<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await _unitOfWork.UserRepository.IsExistsAsync(userId, cancellationToken);
+        }
+
         private bool IsCurrentPassword(User storedUser, ChangePasswordDto changePasswordDto, CancellationToken token = default)
         {
             if (storedUser == null)
@@ -193,13 +198,6 @@ namespace BusinessLogic.Services
             var isPasswordValid = _passwordHashingService.VerifyPassword(changePasswordDto.CurrentPassword, storedUser.PasswordHash);
 
             return isPasswordValid;
-        }
-
-        public Task<bool> UserExists(Guid userId, CancellationToken cancellationToken = default)
-        {
-            var isUserExists = _unitOfWork.UserRepository.IsExists(userId, cancellationToken);
-
-            return isUserExists;
         }
     }
 }

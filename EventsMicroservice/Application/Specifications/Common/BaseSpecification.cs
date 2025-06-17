@@ -1,8 +1,9 @@
-﻿using System.Linq.Expressions;
+﻿using Application.Specifications.Interfaces;
+using System.Linq.Expressions;
 
-namespace Infrastructure.Specifications.Common
+namespace Application.Specifications.Common
 {
-    internal abstract class BaseSpecification<T>
+    internal abstract class BaseSpecification<T> : ISpecification<T>
     {
         public abstract Expression<Func<T, bool>> ToExpression();
 

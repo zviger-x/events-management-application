@@ -1,8 +1,8 @@
-﻿using Domain.Entities;
-using Infrastructure.Specifications.Common;
+﻿using Application.Specifications.Common;
+using Domain.Entities;
 using System.Linq.Expressions;
 
-namespace Infrastructure.Specifications
+namespace Application.Specifications
 {
     internal class EventByFilterSpecification : BaseSpecification<Event>
     {

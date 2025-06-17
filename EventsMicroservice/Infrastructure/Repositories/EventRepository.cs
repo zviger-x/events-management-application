@@ -1,8 +1,8 @@
 ﻿using Application.Repositories.Interfaces;
+using Application.Specifications.Interfaces;
 using Domain.Entities;
 using Infrastructure.Contexts;
 using Infrastructure.Extensions;
-using Infrastructure.Specifications;
 using MongoDB.Driver;
 using Shared.Common;
 
@@ -92,10 +92,9 @@ namespace Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(token);
         }
 
-        public async Task<PagedCollection<Event>> GetPagedByFilterAsync(string name, string description, string location, DateTimeOffset? fromDate, DateTimeOffset? toDate, int pageNumber, int pageSize, CancellationToken token = default)
+        public async Task<PagedCollection<Event>> GetPagedByFilterAsync(ISpecification<Event> specification, int pageNumber, int pageSize, CancellationToken token = default)
         {
-            var filter = new EventByFilterSpecification(name, description, location, fromDate, toDate);
-            var expression = filter.ToExpression();
+            var expression = specification.ToExpression();
 
             return await GetPagedByFilterAsync(expression, pageNumber, pageSize, token);
         }

@@ -6,7 +6,6 @@ namespace Application.Repositories.Interfaces
 {
     public interface IEventUserRepository : IRepository<EventUser>
     {
-
         /// <summary>
         /// Gets a list of users registered for the event.
         /// </summary>

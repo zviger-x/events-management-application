@@ -2,7 +2,7 @@
 
 # Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -12,10 +12,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["EventsAPI/EventsAPI.csproj", "EventsAPI/"]
-RUN dotnet restore "./EventsAPI/EventsAPI.csproj"
+COPY ["EventsMicroservice/EventsAPI/EventsAPI.csproj", "EventsMicroservice/EventsAPI/"]
+COPY ["EventsMicroservice/Application/Application.csproj", "EventsMicroservice/Application/"]
+COPY ["Shared/Shared/Shared.csproj", "Shared/Shared/"]
+COPY ["EventsMicroservice/Domain/Domain.csproj", "EventsMicroservice/Domain/"]
+COPY ["EventsMicroservice/Infrastructure/Infrastructure.csproj", "EventsMicroservice/Infrastructure/"]
+RUN dotnet restore "./EventsMicroservice/EventsAPI/EventsAPI.csproj"
 COPY . .
-WORKDIR "/src/EventsAPI"
+WORKDIR "/src/EventsMicroservice/EventsAPI"
 RUN dotnet build "./EventsAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап

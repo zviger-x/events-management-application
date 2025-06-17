@@ -1,0 +1,70 @@
+services:
+  eventsapi:
+    container_name: EventsAPI
+    stdin_open: true
+    tty: true
+    environment:
+      - DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLORING=true
+      - TERM=xterm-256color
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      mongoserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - internal-docker-network
+      
+  mongoserver:
+    image: mongo:latest
+    container_name: EventsAPI_MongoServer
+    environment:
+      - MONGO_REPLICA_SET=rs0
+      - MONGO_HOST=EventsAPI_MongoServer
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_KEYFILE=mysupersecretkey123
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init-replica.sh:/mongo-init-replica.sh
+    restart: always
+    networks:
+      - internal-docker-network
+    entrypoint: ["/bin/bash", "/mongo-init-replica.sh"]
+    healthcheck:
+      test: >
+        test "$(mongosh --quiet --eval "rs.isMaster().ismaster")" = "true"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:latest
+    container_name: RedisServer
+    volumes:
+      - redis_data:/data
+    restart: always
+    networks:
+      - internal-docker-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  internal-docker-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  redis_data:

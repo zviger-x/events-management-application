@@ -13,7 +13,7 @@ namespace EventsAPI.Controllers
     [ApiController]
     [Route("api/events")]
     [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
-    public class EventController : Controller
+    public class EventController : ControllerBase
     {
         private const int PageSize = 10;
 

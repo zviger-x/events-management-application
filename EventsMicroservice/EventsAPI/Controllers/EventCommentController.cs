@@ -11,7 +11,7 @@ namespace EventsAPI.Controllers
 {
     [ApiController]
     [Route("api/event-comments")]
-    public class EventCommentController : Controller
+    public class EventCommentController : ControllerBase
     {
         private const int PageSize = 10;
 

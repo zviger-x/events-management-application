@@ -1,5 +1,6 @@
 ﻿using Application.Caching.Constants;
 using Application.MediatR.Queries.EventQueries;
+using Application.Specifications;
 using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using Domain.Entities;
@@ -35,7 +36,11 @@ namespace Application.MediatR.Handlers.EventHandlers
 
             // Если фильтр есть, возвращаем по филтру и не кэшируем
             if (!isFilterEmpty)
-                return await _unitOfWork.EventRepository.GetPagedByFilterAsync(name, description, location, fromDate, toDate, pageNumber, pageSize, cancellationToken);
+            {
+                var filter = new EventByFilterSpecification(name, description, location, fromDate, toDate);
+
+                return await _unitOfWork.EventRepository.GetPagedByFilterAsync(filter, pageNumber, pageSize, cancellationToken);
+            }
 
             // Если фильтра нет, возвращаем стандартную страницу и кэшируем
             var cacheKey = CacheKeys.PagedEvents(pageNumber, pageSize);

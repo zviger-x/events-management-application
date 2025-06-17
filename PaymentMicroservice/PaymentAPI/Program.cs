@@ -1,3 +1,9 @@
+using MediatR;
+using PaymentAPI.Extensions;
+using PaymentAPI.Services;
+using Serilog;
+using Shared.Logging;
+
 namespace PaymentAPI
 {
     public class Program
@@ -7,10 +13,30 @@ namespace PaymentAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            var services = builder.Services;
+            var configuration = builder.Configuration;
+            var logging = builder.Logging;
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            // Add logging
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console(theme: CustomConsoleThemes.SixteenEnhanced)
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+                .CreateLogger();
+            logging.ClearProviders();
+            logging.AddSerilog();
+
+            services.AddAutoMapper();
+
+            // BLL
+            services.AddClients();
+            services.AddValidators();
+            services.AddSagas();
+            services.AddMediatR();
+
+            // API
+            services.AddGrpcWithInterceptors();
+            services.AddGrpcSwagger();
+            services.AddSwagger();
 
             var app = builder.Build();
 
@@ -21,11 +47,7 @@ namespace PaymentAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
+            app.MapGrpcService<PaymentService>();
 
             app.Run();
         }

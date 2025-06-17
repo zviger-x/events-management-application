@@ -1,0 +1,7 @@
+﻿dotnet ef migrations add [name] --project DataAccess --startup-project UsersAPI
+dotnet ef migrations remove --project DataAccess --startup-project UsersAPI
+dotnet ef migrations list --project DataAccess --startup-project UsersAPI				
+dotnet ef database update --project DataAccess --startup-project UsersAPI				- применит ожидающие
+dotnet ef database update [name] --project DataAccess --startup-project UsersAPI		- откатит до указанной
+dotnet ef database update 0 --project DataAccess --startup-project UsersAPI 			- отменит все
+

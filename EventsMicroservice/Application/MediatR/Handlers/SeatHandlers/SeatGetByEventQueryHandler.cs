@@ -18,6 +18,7 @@ namespace Application.MediatR.Handlers.SeatHandlers
         public async Task<IEnumerable<Seat>> Handle(SeatGetByEventQuery request, CancellationToken cancellationToken)
         {
             var seat = await _unitOfWork.SeatRepository.GetByEventAsync(request.EventId, cancellationToken);
+
             return seat ?? throw new NotFoundException("Seat not found.");
         }
     }

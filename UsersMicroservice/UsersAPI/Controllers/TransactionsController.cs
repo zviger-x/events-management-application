@@ -10,7 +10,7 @@ namespace UsersAPI.Controllers
     [ApiController]
     [Authorize]
     [Route("api/transactions")]
-    public class TransactionsController : Controller
+    public class TransactionsController : ControllerBase
     {
         private const int PageSize = 10;
 

@@ -10,7 +10,7 @@ namespace UsersAPI.Controllers
     [ApiController]
     [Authorize]
     [Route("api/notifications")]
-    public class NotificationsController : Controller
+    public class NotificationsController : ControllerBase
     {
         private const int PageSize = 10;
 

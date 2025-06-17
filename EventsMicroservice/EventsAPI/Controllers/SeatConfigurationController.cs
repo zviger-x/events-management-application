@@ -12,7 +12,7 @@ namespace EventsAPI.Controllers
     [AuthorizeRoles(UserRoles.EventManager, UserRoles.Admin)]
     [ApiController]
     [Route("api/seat-configurations")]
-    public class SeatConfigurationController : Controller
+    public class SeatConfigurationController : ControllerBase
     {
         private const int PageSize = 10;
 

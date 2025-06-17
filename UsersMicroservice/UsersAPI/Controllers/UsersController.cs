@@ -11,7 +11,7 @@ namespace UsersAPI.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         private const int PageSize = 10;
 

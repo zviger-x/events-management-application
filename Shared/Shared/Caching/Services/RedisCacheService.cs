@@ -6,12 +6,15 @@ using Shared.Caching.Services.Interfaces;
 using Shared.Configuration;
 using Shared.Logging.Extensions;
 using StackExchange.Redis;
+using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace Shared.Caching.Services
 {
     public class RedisCacheService : IRedisCacheService
     {
+        private const int MaxDegreeOfParallelism = 8;
+
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IDatabase _database;
         private readonly ILogger<RedisCacheService> _logger;
@@ -117,15 +120,21 @@ namespace Shared.Caching.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             var members = await _database.SetMembersAsync(setKey);
+            var results = new ConcurrentBag<T>();
 
-            var results = new List<T>(members.Length);
-            foreach (var key in members)
+            var parallelOptions = new ParallelOptions
             {
-                var item = await GetAsync<T>(key, cancellationToken);
+                CancellationToken = cancellationToken,
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism
+            };
+
+            await Parallel.ForEachAsync(members, parallelOptions, async (key, token) =>
+            {
+                var item = await GetAsync<T>(key, token);
 
                 if (item != null)
                     results.Add(item);
-            }
+            });
 
             return results;
         }

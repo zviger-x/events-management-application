@@ -6,7 +6,7 @@ namespace EventsAPI.Controllers
 {
     [ApiController]
     [Route("api/seats")]
-    public class SeatController : Controller
+    public class SeatController : ControllerBase
     {
         private readonly IMediator _mediator;
 

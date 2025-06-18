@@ -12,7 +12,7 @@ namespace EventsAPI.Controllers
 {
     [ApiController]
     [Route("api/event-users")]
-    public class EventUserController : Controller
+    public class EventUserController : ControllerBase
     {
         private const int PageSize = 10;
 

@@ -12,12 +12,23 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+<<<<<<<< HEAD:Gateway/Gateway/Dockerfile
 COPY ["Gateway/Gateway/Gateway.csproj", "Gateway/Gateway/"]
 COPY ["Shared/Shared/Shared.csproj", "Shared/Shared/"]
 RUN dotnet restore "./Gateway/Gateway/Gateway.csproj"
 COPY . .
 WORKDIR "/src/Gateway/Gateway"
 RUN dotnet build "./Gateway.csproj" -c $BUILD_CONFIGURATION -o /app/build
+========
+COPY ["NotificationsMicroservice/NotificationsAPI/NotificationsAPI.csproj", "NotificationsMicroservice/NotificationsAPI/"]
+COPY ["NotificationsMicroservice/Application/Application.csproj", "NotificationsMicroservice/Application/"]
+COPY ["Shared/Shared/Shared.csproj", "Shared/Shared/"]
+COPY ["NotificationsMicroservice/Infrastructure/Infrastructure.csproj", "NotificationsMicroservice/Infrastructure/"]
+RUN dotnet restore "./NotificationsMicroservice/NotificationsAPI/NotificationsAPI.csproj"
+COPY . .
+WORKDIR "/src/NotificationsMicroservice/NotificationsAPI"
+RUN dotnet build "./NotificationsAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+>>>>>>>> develop:NotificationsMicroservice/NotificationsAPI/Dockerfile
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
 FROM build AS publish

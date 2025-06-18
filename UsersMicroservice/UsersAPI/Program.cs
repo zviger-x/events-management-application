@@ -1,15 +1,15 @@
-﻿using BusinessLogic.Configuration;
-using DataAccess.Contexts;
+﻿using DataAccess.Contexts;
 using DataAccess.Initialization;
 using DataAccess.UnitOfWork;
 using DataAccess.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
+using Shared.Configuration;
+using Shared.Extensions;
 using System.Reflection;
 using UsersAPI.Configuration;
 using UsersAPI.Extensions;
 using UsersAPI.Middlewares;
+using UsersAPI.Services;
 
 namespace UsersAPI
 {
@@ -22,20 +22,25 @@ namespace UsersAPI
             // Add services to the container.
             var services = builder.Services;
             var configuration = builder.Configuration;
+            var logging = builder.Logging;
 
             // Add configs
+            configuration.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("/app/config/elk-stack-settings.json", optional: true)
+                .AddEnvironmentVariables();
             var jwtConfig = services.ConfigureAndReceive<JwtTokenConfig>(configuration, "Jwt");
             var cacheConfig = services.ConfigureAndReceive<CacheConfig>(configuration, "Caching:Cache");
             var redisConfig = services.ConfigureAndReceive<RedisServerConfig>(configuration, "Caching:RedisServerConfig");
             var sqlConfig = services.ConfigureAndReceive<SqlServerConfig>(configuration, "SqlServerConfig");
+            var elkConfig = services.ConfigureAndReceive<ELKConfig>(configuration, "ELKConfig");
 
             // Add logging
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
-                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
-                .CreateLogger();
-            builder.Logging.ClearProviders();
-            builder.Logging.AddSerilog();
+            logging.ConfigureLogger(
+                microserviceName: Assembly.GetExecutingAssembly().GetName().Name,
+                writeToLogstash: true,
+                logstashUri: elkConfig.LogstashUri,
+                logstashMinimumLevel: elkConfig.MinimumLevel);
 
             // Redis
             services.AddRedisServer(redisConfig);
@@ -46,7 +51,7 @@ namespace UsersAPI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // BLL
-            services.AddAutoMapper(Assembly.Load("BusinessLogic"));
+            services.AddAutoMapper(Assembly.Load("BusinessLogic"), Assembly.Load("UsersAPI"));
             services.AddValidators();
             services.AddServices();
             services.AddCachingServices();
@@ -55,6 +60,8 @@ namespace UsersAPI
             services.AddJwtAuthentication(jwtConfig);
             services.AddAuthorization();
 
+            // API
+            services.AddGrpcWithInterceptors();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwagger(true, 1);
@@ -85,12 +92,11 @@ namespace UsersAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapGrpcService<UserService>();
 
             app.Run();
         }

@@ -17,12 +17,36 @@ message CreateTransactionRequest {
 	google.protobuf.Timestamp transaction_date = 7;
 }
 
-// Ответ
+// Ответ: на создание транзакции
 message CreateTransactionResult {
+	bool success = 1;
+}
+
+// Запрос: Проверка существования пользователя по Guid
+message UserExistsRequest {
+	string user_id = 1;
+}
+
+// Ответ: Булевое значение, существует ли пользователь
+message UserExistsResponse {
+	bool exists = 1;
+}
+
+// Запрос: DTO уведомление, которое будет отправлено пользователю
+message CreateNotificationRequest {
+	string user_id = 1;
+	string message = 2;
+	google.protobuf.Timestamp date_time = 3;
+}
+
+// Ответ: на создание уведомления
+message CreateNotificationResult {
 	bool success = 1;
 }
 
 // gRPC-сервис
 service UserService {
 	rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResult);
+	rpc UserExists (UserExistsRequest) returns (UserExistsResponse);
+	rpc CreateNotification (CreateNotificationRequest) returns (CreateNotificationResult);
 }

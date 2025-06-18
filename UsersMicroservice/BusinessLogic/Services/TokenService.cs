@@ -1,8 +1,8 @@
-﻿using BusinessLogic.Configuration;
-using BusinessLogic.Services.Interfaces;
+﻿using BusinessLogic.Services.Interfaces;
 using DataAccess.Enums;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -31,6 +31,9 @@ namespace BusinessLogic.Services
                 new Claim(ClaimTypes.Name, name),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Role, role.ToString()),
+
+                // For Ocelot
+                new Claim("scope", role.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey));

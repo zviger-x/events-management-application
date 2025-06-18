@@ -194,5 +194,12 @@ namespace BusinessLogic.Services
 
             return isPasswordValid;
         }
+
+        public Task<bool> UserExists(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var isUserExists = _unitOfWork.UserRepository.IsExists(userId, cancellationToken);
+
+            return isUserExists;
+        }
     }
 }

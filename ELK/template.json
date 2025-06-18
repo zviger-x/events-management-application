@@ -1,0 +1,21 @@
+{
+  "index_patterns": ["aspnet-logs-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1
+    },
+    "mappings": {
+      "properties": {
+        "RenderedMessage": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 2048
+            }
+          }
+        }
+      }
+    }
+  }
+}

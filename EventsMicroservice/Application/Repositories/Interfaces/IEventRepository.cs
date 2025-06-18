@@ -11,7 +11,7 @@ namespace Application.Repositories.Interfaces
         /// Retrieves a paged collection of events that satisfy the given specification criteria.
         /// </summary>
         /// <param name="specification">The specification defining the filtering criteria for events.</param>
-        /// <param name="pageNumber">The page number to retrieve (1-based).</param>
+        /// <param name="pageNumber">The page number to retrieve.</param>
         /// <param name="pageSize">The number of items per page.</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>A paged collection of events matching the specification.</returns>

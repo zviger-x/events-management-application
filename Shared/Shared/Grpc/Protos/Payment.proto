@@ -2,8 +2,6 @@
 
 option csharp_namespace = "Shared.Grpc.Payment";
 
-import "Google/Api/annotations.proto";
-
 package shared;
 
 // Запрос
@@ -24,10 +22,5 @@ message ProcessPaymentResponse {
 
 // gRPC-сервис
 service PaymentService {
-	rpc ProcessPayment (ProcessPaymentRequest) returns (ProcessPaymentResponse){
-    option (google.api.http) = {
-      post: "/payment"
-      body: "*"
-    };
-  }
+	rpc ProcessPayment (ProcessPaymentRequest) returns (ProcessPaymentResponse);
 }

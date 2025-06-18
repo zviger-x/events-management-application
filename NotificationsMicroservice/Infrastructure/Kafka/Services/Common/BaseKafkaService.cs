@@ -14,7 +14,6 @@ namespace Infrastructure.Kafka.Services.Common
         private static readonly TimeSpan _topicConnectionRetryMaxInterval = TimeSpan.FromMinutes(1);
 
         protected readonly TMessageHandler _messageHandler;
-        protected readonly ILogger<BaseKafkaService<TMessageHandler>> _logger;
         protected readonly ConsumerConfig _kafkaConfig;
 
         private IConsumer<Ignore, string> _consumer;
@@ -25,8 +24,6 @@ namespace Infrastructure.Kafka.Services.Common
             IOptions<KafkaServerConfig> kafkaConfig)
             : base(logger)
         {
-            _logger = logger;
-
             _kafkaConfig = new ConsumerConfig
             {
                 BootstrapServers = kafkaConfig.Value.BootstrapServers,
@@ -35,6 +32,8 @@ namespace Infrastructure.Kafka.Services.Common
             };
 
             _messageHandler = kafkaMessageHandler;
+
+            RestartOnUnhandledException = true;
         }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken)

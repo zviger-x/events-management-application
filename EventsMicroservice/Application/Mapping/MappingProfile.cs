@@ -6,6 +6,7 @@ namespace Application.Mapping
 {
     public class MappingProfile : Profile
     {
+        // TODO: РАЗДЕЛИТЬ ПРОФИЛИ!
         public MappingProfile()
         {
             CreateMap<Event, CreateEventDto>();

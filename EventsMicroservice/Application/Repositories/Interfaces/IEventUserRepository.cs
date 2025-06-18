@@ -6,6 +6,15 @@ namespace Application.Repositories.Interfaces
 {
     public interface IEventUserRepository : IRepository<EventUser>
     {
+
+        /// <summary>
+        /// Gets a list of users registered for the event.
+        /// </summary>
+        /// <param name="eventId">The unique identifier of the event.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A list of users</returns>
+        Task<IEnumerable<EventUser>> GetByEventAsync(Guid eventId, CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Retrieves the event user entry for the specified user and event identifiers.
         /// </summary>

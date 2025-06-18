@@ -1,9 +1,13 @@
-﻿using Infrastructure.Kafka.MessageHandlers;
+﻿using Application.Clients;
+using Infrastructure.Clients.Grpc;
+using Infrastructure.Kafka.MessageHandlers;
 using Infrastructure.Kafka.MessageHandlers.Interfaces;
 using Infrastructure.Kafka.Services;
 using NotificationsAPI.Configuration;
 using Shared.Caching.Services;
 using Shared.Caching.Services.Interfaces;
+using Shared.Configuration;
+using Shared.Grpc.User;
 using StackExchange.Redis;
 using System.Reflection;
 
@@ -47,6 +51,22 @@ namespace NotificationsAPI.Extensions
             services.AddHostedService<EventUpdatedKafkaReceiveService>();
             services.AddHostedService<EventCompletedKafkaReceiveService>();
             services.AddHostedService<PaymentConfirmedKafkaReceiveService>();
+        }
+
+        public static void AddClients(this IServiceCollection services, GrpcConnectionsConfig grpcConnections)
+        {
+            var httpHandler = () => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            services.AddGrpcClient<UserService.UserServiceClient>(o =>
+            {
+                o.Address = new Uri(grpcConnections.UsersMicroservice);
+            })
+            .ConfigurePrimaryHttpMessageHandler(httpHandler);
+
+            services.AddScoped<IUserNotificationsClient, UserNotificationsClient>();
         }
     }
 }

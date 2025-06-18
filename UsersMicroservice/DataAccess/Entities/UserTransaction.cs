@@ -3,6 +3,7 @@
 namespace DataAccess.Entities
 {
     // TODO: EventName должен обновлятся через Kafka, при непосредственном обновлении данных ивента
+    // Эта функция пока не будет реализована
     public class UserTransaction : IEntity
     {
         public Guid Id { get; set; }

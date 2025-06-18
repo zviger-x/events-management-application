@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>5217f0f9-bd4a-4572-afd6-3b0fe313ff3c</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +32,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Http" Version="9.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
   </ItemGroup>
 

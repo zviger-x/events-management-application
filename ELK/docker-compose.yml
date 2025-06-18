@@ -1,0 +1,50 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.1
+    container_name: ElasticSearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.audit.enabled=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - internal-docker-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.0.1
+    container_name: Kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - internal-docker-network
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:9.0.1
+    container_name: Logstash
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ./template.json:/usr/share/logstash/config/template.json:ro
+    networks:
+      - internal-docker-network
+    depends_on:
+      - elasticsearch
+
+volumes:
+  es-data:
+
+networks:
+  internal-docker-network:
+    external: true

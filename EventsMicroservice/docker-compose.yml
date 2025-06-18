@@ -1,0 +1,6 @@
+services:
+  eventsapi:
+    image: ${DOCKER_REGISTRY-}eventsapi
+    build:
+      context: ..
+      dockerfile: EventsMicroservice/EventsAPI/Dockerfile

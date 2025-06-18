@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Shared.Configuration;
-using Shared.Swagger.Filters;
 using System.Text;
 
 namespace Shared.Extensions
@@ -16,10 +15,9 @@ namespace Shared.Extensions
         /// </summary>
         /// <param name="services">The service collection to register authentication services with.</param>
         /// <param name="config">The JWT token configuration containing issuer, audience, and secret key.</param>
-        public static void AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig config)
+        public static AuthenticationBuilder AddJwtAuthentication(this IServiceCollection services, JwtTokenConfig config)
         {
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            return services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -34,35 +32,6 @@ namespace Shared.Extensions
                         ClockSkew = TimeSpan.Zero
                     };
                 });
-        }
-
-        /// <summary>
-        /// Adds and configures Swagger generation.
-        /// </summary>
-        /// <param name="services">The service collection to register Swagger services with.</param>
-        /// <param name="useRouteGrouping">
-        /// Indicates whether to enable route grouping based on controller paths.
-        /// If true, applies a grouping filter on a portion of the route path.
-        /// </param>
-        /// <param name="routeWordOffset">Used to offset the index of the word in the route by which it will be grouped</param>
-        public static void AddSwagger(this IServiceCollection services, bool useRouteGrouping = false, int routeWordOffset = 0)
-        {
-            services.AddSwaggerGen(options =>
-            {
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                {
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer"
-                });
-
-                options.OperationFilter<AuthorizeCheckOperationFilter>();
-                options.OperationFilter<RolesOperationFilter>();
-
-                if (useRouteGrouping)
-                    options.OperationFilter<RouteGroupingOperationFilter>(routeWordOffset);
-            });
         }
 
         /// <summary>

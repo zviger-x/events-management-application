@@ -9,8 +9,9 @@
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8091
       - ASPNETCORE_HTTPS_PORTS=8092
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/events-management-application-dev.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=1234
     volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ../Shared/Shared/Configuration/Json/elk-stack-settings.json:/app/config/elk-stack-settings.json:ro
     depends_on:

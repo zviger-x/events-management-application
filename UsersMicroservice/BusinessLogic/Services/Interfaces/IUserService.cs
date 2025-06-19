@@ -1,5 +1,5 @@
 ﻿using BusinessLogic.Contracts;
-using DataAccess.Common;
+using Shared.Common;
 
 namespace BusinessLogic.Services.Interfaces
 {
@@ -75,6 +75,6 @@ namespace BusinessLogic.Services.Interfaces
         /// <param name="userId">User id.</param>
         /// <param name="cancellationToken">Cancellation token if needed.</param>
         /// <returns></returns>
-        Task<bool> UserExists(Guid userId, CancellationToken cancellationToken = default);
+        Task<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }

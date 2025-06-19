@@ -2,18 +2,14 @@
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace DataAccess.Repositories
 {
     public class RefreshTokenRepository : BaseRepository<RefreshToken>, IRefreshTokenRepository
     {
-        private readonly ILogger<RefreshTokenRepository> _logger;
-
-        public RefreshTokenRepository(UserDbContext context, ILogger<RefreshTokenRepository> logger)
+        public RefreshTokenRepository(UserDbContext context)
             : base(context)
         {
-            _logger = logger;
         }
 
         public async Task<RefreshToken> GetByRefreshTokenAsync(string refreshToken, CancellationToken token = default)

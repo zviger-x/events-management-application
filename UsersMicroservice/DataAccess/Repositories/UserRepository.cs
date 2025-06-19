@@ -31,7 +31,7 @@ namespace DataAccess.Repositories
             return await _context.Users.SingleOrDefaultAsync(u => u.Email == email, token);
         }
 
-        public async Task<bool> IsExists(Guid id, CancellationToken token = default)
+        public async Task<bool> IsExistsAsync(Guid id, CancellationToken token = default)
         {
             return await _context.Users.AnyAsync(user => user.Id == id, token);
         }

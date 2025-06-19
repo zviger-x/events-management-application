@@ -1,8 +1,9 @@
-﻿using DataAccess.Common;
-using DataAccess.Contexts;
-using DataAccess.Entities.Interfaces;
-using DataAccess.Repositories.Interfaces;
+﻿using DataAccess.Contexts;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Shared.Common;
+using Shared.Entities.Interfaces;
+using Shared.Repositories.Interfaces;
 
 namespace DataAccess.Repositories
 {
@@ -21,7 +22,7 @@ namespace DataAccess.Repositories
             await _context.AddAsync(entity, token);
             await _context.SaveChangesAsync(token);
 
-            _context.Entry(entity).State = EntityState.Detached;
+            DetachEntity(entity);
 
             return entity.Id;
         }
@@ -31,7 +32,7 @@ namespace DataAccess.Repositories
             _context.Update(entity);
             await _context.SaveChangesAsync(token);
 
-            _context.Entry(entity).State = EntityState.Detached;
+            DetachEntity(entity);
         }
 
         public virtual async Task DeleteAsync(T entity, CancellationToken token = default)
@@ -75,9 +76,29 @@ namespace DataAccess.Repositories
             };
         }
 
+        public virtual async Task CreateManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            await _context.BulkInsertAsync(entities, cancellationToken: token);
+        }
+
+        public virtual async Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            await _context.BulkUpdateAsync(entities, cancellationToken: token);
+        }
+
+        public virtual async Task DeleteManyAsync(IEnumerable<T> entities, CancellationToken token = default)
+        {
+            await _context.BulkDeleteAsync(entities, cancellationToken: token);
+        }
+
         public virtual void Dispose()
         {
             _context.Dispose();
+        }
+
+        protected virtual void DetachEntity(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Detached;
         }
     }
 }

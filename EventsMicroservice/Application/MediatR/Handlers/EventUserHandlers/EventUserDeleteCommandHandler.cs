@@ -3,6 +3,7 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.EventUserHandlers
 {
@@ -17,7 +18,7 @@ namespace Application.MediatR.Handlers.EventUserHandlers
         {
             var eventUser = await _unitOfWork.EventUserRepository.GetByUserAndEventAsync(request.UserId, request.EventId, cancellationToken);
             if (eventUser == null)
-                return;
+                throw new NotFoundException("Event user is already deleted or not found");
 
             await _unitOfWork.InvokeWithTransactionAsync(async (token) =>
             {

@@ -1,5 +1,5 @@
 ﻿using DataAccess.Entities;
-using DataAccess.Enums;
+using Shared.Enums;
 
 namespace BusinessLogic.Contracts
 {

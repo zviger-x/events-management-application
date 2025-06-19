@@ -18,7 +18,7 @@ namespace Application.MediatR.Handlers.EventCommentHandlers
         {
             var comment = await _unitOfWork.EventCommentRepository.GetByIdAsync(request.CommentId, cancellationToken);
             if (comment == null)
-                return;
+                throw new NotFoundException("Comment is already deleted or not found");
 
             var currentUserId = request.CurrentUserId;
             var isAdmin = request.IsCurrentUserAdmin;

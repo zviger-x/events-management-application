@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using BusinessLogic.Contracts;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
-using ValidationException = BusinessLogic.Exceptions.ValidationException;
+using Shared.Common;
+using Shared.Exceptions.ServerExceptions;
+using ValidationException = Shared.Exceptions.ServerExceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -34,7 +34,7 @@ namespace BusinessLogic.Services
         {
             await _createUserTransactionDtoValidator.ValidateAndThrowAsync(transactionDto, token);
 
-            if (!await _unitOfWork.UserRepository.IsExists(transactionDto.UserId, token))
+            if (!await _unitOfWork.UserRepository.IsExistsAsync(transactionDto.UserId, token))
                 throw new ValidationException(
                     UserTransactionValidationErrorCodes.UserIdIsInvalid,
                     UserTransactionValidationMessages.UserIdIsInvalid,
@@ -64,7 +64,7 @@ namespace BusinessLogic.Services
         {
             var entity = await _unitOfWork.UserTransactionRepository.GetByIdAsync(id, token);
             if (entity == null)
-                return;
+                throw new NotFoundException("Transaction is already deleted or not found");
 
             await _unitOfWork.UserTransactionRepository.DeleteAsync(entity, token);
         }

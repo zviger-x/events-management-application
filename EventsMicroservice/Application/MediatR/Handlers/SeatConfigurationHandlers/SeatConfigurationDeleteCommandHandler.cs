@@ -3,6 +3,7 @@ using Application.UnitOfWork.Interfaces;
 using AutoMapper;
 using MediatR;
 using Shared.Caching.Services.Interfaces;
+using Shared.Exceptions.ServerExceptions;
 
 namespace Application.MediatR.Handlers.SeatConfigurationHandlers
 {
@@ -17,7 +18,7 @@ namespace Application.MediatR.Handlers.SeatConfigurationHandlers
         {
             var configuration = await _unitOfWork.SeatConfigurationRepository.GetByIdAsync(request.Id, cancellationToken);
             if (configuration == null)
-                return;
+                throw new NotFoundException("Seat configuration is already deleted or not found");
 
             await _unitOfWork.SeatConfigurationRepository.DeleteAsync(configuration, cancellationToken);
         }

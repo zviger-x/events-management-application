@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using BusinessLogic.Caching.Constants;
-using BusinessLogic.Caching.Interfaces;
 using BusinessLogic.Contracts;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
-using ValidationException = BusinessLogic.Exceptions.ValidationException;
+using Shared.Caching.Services.Interfaces;
+using Shared.Common;
+using Shared.Exceptions.ServerExceptions;
+using ValidationException = Shared.Exceptions.ServerExceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -54,7 +54,7 @@ namespace BusinessLogic.Services
             {
                 var entity = await _unitOfWork.UserRepository.GetByIdAsync(targetUserId, token);
                 if (entity == null)
-                    return; // Идемпотентный запрос возврощает тот же результат
+                    throw new NotFoundException("User is already deleted or not found.");
 
                 await _unitOfWork.UserRepository.DeleteAsync(entity, token);
             }, cancellationToken);
@@ -62,7 +62,7 @@ namespace BusinessLogic.Services
 
         public async Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken token = default)
         {
-            var cachedUsers = await _cacheService.GetAsync<List<UserDto>>(CacheKeys.AllUsers, token);
+            var cachedUsers = await _cacheService.GetAsync<IEnumerable<UserDto>>(CacheKeys.AllUsers, token);
             if (cachedUsers != null)
                 return cachedUsers;
 
@@ -70,7 +70,7 @@ namespace BusinessLogic.Services
 
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
 
-            await _cacheService.SetAsync(CacheKeys.AllUsers, userDtos, token);
+            await _cacheService.SetAsync(CacheKeys.AllUsers, userDtos, cancellationToken: token);
 
             return userDtos;
         }
@@ -90,7 +90,7 @@ namespace BusinessLogic.Services
 
             var pagedUserDtos = _mapper.Map<PagedCollection<UserDto>>(pagedUsers);
 
-            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), pagedUserDtos, token);
+            await _cacheService.SetAsync(CacheKeys.PagedUsers(pageNumber, pageSize), pagedUserDtos, cancellationToken: token);
 
             return pagedUserDtos;
         }
@@ -112,7 +112,7 @@ namespace BusinessLogic.Services
 
             var userDto = _mapper.Map<UserDto>(user);
 
-            await _cacheService.SetAsync(CacheKeys.UserById(targetUserId), userDto, token);
+            await _cacheService.SetAsync(CacheKeys.UserById(targetUserId), userDto, cancellationToken: token);
 
             return userDto;
         }
@@ -173,7 +173,7 @@ namespace BusinessLogic.Services
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
-                throw new ArgumentException("There is no user with this Id.");
+                throw new ParameterException("There is no user with this Id.");
 
             user.Role = changeUserRoleDto.Role;
 
@@ -185,6 +185,11 @@ namespace BusinessLogic.Services
             await _cacheService.RemoveAsync(CacheKeys.UserById(user.Id), cancellationToken);
         }
 
+        public async Task<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await _unitOfWork.UserRepository.IsExistsAsync(userId, cancellationToken);
+        }
+
         private bool IsCurrentPassword(User storedUser, ChangePasswordDto changePasswordDto, CancellationToken token = default)
         {
             if (storedUser == null)
@@ -193,13 +198,6 @@ namespace BusinessLogic.Services
             var isPasswordValid = _passwordHashingService.VerifyPassword(changePasswordDto.CurrentPassword, storedUser.PasswordHash);
 
             return isPasswordValid;
-        }
-
-        public Task<bool> UserExists(Guid userId, CancellationToken cancellationToken = default)
-        {
-            var isUserExists = _unitOfWork.UserRepository.IsExists(userId, cancellationToken);
-
-            return isUserExists;
         }
     }
 }

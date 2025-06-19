@@ -1,19 +1,16 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UsersAPI.Extensions;
+using Shared.Common;
+using Shared.Extensions;
 
 namespace UsersAPI.Controllers
 {
-    // TODO: Создать gRPC сервис для работы с уведомлениями
-    // Этот класс для демонстрации и проверки корректности работы CRUD операций с уведомлениями.
-    // Часть будет перенесена в gRPC сервис
     [ApiController]
     [Authorize]
     [Route("api/notifications")]
-    public class NotificationsController : Controller
+    public class NotificationsController : ControllerBase
     {
         private const int PageSize = 10;
 

@@ -2,13 +2,13 @@
 using BusinessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UsersAPI.Extensions;
+using Shared.Extensions;
 
 namespace UsersAPI.Controllers
 {
     [ApiController]
     [Route("api/auth")]
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
 

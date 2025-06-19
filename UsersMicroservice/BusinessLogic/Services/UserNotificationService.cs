@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using BusinessLogic.Contracts;
-using BusinessLogic.Exceptions;
 using BusinessLogic.Services.Interfaces;
 using BusinessLogic.Validation.ErrorCodes;
 using BusinessLogic.Validation.Messages;
-using DataAccess.Common;
 using DataAccess.Entities;
 using DataAccess.UnitOfWork.Interfaces;
 using FluentValidation;
-using ValidationException = BusinessLogic.Exceptions.ValidationException;
+using Shared.Common;
+using Shared.Exceptions.ServerExceptions;
+using ValidationException = Shared.Exceptions.ServerExceptions.ValidationException;
 
 namespace BusinessLogic.Services
 {
@@ -34,7 +34,7 @@ namespace BusinessLogic.Services
         {
             await _createUserNotificationDtoValidator.ValidateAndThrowAsync(notificationDto, token);
 
-            if (!await _unitOfWork.UserRepository.IsExists(notificationDto.UserId, token))
+            if (!await _unitOfWork.UserRepository.IsExistsAsync(notificationDto.UserId, token))
                 throw new ValidationException(
                     UserNotificationValidationErrorCodes.UserIdIsInvalid,
                     UserNotificationValidationMessages.UserIdIsInvalid,
@@ -62,7 +62,7 @@ namespace BusinessLogic.Services
         {
             var entity = await _unitOfWork.UserNotificationRepository.GetByIdAsync(id, token);
             if (entity == null)
-                return;
+                throw new NotFoundException("Notification is already deleted or not found");
 
             await _unitOfWork.UserNotificationRepository.DeleteAsync(entity, token);
         }

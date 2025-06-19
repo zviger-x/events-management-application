@@ -1,17 +1,17 @@
 ﻿using BusinessLogic.Contracts;
 using BusinessLogic.Services.Interfaces;
-using DataAccess.Common;
-using DataAccess.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UsersAPI.Attributes;
-using UsersAPI.Extensions;
+using Shared.Attributes;
+using Shared.Common;
+using Shared.Enums;
+using Shared.Extensions;
 
 namespace UsersAPI.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         private const int PageSize = 10;
 

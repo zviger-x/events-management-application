@@ -1,4 +1,5 @@
 ﻿using DataAccess.Repositories.Interfaces;
+using Shared.UnitOfWork;
 
 namespace DataAccess.UnitOfWork.Interfaces
 {

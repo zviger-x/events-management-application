@@ -1,4 +1,4 @@
-﻿using DataAccess.Enums;
+﻿using Shared.Enums;
 
 namespace BusinessLogic.Services.Interfaces
 {

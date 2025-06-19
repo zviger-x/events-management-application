@@ -28,7 +28,7 @@ namespace UsersAPI.Services
 
         public override async Task<UserExistsResponse> UserExists(UserExistsRequest request, ServerCallContext context)
         {
-            var isUserExists = await _userService.UserExists(Guid.Parse(request.UserId), context.CancellationToken);
+            var isUserExists = await _userService.UserExistsAsync(Guid.Parse(request.UserId), context.CancellationToken);
 
             var response = new UserExistsResponse() { Exists = isUserExists };
 

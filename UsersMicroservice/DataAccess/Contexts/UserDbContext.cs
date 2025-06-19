@@ -10,10 +10,10 @@ namespace DataAccess.Contexts
         {
         }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<UserNotification> UserNotifications { get; set; }
-        public DbSet<UserTransaction> UserTransactions { get; set; }
-        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserNotification> UserNotifications { get; set; }
+        public virtual DbSet<UserTransaction> UserTransactions { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
